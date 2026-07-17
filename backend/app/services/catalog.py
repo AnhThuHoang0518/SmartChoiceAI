@@ -19,6 +19,11 @@ from backend.app.schemas.ket_qua import Nguon
 
 MAC_DINH = Path("data/processed/may_lanh.csv")
 
+# Du lieu THAT (NDA, khong co tren repo) vang -> tu roi ve catalog MAU gia lap.
+# Nho vay nguoi cham clone repo ve la chay duoc ngay, khong can xin file NDA.
+# Thu tu uu tien: that -> mau. Xem scripts/sinh_catalog_mau.py.
+DU_PHONG_MAU = Path("data/mock/catalog/may_lanh_mau.csv")
+
 
 def _bay_gio() -> str:
     return datetime.now(timezone.utc).isoformat(timespec="seconds")
@@ -77,7 +82,23 @@ def _nguon(truong: str, gia_tri, ma_sp: str, tu: str, suy_luan: bool = False) ->
     )
 
 
-def tai_catalog(duong_dan: str | Path = MAC_DINH) -> list[SanPham]:
+def tai_catalog(duong_dan: str | Path | None = None) -> list[SanPham]:
+    # None (mac dinh) -> uu tien du lieu THAT, vang thi roi ve MAU gia lap.
+    # Dung sentinel None thay vi default=MAC_DINH: default arg bind luc def,
+    # doi bien module sau do khong an - loi da dinh mot lan khi test fallback.
+    if duong_dan is None:
+        if MAC_DINH.exists():
+            duong_dan = MAC_DINH
+        elif DU_PHONG_MAU.exists():
+            duong_dan = DU_PHONG_MAU
+        else:
+            raise FileNotFoundError(
+                f"Khong co du lieu: thieu ca {MAC_DINH} (du lieu that, sinh bang "
+                f"scripts/nap_dmx.py) lan {DU_PHONG_MAU} (mau, sinh bang "
+                f"scripts/sinh_catalog_mau.py)."
+            )
+    duong_dan = Path(duong_dan)
+
     ds: list[SanPham] = []
     with open(duong_dan, encoding="utf-8") as f:
         for r in csv.DictReader(f):

@@ -15,16 +15,22 @@ hậu kiểm chứ không phải lời nhắc.
 - [Lộ trình pilot 3 tháng](docs/pilot/lo-trinh-pilot.md)
 - [Deploy](infra/DEPLOY.md)
 
-## Chạy local
+## Chạy local — không cần xin dữ liệu gì
 
 ```bash
 pip install -r requirements.txt
-# Can 2 file khong co tren repo (du lieu doi tac + khoa API):
-#   data/processed/may_lanh.csv  (sinh tu: python scripts/nap_dmx.py voi file goc trong data/raw/)
-#   .env                         (xem .env.example)
 python -m uvicorn backend.app.main:app --port 8000
 # -> http://localhost:8000
 ```
+
+Repo kèm sẵn **catalog mẫu giả lập** (`data/mock/catalog/may_lanh_mau.csv`, sinh lại
+bằng `python scripts/sinh_catalog_mau.py`) — clone về là chạy được ngay, đúng yêu cầu
+đề bài "dữ liệu demo nên được giả lập hoặc anonymize". Không có `.env` thì hệ chạy
+chế độ thuần luật: đủ luồng hỏi ngược + lọc + xếp hạng, chỉ phần diễn đạt là bản mẫu.
+
+Bản demo công khai dùng **dữ liệu thật của ĐMX** (NDA, không nằm trên repo):
+đặt file gốc vào `data/raw/` rồi `python scripts/nap_dmx.py` — hệ tự ưu tiên
+dữ liệu thật khi có. Khóa API: xem `.env.example`.
 
 ## Đo chất lượng
 

@@ -213,11 +213,11 @@
     {
       "ten": "doi_y_giam_ngan_sach",
       "tin_dau": "may lanh 20tr phong 18m2 co nang phong ngu tk dien",
-      "ky_vong_loai": "tu_van",
+      "ky_vong_loai": "bat_ky_khong_loi",
       "tiep_theo": [
         {
           "tin": "neu giam con 10 trieu thi sao",
-          "ky_vong_loai": "tu_van",
+          "ky_vong_loai": "bat_ky_khong_loi",
           "ky_vong_o": {
             "ngan_sach_max": 10000000,
             "dien_tich_m2": 18,
@@ -226,7 +226,7 @@
         }
       ],
       "toi_da_cau_hoi": 1,
-      "_ghi_chu": "BAY DEMO: truoc day o da biet khong ghi de -> bot lang le tu van theo 20tr cu"
+      "_ghi_chu": "BAY DEMO: truoc day o da biet khong ghi de -> bot lang le tu van theo 20tr cu | ket cuc tha long: phu thuoc catalog, cai phai dung la o ngan_sach bi ghi de"
     },
     {
       "ten": "doi_y_phong_khac",
