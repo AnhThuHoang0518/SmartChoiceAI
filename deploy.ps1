@@ -22,7 +22,16 @@ if ($nhay_cam) {
 git add -A
 git commit -m $m
 if ($LASTEXITCODE -ne 0) { Write-Host "Khong co gi de commit - van cap nhat VPS..." }
+
+# Push fail (mat mang, DNS...) ma van chay tiep thi VPS pull ra ban CU
+# va script bao "Xong" lao -> dung ngay tai day. (Bai hoc tu lan deploy dau:
+# 'Could not resolve host' nhung van in Xong.)
 git push
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "`nPUSH THAT BAI - thuong do mang/DNS. Commit van nam local, khong mat gi." -ForegroundColor Red
+    Write-Host "Thu lai:  git push   (roi chay lai .\deploy.ps1 hoac tu ssh pull)" -ForegroundColor Yellow
+    exit 1
+}
 
 Write-Host "`n--- VPS: pull + restart ---"
 ssh root@45.117.170.223 "cd /opt/smartchoice && git pull && systemctl restart smartchoice && sleep 2 && curl -s localhost:8100/healthz || journalctl -u smartchoice -n 20 --no-pager"
