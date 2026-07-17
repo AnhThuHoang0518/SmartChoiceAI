@@ -124,6 +124,14 @@ def yeu_cau_thong_so(text: str) -> bool:
                           r"xin thong so|noi thong so|spec)\b", kd))
 
 
+def hoi_khuyen_mai(text: str) -> bool:
+    """Khach hoi may dang giam gia/khuyen mai. Tra loi bang du lieu THAT
+    (gia goc vs gia khuyen mai co san trong catalog) - khong doan 'hot',
+    khong doan 'noi bat' vi khong co so lieu nao dung sau mot chu do."""
+    kd = bo_dau(text or "").lower()
+    return bool(re.search(r"\b(khuyen mai|giam gia|dang giam|dang sale|sale|km)\b", kd))
+
+
 def cau_hoi_cong_suat(text: str) -> bool:
     """Khach hoi KIEN THUC ve cong suat ('gia dinh 5 nguoi mua cong suat bao
     nhieu?', 'phong nay can may HP?') - khac voi nho tu van chon may.

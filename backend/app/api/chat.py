@@ -24,10 +24,12 @@ from backend.app.core import phien
 from backend.app.core.chuan_hoa_tv import (
     cau_hoi_cong_suat,
     co_nganh_may_lanh,
+    hoi_khuyen_mai,
     nganh_ngoai_pham_vi,
     tu_ky_thuat_trong,
     yeu_cau_thong_so,
 )
+from backend.app.schemas.nhu_cau import UuTien
 from backend.app.ranking.xep_hang import cfg, xep_hang
 from backend.app.services.catalog import tai_catalog
 from backend.app.services.llm import tao_llm
@@ -128,6 +130,46 @@ def chat(t: TinNhan) -> TraLoi:
     # phai nho chon may. Truoc day bi tra loi bang nguyen van cau tu van cu -
     # phat hien tu demo that. Template cung + van trich duoc thong tin trong
     # cau hoi (vd "phong 40m2 can bao nhieu HP" -> dien luon dien tich).
+    # Khach hoi khuyen mai -> tra loi bang KHUYEN MAI THAT (gia goc vs gia KM
+    # trong catalog), khong phai "hot"/"noi bat" tu phong. Code chon + tinh,
+    # khong qua LLM. Sau do van keo ve nhu cau (sale that cung dan tu khuyen
+    # mai ve "phong minh bao nhieu m2").
+    if hoi_khuyen_mai(t.tin_nhan):
+        if UuTien.GIA not in nc.uu_tien:
+            nc.uu_tien.append(UuTien.GIA)   # khach quan tam gia -> vao nhu cau
+        p["nganh"] = p.get("nganh") or "may_lanh"
+
+    # Chi tra BANG khuyen mai khi CHUA biet phong - biet roi thi di thang vao
+    # tu van (trong so gia da duoc nang), dung bat khach tra loi lai dien tich.
+    if hoi_khuyen_mai(t.tin_nhan) and nc.dien_tich_m2 is None:
+        giam = sorted(
+            (s for s in ds if s.gia < s.gia_goc),
+            key=lambda s: s.gia_goc - s.gia,
+            reverse=True,
+        )[:3]
+        if giam:
+            dong = []
+            for s in giam:
+                muc = s.gia_goc - s.gia
+                dong.append(
+                    f"• {s.ten}: {s.gia_goc:,.0f}đ còn {s.gia:,.0f}đ (giảm {muc/1_000_000:.1f} triệu)".replace(",", ".")
+                )
+            text = (
+                "Dạ đang có mấy máy giảm sâu nhất nè ạ:\n" + "\n".join(dong)
+                + "\nMáy phù hợp hay không còn tùy phòng mình ạ — phòng mình rộng khoảng bao nhiêu m² để em xem máy nào đang giảm mà VỪA phòng mình ạ?"
+            )
+        else:
+            text = "Dạ hiện tại em chưa thấy máy nào đang có giá khuyến mãi trong dữ liệu ạ. Mình cho em xin diện tích phòng và ngân sách, em lọc máy giá tốt nhất cho mình nhé ạ?"
+        phien.ghi(ma, nc, "dien_tich_m2")
+        return TraLoi(
+            phien_id=ma,
+            loai="khuyen_mai",
+            text=text,
+            o_nhu_cau=nc.model_dump(exclude_none=True, mode="json"),
+            thong_ke={"ms": int((time.perf_counter() - t0) * 1000), "cham_llm": 1,
+                      "giong": giong},
+        )
+
     if cau_hoi_cong_suat(t.tin_nhan):
         g = cfg()["giai_thich_cong_suat"]
         if nc.dien_tich_m2:
