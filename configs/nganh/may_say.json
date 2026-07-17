@@ -1,0 +1,76 @@
+{
+  "ten_nganh": "may_say",
+  "ten_hien_thi": "máy sấy quần áo",
+  "tu_khoa_nganh": ["may say"],
+  "csv_that": "data/processed/may_say.csv",
+  "csv_mau": "data/mock/catalog/may_say_mau.csv",
+  "cot_so": {
+    "nguoi_min": {"nguon": "catalog:Số người sử dụng", "ro": "nguoi"},
+    "nguoi_max": {"nguon": "catalog:Số người sử dụng", "ro": "nguoi"},
+    "tai_kg": {"nguon": "catalog:Khối lượng tải chính", "ro": "kg"},
+    "dien_w": {"nguon": "catalog:Điện năng tiêu thụ", "ro": "w"},
+    "nhiet_toi_da_c": {"nguon": "catalog:Nhiệt độ tối đa", "ro": "doc"},
+    "ngang_cm": {"nguon": "catalog:Ngang", "ro": "cm"},
+    "cao_cm": {"nguon": "catalog:Cao", "ro": "cm"},
+    "sau_cm": {"nguon": "catalog:Sâu", "ro": "cm"}
+  },
+  "cot_chu": { "loai": {"nguon": "catalog:Loại sản phẩm"} },
+  "o_nhu_cau": {
+    "tai_kg": {
+      "kieu": "so", "bat_buoc": true,
+      "trich": ["(\\d{1,2})\\s*(?:-\\s*\\d{1,2}\\s*)?kg", "(?:nha|gia dinh)\\s*(\\d{1,2})\\s*nguoi"],
+      "cau_hoi": "Dạ mình cần máy sấy khoảng bao nhiêu kg ạ? (nhà 3-5 người thường dùng 8-9 kg ạ)",
+      "cau_hoi_lap": "Dạ mình cho em xin tải sấy ạ — ví dụ: '9 kg'.",
+      "nhan": "tải {:.0f} kg"
+    },
+    "ngang_cm": {
+      "kieu": "so", "bat_buoc": false,
+      "trich": ["(?:rong|ngang)\\s*(?:chi\\s*)?(\\d{2,3})\\s*cm", "(\\d{2,3})\\s*[x×]\\s*\\d{2,3}\\s*[x×]\\s*\\d{2,3}"],
+      "cau_hoi": "Dạ chỗ đặt máy rộng bao nhiêu cm ạ?",
+      "nhan": "hốc ngang {:.0f} cm"
+    },
+    "sau_cm": {
+      "kieu": "so", "bat_buoc": false,
+      "trich": ["\\d{2,3}\\s*[x×]\\s*(\\d{2,3})\\s*[x×]\\s*\\d{2,3}"],
+      "cau_hoi": "Dạ chỗ đặt sâu bao nhiêu cm ạ?",
+      "nhan": "sâu {:.0f} cm"
+    },
+    "cao_cm": {
+      "kieu": "so", "bat_buoc": false,
+      "trich": ["\\d{2,3}\\s*[x×]\\s*\\d{2,3}\\s*[x×]\\s*(\\d{2,3})"],
+      "cau_hoi": "Dạ chỗ đặt cao bao nhiêu cm ạ?",
+      "nhan": "cao {:.0f} cm"
+    },
+    "loai": {
+      "kieu": "chu", "bat_buoc": false,
+      "trich": ["(bom nhiet|thong hoi|nguung tu|ngung tu)"],
+      "cau_hoi": "Dạ mình muốn sấy bơm nhiệt (tiết kiệm điện) hay thông hơi (rẻ hơn) ạ?",
+      "nhan": "loại {}"
+    }
+  },
+  "cau_hoi_ngan_sach": {
+    "cau_hoi": "Dạ mình dự tính khoảng bao nhiêu cho máy sấy ạ?",
+    "cau_hoi_lap": "Dạ mình cho em xin ngân sách ạ — ví dụ: 'khoảng 8 triệu'."
+  },
+  "loc_cung": [
+    {"kieu": "toi_da", "o": "ngang_cm", "cot": "ngang_cm", "don_vi": "cm", "ly_do": "kich_thuoc"},
+    {"kieu": "toi_da", "o": "sau_cm", "cot": "sau_cm", "don_vi": "cm", "ly_do": "kich_thuoc"},
+    {"kieu": "toi_da", "o": "cao_cm", "cot": "cao_cm", "don_vi": "cm", "ly_do": "kich_thuoc"},
+    {"kieu": "ngan_sach"},
+    {"kieu": "khop_ten", "o": "loai", "cot": "loai", "ly_do": "loai"}
+  ],
+  "truc_cham": [
+    {"uu_tien": "tiet_kiem_dien", "ten": "công suất điện", "cot": "dien_w", "thap_tot": true, "fmt": "{:.0f} W", "mac_dinh": 0.2,
+     "trich_uu_tien": ["tiet kiem dien", "it ton dien", "tkd"]},
+    {"uu_tien": "tai_lon", "ten": "tải sấy", "cot": "tai_kg", "thap_tot": false, "fmt": "{:.0f} kg",
+     "trich_uu_tien": ["say nhieu", "tai lon"]},
+    {"uu_tien": "gia", "ten": "giá", "cot": "gia", "thap_tot": true, "fmt": "{:,.0f}đ", "mac_dinh": 0.2,
+     "trich_uu_tien": ["\\bre\\b", "gia re", "khuyen mai"]}
+  ],
+  "hien_thi_thong_so": [
+    {"cot": "tai_kg", "fmt": "tải {:.0f} kg"},
+    {"cot": "dien_w", "fmt": "điện {:.0f} W"},
+    {"cot": "ngang_cm", "fmt": "ngang {:.0f} cm"},
+    {"cot": "nhiet_toi_da_c", "fmt": "nhiệt tối đa {:.0f}°C"}
+  ]
+}

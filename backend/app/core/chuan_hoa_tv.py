@@ -79,8 +79,7 @@ def chuan_hoa_tien(s: str) -> str:
 # 'tu lanh' DA GO khoi danh sach nay: tu 18/07 nganh tu lanh co vertical rieng
 # (backend/app/nganh/tu_lanh.py) - router trong api se dan sang, khong tu choi nua.
 NGANH_KHAC = [
-    (r"\bmay giat\b", "máy giặt"),
-    (r"\bmay say\b", "máy sấy"),
+    # 'may giat' + 'may say' DA GO (18/07): chay tren khung generic configs/nganh/
     (r"\bmay rua (?:chen|bat)\b", "máy rửa chén"),
     (r"\btu (?:dong|mat)\b", "tủ mát/tủ đông"),
     (r"\bmay nuoc nong\b", "máy nước nóng"),

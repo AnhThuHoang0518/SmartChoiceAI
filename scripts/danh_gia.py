@@ -128,6 +128,8 @@ def _doan_o(text: str) -> str:
         return "nganh"
     if "mấy người" in t or "người dùng tủ" in t:
         return "so_nguoi"
+    if "bao nhiêu kg" in t:
+        return "tai_kg"
     if "cho tủ lạnh" in t:
         return "ngan_sach_max"
     if "bao nhiêu" in t and "m²" in t:

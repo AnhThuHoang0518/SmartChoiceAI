@@ -147,6 +147,70 @@ def _xu_ly_tu_lanh(t: TinNhan, ma: str, p: dict, t0: float, giong: str) -> TraLo
     )
 
 
+def _xu_ly_nganh_khung(t: TinNhan, ma: str, p: dict, t0: float, giong: str,
+                       nganh) -> TraLoi:
+    """Luong tu van cho NGANH CHAY TREN KHUNG (may giat, may say... - moi nganh
+    la 1 file configs/nganh/*.json). Cung nhip sale: gom o bat buoc -> loc cung
+    theo cong bo hang -> top 3 -> LLM dien dat -> hau kiem theo ro don vi.
+    """
+    from types import SimpleNamespace
+
+    from backend.app.agents.viet_lai import viet_lai
+
+    ds = nganh.catalog()
+    if not ds:
+        return TraLoi(phien_id=ma, loai="ngoai_pham_vi",
+                      text=f"Dạ dữ liệu {nganh.ten_hien_thi} chưa được nạp trên hệ "
+                           "thống này ạ — mình cần máy lạnh/tủ lạnh thì em tư vấn ngay ạ!",
+                      thong_ke={"ms": int((time.perf_counter() - t0) * 1000), "cham_llm": 0})
+
+    p["nganh"] = nganh.ten
+    khoa = f"nhu_cau_{nganh.ten}"
+    o_cho = p["da_hoi"][-1] if p["da_hoi"] else None
+    nc = nganh.trich(t.tin_nhan, p.get(khoa), o_cho)
+    if bo_ngan_sach(t.tin_nhan):
+        nc.gia_tri["ngan_sach_max"] = float(KHONG_GIOI_HAN)
+    p[khoa] = nc
+    p["luc"] = time.time()
+
+    thieu = nganh.thieu_bat_buoc(nc)
+    if thieu:
+        o = thieu[0]
+        text = nganh.cau_hoi(o, lap_lai=o in p["da_hoi"])
+        p["da_hoi"].append(o)
+        return TraLoi(phien_id=ma, loai="cau_hoi", text=text,
+                      o_nhu_cau=nc.dump(),
+                      thong_ke={"ms": int((time.perf_counter() - t0) * 1000),
+                                "cham_llm": 0, "giong": giong, "nganh": nganh.ten})
+
+    bang, thieu_kt = nganh.xep_hang(ds, nc)
+    if not bang.top3:
+        p["loai_truoc"] = "khong_co_may"
+        return TraLoi(phien_id=ma, loai="khong_co_may",
+                      text=f"Dạ với các tiêu chí hiện tại em chưa tìm được "
+                           f"{nganh.ten_hien_thi} nào phù hợp ạ. Mình có thể nới ngân "
+                           "sách hoặc bỏ bớt ràng buộc — em lọc lại ngay ạ.",
+                      o_nhu_cau=nc.dump(),
+                      thong_ke={"ms": int((time.perf_counter() - t0) * 1000),
+                                "cham_llm": 0, "nganh": nganh.ten})
+
+    mo_ta = nganh.bang_thanh_chu(bang, nc, thieu_kt)
+    # hau_kiem doc thuoc tinh tu nhu_cau qua getattr -> boc dict thanh namespace
+    nc_shim = SimpleNamespace(**{k: v for k, v in nc.gia_tri.items() if v is not None})
+    r = viet_lai(bang, nc_shim, llm(), giong, mo_ta_nhu_cau=mo_ta)
+    p["loai_truoc"] = "tu_van"
+    return TraLoi(
+        phien_id=ma, loai="tu_van", text=r["text"],
+        o_nhu_cau=nc.dump(),
+        top3=[u.model_dump(mode="json") for u in bang.top3],
+        loai_noi_bat=bang.loai_noi_bat.model_dump(mode="json") if bang.loai_noi_bat else None,
+        thong_ke={"ms": int((time.perf_counter() - t0) * 1000), "cham_llm": 2,
+                  "truoc_loc": bang.tong_truoc_loc, "sau_loc": bang.con_lai_sau_loc,
+                  "nguon_llm": r["nguon_llm"], "so_lan_chan_bia": r["so_lan_bi_chan"],
+                  "loi_da_chan": r["loi_da_chan"], "giong": giong, "nganh": nganh.ten},
+    )
+
+
 @router.post("/chat", response_model=TraLoi)
 def chat(t: TinNhan) -> TraLoi:
     t0 = time.perf_counter()
@@ -209,6 +273,18 @@ def chat(t: TinNhan) -> TraLoi:
     if yeu_cau_thong_so(t.tin_nhan) or len(p["tu_kt"]) >= 2:
         p["giong"] = "ky_thuat"
     giong = p.get("giong") or "binh_dan"
+
+    # ── ROUTER NGANH: cac nganh chay tren khung generic ─────────────────────
+    # Uu tien nganh khach vua nhac; khong nhac thi theo nganh dang do trong
+    # phien. May lanh nhac kem thi may lanh thang (nganh chinh cua de bai).
+    from backend.app.nganh.khung import nganh_theo_ten, tim_nganh
+
+    if not co_nganh_may_lanh(t.tin_nhan) and not co_nganh_tu_lanh(t.tin_nhan):
+        ng = tim_nganh(t.tin_nhan) or (
+            nganh_theo_ten(p["nganh"]) if p.get("nganh") else None
+        )
+        if ng is not None:
+            return _xu_ly_nganh_khung(t, ma, p, t0, giong, ng)
 
     # ── ROUTER NGANH: tu lanh co vertical rieng ─────────────────────────────
     # May lanh thang khi khach nhac CA HAI ("mua may lanh va tu lanh") - giu

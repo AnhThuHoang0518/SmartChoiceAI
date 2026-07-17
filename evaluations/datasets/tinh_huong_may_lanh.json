@@ -7,7 +7,8 @@
     "loai_phong": "phòng ngủ",
     "khu_vuc": "Hà Nội",
     "nganh": "máy lạnh",
-    "so_nguoi": "4 người"
+    "so_nguoi": "4 người",
+    "tai_kg": "9 kg"
   },
   "tinh_huong": [
     {
@@ -82,10 +83,11 @@
       "_ghi_chu": "Truoc 18/07: tu choi lich su. Nay: vertical tu lanh that"
     },
     {
-      "ten": "ngoai_pham_vi_may_giat",
+      "ten": "may_giat_vao_luong_that",
       "tin_dau": "can mua may giat 10kg cho gia dinh 4 nguoi",
-      "ky_vong_loai": "ngoai_pham_vi",
-      "toi_da_cau_hoi": 0
+      "ky_vong_loai": "tu_van",
+      "toi_da_cau_hoi": 3,
+      "_ghi_chu": "Truoc: tu choi. Nay: nganh may giat tren khung generic"
     },
     {
       "ten": "ngoai_pham_vi_tivi",
@@ -344,6 +346,52 @@
       },
       "toi_da_cau_hoi": 3,
       "_ghi_chu": "go so tran '5' khi dang hoi so nguoi -> dien dung o (ngu canh)"
+    },
+    {
+      "ten": "tc019_may_giat_5_nguoi",
+      "tin_dau": "Gia đình 5 người nên mua máy giặt bao nhiêu kg?",
+      "tra_loi": {
+        "ngan_sach_max": "tam 10 trieu"
+      },
+      "ky_vong_loai": "tu_van",
+      "ky_vong_o": {
+        "so_nguoi": 5,
+        "ngan_sach_max": 10000000
+      },
+      "toi_da_cau_hoi": 2,
+      "_ghi_chu": "TC-019: map so nguoi -> tai theo cong bo hang"
+    },
+    {
+      "ten": "tc020_may_giat_kich_thuoc",
+      "tin_dau": "cho dat may giat rong 62 cm, sau 60 cm, nha 4 nguoi, tam 12tr",
+      "ky_vong_loai": "bat_ky_khong_loi",
+      "ky_vong_o": {
+        "so_nguoi": 4,
+        "ngang_cm": 62,
+        "sau_cm": 60
+      },
+      "toi_da_cau_hoi": 1,
+      "_ghi_chu": "TC-020: hard filter kich thuoc"
+    },
+    {
+      "ten": "tc031_may_say_hoc",
+      "tin_dau": "may say phai vua hoc 60x65x86 cm, tai 9kg, tam 15tr",
+      "ky_vong_loai": "tu_van",
+      "ky_vong_o": {
+        "tai_kg": 9,
+        "ngang_cm": 60,
+        "sau_cm": 65,
+        "cao_cm": 86
+      },
+      "toi_da_cau_hoi": 1,
+      "_ghi_chu": "TC-031: loc du 3 chieu, khong dao Ngang/Sau - cau khach THAT da hoi trong demo"
+    },
+    {
+      "ten": "tc029_may_say_bom_nhiet",
+      "tin_dau": "may say bom nhiet 9kg khoang 15 trieu",
+      "ky_vong_loai": "tu_van",
+      "toi_da_cau_hoi": 1,
+      "_ghi_chu": "TC-029: khop loai bo dau ca 2 phia (bug loai oan da vet)"
     }
   ]
 }

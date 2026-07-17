@@ -1,0 +1,78 @@
+{
+  "ten_nganh": "may_giat",
+  "ten_hien_thi": "máy giặt",
+  "tu_khoa_nganh": ["may giat"],
+  "csv_that": "data/processed/may_giat.csv",
+  "csv_mau": "data/mock/catalog/may_giat_mau.csv",
+  "cot_so": {
+    "nguoi_min": {"nguon": "catalog:Số người sử dụng", "ro": "nguoi"},
+    "nguoi_max": {"nguon": "catalog:Số người sử dụng", "ro": "nguoi"},
+    "tai_kg": {"nguon": "catalog:Khối lượng tải chính", "ro": "kg"},
+    "dien_wh_kg": {"nguon": "catalog:Điện năng tiêu thụ", "ro": "whkg"},
+    "vat_vong": {"nguon": "catalog:Tốc độ quay vắt tối đa", "ro": "vong"},
+    "bao_hanh_dc_nam": {"nguon": "catalog:Bảo hành động cơ", "ro": "nam"},
+    "ngang_cm": {"nguon": "catalog:Ngang", "ro": "cm"},
+    "sau_cm": {"nguon": "catalog:Sâu", "ro": "cm"}
+  },
+  "cot_chu": { "loai": {"nguon": "catalog:Loại sản phẩm"} },
+  "o_nhu_cau": {
+    "so_nguoi": {
+      "kieu": "so", "bat_buoc": true,
+      "trich": ["(?:nha|gia dinh|cho)?\\s*(\\d{1,2})\\s*(?:nguoi|thanh vien)"],
+      "cau_hoi": "Dạ nhà mình mấy người ạ? Hãng công bố tải giặt theo số người nên em hỏi để chọn đúng cỡ ạ.",
+      "cau_hoi_lap": "Dạ em vẫn cần biết nhà mình mấy người ạ — ví dụ: '4 người'.",
+      "nhan": "nhà {:.0f} người"
+    },
+    "tai_kg": {
+      "kieu": "so", "bat_buoc": false,
+      "trich": ["(\\d{1,2})\\s*kg"],
+      "cau_hoi": "Dạ mình muốn máy giặt khoảng bao nhiêu kg ạ?",
+      "nhan": "tải {:.0f} kg"
+    },
+    "ngang_cm": {
+      "kieu": "so", "bat_buoc": false,
+      "trich": ["(?:rong|ngang)\\s*(?:chi\\s*)?(\\d{2,3})\\s*cm"],
+      "cau_hoi": "Dạ chỗ đặt máy rộng bao nhiêu cm ạ?",
+      "nhan": "chỗ đặt ngang {:.0f} cm"
+    },
+    "sau_cm": {
+      "kieu": "so", "bat_buoc": false,
+      "trich": ["sau\\s*(\\d{2,3})\\s*cm"],
+      "cau_hoi": "Dạ chỗ đặt sâu bao nhiêu cm ạ?",
+      "nhan": "sâu {:.0f} cm"
+    },
+    "loai": {
+      "kieu": "chu", "bat_buoc": false,
+      "trich": ["(cua truoc|cua tren|long ngang|long dung)"],
+      "cau_hoi": "Dạ mình thích cửa trước hay cửa trên ạ?",
+      "nhan": "kiểu {}"
+    }
+  },
+  "cau_hoi_ngan_sach": {
+    "cau_hoi": "Dạ mình dự tính khoảng bao nhiêu cho máy giặt ạ?",
+    "cau_hoi_lap": "Dạ mình cho em xin ngân sách ạ — ví dụ: 'khoảng 10 triệu'."
+  },
+  "loc_cung": [
+    {"kieu": "khoang_hang_cong_bo", "o": "so_nguoi", "cot_min": "nguoi_min", "cot_max": "nguoi_max", "don_vi": "người", "ly_do": "so_nguoi"},
+    {"kieu": "ngan_sach"},
+    {"kieu": "toi_da", "o": "ngang_cm", "cot": "ngang_cm", "don_vi": "cm", "ly_do": "kich_thuoc"},
+    {"kieu": "toi_da", "o": "sau_cm", "cot": "sau_cm", "don_vi": "cm", "ly_do": "kich_thuoc"},
+    {"kieu": "khop_ten", "o": "loai", "cot": "loai", "ly_do": "loai"}
+  ],
+  "truc_cham": [
+    {"uu_tien": "tiet_kiem_dien", "ten": "điện năng", "cot": "dien_wh_kg", "thap_tot": true, "fmt": "{:.1f} Wh/kg", "mac_dinh": 0.2,
+     "trich_uu_tien": ["tiet kiem dien", "it ton dien", "inverter", "tkd"]},
+    {"uu_tien": "vat_khoe", "ten": "tốc độ vắt", "cot": "vat_vong", "thap_tot": false, "fmt": "{:.0f} vòng/phút",
+     "trich_uu_tien": ["vat khoe", "vat manh", "nhanh kho", "mau kho"]},
+    {"uu_tien": "ben", "ten": "bảo hành động cơ", "cot": "bao_hanh_dc_nam", "thap_tot": false, "fmt": "{:.0f} năm",
+     "trich_uu_tien": ["ben\\b", "bao hanh (?:lau|dai)", "dung lau"]},
+    {"uu_tien": "gia", "ten": "giá", "cot": "gia", "thap_tot": true, "fmt": "{:,.0f}đ", "mac_dinh": 0.2,
+     "trich_uu_tien": ["\\bre\\b", "gia re", "khuyen mai", "giam gia"]}
+  ],
+  "hien_thi_thong_so": [
+    {"cot": "tai_kg", "fmt": "tải {:.0f} kg"},
+    {"cot": "dien_wh_kg", "fmt": "điện {:.1f} Wh/kg"},
+    {"cot": "vat_vong", "fmt": "vắt {:.0f} vòng/phút"},
+    {"cot": "bao_hanh_dc_nam", "fmt": "bảo hành động cơ {:.0f} năm"}
+  ]
+}

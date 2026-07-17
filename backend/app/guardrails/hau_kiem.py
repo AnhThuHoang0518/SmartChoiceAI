@@ -41,6 +41,13 @@ MAU_SO: dict[str, list[tuple[str, float]]] = {
     "kwh": [(r"([\d.,]+)\s*kWh", 1.0)],
     "cm": [(r"([\d.,]+)\s*cm\b", 1.0)],
     "nguoi": [(r"([\d.,]+)\s*người", 1.0)],
+    # Nhom gia dung (may giat/say) - moi don vi mot ro rieng nhu moi khi
+    "kg": [(r"([\d.,]+)\s*kg", 1.0)],
+    "vong": [(r"([\d.,]+)\s*vòng", 1.0)],
+    "whkg": [(r"([\d.,]+)\s*Wh/kg", 1.0)],
+    "w": [(r"([\d.,]+)\s*W\b(?!h)", 1.0)],
+    "doc": [(r"([\d.,]+)\s*°C", 1.0)],
+    "nam": [(r"([\d.,]+)\s*năm", 1.0)],
 }
 
 # truong trong Nguon -> ro don vi (dung chung moi nganh)
@@ -50,6 +57,9 @@ _TRUONG_RO = {
     "dung_tich_lit": "lit", "dien_kwh_nam": "kwh",
     "ngang_cm": "cm", "cao_cm": "cm", "sau_cm": "cm",
     "so_nguoi": "nguoi",
+    "tai_kg": "kg", "vat_vong": "vong", "dien_wh_kg": "whkg", "dien_w": "w",
+    "nhiet_toi_da_c": "doc", "bao_hanh_dc_nam": "nam",
+    "nguoi_min": "nguoi", "nguoi_max": "nguoi",
 }
 
 # thuoc tinh trong o nhu cau -> ro (loi khach noi cung la nguon su that)
