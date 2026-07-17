@@ -1,0 +1,18 @@
+# systemd service - Smart Choice demo
+# Cai: cp infra/smartchoice.service /etc/systemd/system/ && systemctl daemon-reload && systemctl enable --now smartchoice
+#
+# Port 8100 - CO Y tranh xa port cua aibutler (dang chay that tren cung VPS).
+# Chi nghe 127.0.0.1 - ra ngoai bat buoc di qua nginx (de co HTTPS cho nut mic).
+
+[Unit]
+Description=Smart Choice - tro ly tu van dien may (demo hackathon)
+After=network.target
+
+[Service]
+WorkingDirectory=/opt/smartchoice
+ExecStart=/opt/smartchoice/venv/bin/uvicorn backend.app.main:app --host 127.0.0.1 --port 8100
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
