@@ -66,27 +66,57 @@ class GeminiLLM(LLM):
 
 
 class FptLLM(LLM):
-    """FPT AI Factory - Serverless Inference (DeepSeek-V4-Flash, Llama-3.3-70B...).
+    """FPT AI Marketplace - da doc tai lieu chinh thuc, KHONG doan:
+    github.com/fpt-corp/ai-marketplace (README + API Integration - LLM.md)
 
-    CHUA VIET. Ly do: chua co tai lieu chinh thuc trong tay, va luat cua du an la
-    KHONG DOAN API (da tra gia mot lan voi SePay). Can xac nhan 3 thu truoc khi
-    viet vao day:
-      1. Endpoint that (marketplace.fptcloud.jp cho region Nhat - co ban VN khong?)
-      2. Kieu xac thuc: 'Authorization: Bearer' hay header rieng?
-      3. Body co tuong thich OpenAI (/v1/chat/completions) hay dang rieng?
-    Co doc roi thi lop nay chi ~15 dong, khong phai viec lon.
+    Xac nhan tu docs:
+      - Base URL : https://mkp-api.fptcloud.com
+      - Endpoint : POST /chat/completions  (tuong thich chuan OpenAI)
+      - Auth     : header 'Authorization: Bearer <api-key>'
+      - Body     : {model, messages[{role,content}], stream}
+    Khoa lay o marketplace.fptcloud.com -> My account -> My API Keys.
+
+    json_mode: docs FPT khong nhac response_format -> KHONG gui tham so do
+    (server la co the 400). Thay bang chi thi trong system prompt; tang goi
+    (trich_o_nhu_cau) von da tu boc ```json``` va tu loai khi sai khuon.
     """
 
     ten = "fpt"
 
-    def __init__(self, khoa: str, model: str, endpoint: str):
-        raise LoiLLM(
-            "Driver FPT chua viet - can tai lieu API chinh thuc truoc. "
-            "Xem docstring FptLLM de biet can hoi gi. Tam dung LLM_NHA_CUNG_CAP=gemini."
-        )
+    def __init__(self, khoa: str, model: str = "DeepSeek-V4-Flash",
+                 endpoint: str = "https://mkp-api.fptcloud.com"):
+        self._khoa = khoa
+        self._model = model
+        self._url = (endpoint or "https://mkp-api.fptcloud.com").rstrip("/") + "/chat/completions"
 
     def sinh(self, he_thong: str, nguoi_dung: str, json_mode: bool = False) -> str:
-        raise NotImplementedError
+        import requests
+
+        ht = he_thong + (
+            "\nCHỈ trả về JSON hợp lệ, không markdown, không giải thích." if json_mode else ""
+        )
+        try:
+            r = requests.post(
+                self._url,
+                headers={
+                    "Content-Type": "application/json",
+                    "Authorization": f"Bearer {self._khoa}",
+                },
+                json={
+                    "model": self._model,
+                    "messages": [
+                        {"role": "system", "content": ht},
+                        {"role": "user", "content": nguoi_dung},
+                    ],
+                    "temperature": 0.2,
+                    "stream": False,
+                },
+                timeout=30,
+            )
+            r.raise_for_status()
+            return (r.json()["choices"][0]["message"]["content"] or "").strip()
+        except Exception as e:
+            raise LoiLLM(f"FPT Marketplace loi: {e}") from e
 
 
 class LuatLLM(LLM):

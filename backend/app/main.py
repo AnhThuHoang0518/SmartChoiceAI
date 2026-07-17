@@ -3,6 +3,10 @@
 
 Chay:  uvicorn backend.app.main:app --reload --port 8000
 """
+from dotenv import load_dotenv
+
+load_dotenv()          # doc .env TRUOC khi bat cu module nao dong toi LLM
+
 from fastapi import FastAPI
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles

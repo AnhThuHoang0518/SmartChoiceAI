@@ -21,7 +21,8 @@ from backend.app.agents.gia_tri_thong_tin import bang_diem, chon_cau_hoi
 from backend.app.agents.trich_o_nhu_cau import trich
 from backend.app.agents.viet_lai import viet_lai
 from backend.app.core import phien
-from backend.app.ranking.xep_hang import xep_hang
+from backend.app.core.chuan_hoa_tv import nganh_ngoai_pham_vi
+from backend.app.ranking.xep_hang import cfg, xep_hang
 from backend.app.services.catalog import tai_catalog
 from backend.app.services.llm import tao_llm
 
@@ -69,25 +70,73 @@ def chat(t: TinNhan) -> TraLoi:
     ma = t.phien_id if t.phien_id and phien.lay(t.phien_id) else phien.tao_phien()
     p = phien.lay(ma)
 
+    # Khach hoi nganh khac (tu lanh, may giat...) -> noi that pham vi, dung lai
+    # cau hoi ngan sach nhu robot hong. Phat hien tu demo that.
+    nganh = nganh_ngoai_pham_vi(t.tin_nhan)
+    if nganh:
+        return TraLoi(
+            phien_id=ma,
+            loai="ngoai_pham_vi",
+            text=cfg()["ngoai_pham_vi"]["mau"].format(nganh=nganh),
+            o_nhu_cau=p["nhu_cau"].model_dump(exclude_none=True, mode="json"),
+            thong_ke={"ms": int((time.perf_counter() - t0) * 1000), "cham_llm": 0},
+        )
+
     ds = catalog()
-    nc = trich(t.tin_nhan, llm(), p["nhu_cau"])
+    o_dang_cho = p["da_hoi"][-1] if p["da_hoi"] else None
+    nc = trich(t.tin_nhan, llm(), p["nhu_cau"], o_dang_cho)
 
     diem = [{"o": o, "diem": d} for o, d in bang_diem(ds, nc)]
     hoi = chon_cau_hoi(ds, nc)
 
     if hoi:
+        # Hoi lai o DA hoi roi -> doi loi + kem vi du, khong lap nguyen van.
+        text = (
+            cfg()["cau_hoi_lap_lai"].get(hoi.o_hoi, hoi.cau_hoi)
+            if hoi.o_hoi in p["da_hoi"]
+            else hoi.cau_hoi
+        )
         phien.ghi(ma, nc, hoi.o_hoi)
         return TraLoi(
             phien_id=ma,
             loai="cau_hoi",
-            text=hoi.cau_hoi,
+            text=text,
             o_nhu_cau=nc.model_dump(exclude_none=True, mode="json"),
-            vi_sao_hoi=diem,
+            # Dang thieu o BAT BUOC thi bang diem gia tri thong tin chua co
+            # nghia (chua loc duoc gi) - hien toan 0.00 chi gay roi.
+            vi_sao_hoi=[] if nc.thieu_bat_buoc() else diem,
             thong_ke={"ms": int((time.perf_counter() - t0) * 1000), "cham_llm": 1},
         )
 
     phien.ghi(ma, nc)
     bang = xep_hang(ds, nc)
+
+    if not bang.top3:
+        # Loc xong 0 may. Tim gia thap nhat cua may DU TAI (bo qua ngan sach)
+        # de goi huong that cho khach thay vi cau xin loi suong.
+        from backend.app.ranking.xep_hang import loc_cung
+
+        nc_khong_ngan_sach = nc.model_copy(update={"ngan_sach_max": None})
+        du_tai, _ = loc_cung(ds, nc_khong_ngan_sach)
+        gia_min = min((s.gia for s in du_tai), default=None)
+        text = cfg()["khong_co_may"]["mau"].format(
+            ngan_sach=(f"{nc.ngan_sach_max/1_000_000:.0f} triệu" if nc.ngan_sach_max else "này"),
+            dien_tich=(f"{nc.dien_tich_m2:.0f}" if nc.dien_tich_m2 else "?"),
+            gia_thap_nhat=(f"{gia_min/1_000_000:.1f} triệu" if gia_min else "cao hơn"),
+        )
+        return TraLoi(
+            phien_id=ma,
+            loai="khong_co_may",
+            text=text,
+            o_nhu_cau=nc.model_dump(exclude_none=True, mode="json"),
+            thong_ke={
+                "ms": int((time.perf_counter() - t0) * 1000),
+                "cham_llm": 1,
+                "truoc_loc": bang.tong_truoc_loc,
+                "sau_loc": 0,
+            },
+        )
+
     r = viet_lai(bang, nc, llm())
 
     return TraLoi(

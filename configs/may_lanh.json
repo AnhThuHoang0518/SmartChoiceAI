@@ -34,6 +34,22 @@
     "loai_phong": "Dạ mình lắp cho phòng ngủ hay phòng khách ạ?",
     "khu_vuc": "Dạ mình ở khu vực nào để em kiểm tra hàng và lắp đặt ạ?"
   },
+  "cau_hoi_lap_lai": {
+    "_doc": "Dung khi cung mot o da hoi roi ma khach tra loi lac de - lap nguyen van cau cu nghe nhu robot hong (bai hoc tu demo that). Kem vi du de khach biet tra loi kieu gi.",
+    "ngan_sach_max": "Dạ để tư vấn đúng em vẫn cần biết ngân sách của mình ạ — ví dụ: 'khoảng 15 triệu'.",
+    "dien_tich_m2": "Dạ em vẫn cần diện tích phòng để chọn công suất đúng ạ — ví dụ: 'phòng 18m2'.",
+    "co_nang": "Dạ mình cho em biết phòng có nắng chiếu trực tiếp không ạ — trả lời 'có' hoặc 'không' là được ạ.",
+    "loai_phong": "Dạ mình lắp cho phòng ngủ hay phòng khách ạ? Hai loại em tư vấn khác nhau đó ạ.",
+    "khu_vuc": "Dạ mình ở tỉnh/thành nào ạ — ví dụ: 'Hà Nội'."
+  },
+  "ngoai_pham_vi": {
+    "_doc": "Khach hoi nganh chua bat trong demo. Noi that pham vi + khoe kien truc da san sang 14 nganh (dung su that: file DMX co du 14 sheet, them nganh = them config).",
+    "mau": "Dạ hiện tại em đang tư vấn chuyên về máy lạnh ạ. Mặt hàng {nganh} đã có sẵn trong dữ liệu hệ thống (14 ngành hàng) — chỉ cần bật thêm cấu hình ngành là em tư vấn được ngay ạ. Còn nếu mình đang cần tìm máy lạnh thì em giúp luôn ạ!"
+  },
+  "khong_co_may": {
+    "_doc": "Loc xong 0 may (ngan sach qua thap / phong qua lon). Phai noi that + goi huong, khong duoc tra chuoi rong hay bia may.",
+    "mau": "Dạ trong tầm {ngan_sach} em chưa tìm được máy nào phù hợp cho phòng {dien_tich}m² ạ. Máy đủ tải cho phòng mình đang từ khoảng {gia_thap_nhat} ạ — mình cân nhắc nới ngân sách một chút không ạ?"
+  },
   "ban_du_phong": {
     "_doc": "Dung khi hau kiem chan qua so lan cho phep. Kho nhung khong bia.",
     "mau": "Dạ với phòng tải nhiệt tương đương {dien_tich_m2}m², em lọc được các máy phù hợp trong tầm giá của mình: {danh_sach}. Anh/chị cần em nói rõ thêm điểm nào không ạ?"

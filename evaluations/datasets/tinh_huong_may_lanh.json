@@ -1,0 +1,213 @@
+{
+  "_doc": "20 tinh huong khach that cho nganh may lanh. Chay: python scripts/danh_gia.py. Moi tinh huong: tin_dau (cau mo man), tra_loi (khach dap gi khi bot hoi tung o), ky_vong_loai (ket cuc), ky_vong_o (o nhu cau phai trich dung), toi_da_cau_hoi.",
+  "tra_loi_mac_dinh": {
+    "ngan_sach_max": "khoảng 15 triệu",
+    "dien_tich_m2": "phòng 18m2",
+    "co_nang": "không có nắng",
+    "loai_phong": "phòng ngủ",
+    "khu_vuc": "Hà Nội"
+  },
+  "tinh_huong": [
+    {
+      "ten": "kich_ban_chuan_de_bai",
+      "tin_dau": "e muon mua may lanh duoi 20tr cho phong 18m2, tk dien, it on",
+      "tra_loi": {
+        "co_nang": "có, chiều nắng lắm"
+      },
+      "ky_vong_loai": "tu_van",
+      "ky_vong_o": {
+        "ngan_sach_max": 20000000,
+        "dien_tich_m2": 18,
+        "co_nang": true,
+        "uu_tien_chua": [
+          "tiet_kiem_dien",
+          "do_on"
+        ]
+      },
+      "toi_da_cau_hoi": 2
+    },
+    {
+      "ten": "du_thong_tin_1_luot",
+      "tin_dau": "máy lạnh dưới 20 triệu phòng ngủ 18m² có nắng, tiết kiệm điện ít ồn",
+      "ky_vong_loai": "tu_van",
+      "ky_vong_o": {
+        "ngan_sach_max": 20000000,
+        "dien_tich_m2": 18,
+        "co_nang": true,
+        "loai_phong": "ngu"
+      },
+      "toi_da_cau_hoi": 1
+    },
+    {
+      "ten": "khong_dau_viet_tat",
+      "tin_dau": "ml duoi 15tr cho pn 12m2 tk dien",
+      "ky_vong_loai": "tu_van",
+      "ky_vong_o": {
+        "ngan_sach_max": 15000000,
+        "dien_tich_m2": 12,
+        "loai_phong": "ngu",
+        "uu_tien_chua": [
+          "tiet_kiem_dien"
+        ]
+      },
+      "toi_da_cau_hoi": 2
+    },
+    {
+      "ten": "don_vi_ty",
+      "tin_dau": "toi co 1 ty mua may lanh cho phong 30m2",
+      "ky_vong_loai": "tu_van",
+      "ky_vong_o": {
+        "ngan_sach_max": 1000000000,
+        "dien_tich_m2": 30
+      },
+      "toi_da_cau_hoi": 2
+    },
+    {
+      "ten": "don_vi_nghin_k",
+      "tin_dau": "may lanh tam 9990k cho phong 10m2",
+      "ky_vong_loai": "tu_van",
+      "ky_vong_o": {
+        "ngan_sach_max": 9990000,
+        "dien_tich_m2": 10
+      },
+      "toi_da_cau_hoi": 2
+    },
+    {
+      "ten": "ngoai_pham_vi_tu_lanh",
+      "tin_dau": "có Tủ lạnh nào xịn không",
+      "ky_vong_loai": "ngoai_pham_vi",
+      "toi_da_cau_hoi": 0
+    },
+    {
+      "ten": "ngoai_pham_vi_may_giat",
+      "tin_dau": "can mua may giat 10kg cho gia dinh 4 nguoi",
+      "ky_vong_loai": "ngoai_pham_vi",
+      "toi_da_cau_hoi": 0
+    },
+    {
+      "ten": "ngoai_pham_vi_tivi",
+      "tin_dau": "co ti vi 55 inch nao khong",
+      "ky_vong_loai": "ngoai_pham_vi",
+      "toi_da_cau_hoi": 0
+    },
+    {
+      "ten": "nhac_ca_hai_nganh_van_tu_van",
+      "tin_dau": "mua máy lạnh và tủ lạnh cho nhà mới",
+      "ky_vong_loai": "tu_van",
+      "toi_da_cau_hoi": 4
+    },
+    {
+      "ten": "mo_man_khong_thong_tin",
+      "tin_dau": "cai nao ngon nhat",
+      "ky_vong_loai": "tu_van",
+      "toi_da_cau_hoi": 4
+    },
+    {
+      "ten": "phong_khach_lam_lanh_nhanh",
+      "tin_dau": "may lanh phong khach 25m2 uu tien lam lanh nhanh, tam 25tr",
+      "tra_loi": {
+        "co_nang": "khong"
+      },
+      "ky_vong_loai": "tu_van",
+      "ky_vong_o": {
+        "dien_tich_m2": 25,
+        "loai_phong": "khach",
+        "uu_tien_chua": [
+          "lam_lanh_nhanh"
+        ]
+      },
+      "toi_da_cau_hoi": 2
+    },
+    {
+      "ten": "ngan_sach_qua_thap",
+      "tin_dau": "may lanh 3tr cho phong 18m2 khong nang",
+      "ky_vong_loai": "khong_co_may",
+      "toi_da_cau_hoi": 2
+    },
+    {
+      "ten": "phong_rat_lon",
+      "tin_dau": "may lanh cho hoi truong 60m2 ngan sach 40tr khong nang",
+      "ky_vong_loai": "bat_ky_khong_loi",
+      "toi_da_cau_hoi": 3
+    },
+    {
+      "ten": "so_thap_phan",
+      "tin_dau": "phong 18,5m2 mua may lanh tam 15,5tr khong nang",
+      "ky_vong_loai": "tu_van",
+      "ky_vong_o": {
+        "dien_tich_m2": 18.5,
+        "ngan_sach_max": 15500000
+      },
+      "toi_da_cau_hoi": 2
+    },
+    {
+      "ten": "chi_co_dien_tich",
+      "tin_dau": "phong 22m2 nen mua may lanh nao",
+      "tra_loi": {
+        "ngan_sach_max": "20 trieu do ban"
+      },
+      "ky_vong_loai": "tu_van",
+      "ky_vong_o": {
+        "dien_tich_m2": 22,
+        "ngan_sach_max": 20000000
+      },
+      "toi_da_cau_hoi": 2,
+      "_ghi_chu": "22m2: nang khong doi ket qua (van dai 20-30m2) -> thuat toan tu bo cau hoi nang la DUNG"
+    },
+    {
+      "ten": "uu_tien_gia_re",
+      "tin_dau": "may lanh re nhat cho phong 15m2 duoi 10tr khong nang",
+      "ky_vong_loai": "tu_van",
+      "ky_vong_o": {
+        "uu_tien_chua": [
+          "gia"
+        ]
+      },
+      "toi_da_cau_hoi": 2
+    },
+    {
+      "ten": "tra_loi_lac_de_roi_chot",
+      "tin_dau": "mua may lanh",
+      "lac_de_truoc": "cai nao cung dc ban chon ho minh",
+      "ky_vong_loai": "tu_van",
+      "ky_vong_hoi_lai_co_vi_du": true,
+      "toi_da_cau_hoi": 5
+    },
+    {
+      "ten": "tu_khoa_inverter",
+      "tin_dau": "may lanh inverter phong 18m2 khoang 18tr khong nang",
+      "ky_vong_loai": "tu_van",
+      "ky_vong_o": {
+        "uu_tien_chua": [
+          "tiet_kiem_dien"
+        ]
+      },
+      "toi_da_cau_hoi": 2
+    },
+    {
+      "ten": "goi_dieu_hoa",
+      "tin_dau": "dieu hoa cho phong 20m2 tam 15tr khong co nang",
+      "ky_vong_loai": "tu_van",
+      "ky_vong_o": {
+        "dien_tich_m2": 20,
+        "ngan_sach_max": 15000000
+      },
+      "toi_da_cau_hoi": 2
+    },
+    {
+      "ten": "hoi_dap_tung_buoc",
+      "tin_dau": "muon mua may lanh moi",
+      "tra_loi": {
+        "ngan_sach_max": "10 trieu",
+        "dien_tich_m2": "12m2 thoi",
+        "co_nang": "khong co nang dau"
+      },
+      "ky_vong_loai": "tu_van",
+      "ky_vong_o": {
+        "ngan_sach_max": 10000000,
+        "dien_tich_m2": 12
+      },
+      "toi_da_cau_hoi": 4
+    }
+  ]
+}

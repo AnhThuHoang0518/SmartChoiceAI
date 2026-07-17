@@ -68,7 +68,12 @@ def viet_lai(bang: BangKetQua, nhu_cau: ONhuCauMayLanh, llm: LLM) -> dict:
     tong_ms = 0
 
     for lan in range(c["so_lan_bat_viet_lai_toi_da"] + 1):
-        text, ms = llm.sinh_do(HE_THONG, nguoi_dung)
+        try:
+            text, ms = llm.sinh_do(HE_THONG, nguoi_dung)
+        except Exception:
+            # LLM chet giua chung (mang, het quota, server sap) -> khong duoc 500
+            # voi khach. Roi ve ban du phong nhu the LLM tra rong.
+            text, ms = "", 0
         tong_ms += ms
         if not text:
             break                                   # LuatLLM / LLM hong -> ban du phong

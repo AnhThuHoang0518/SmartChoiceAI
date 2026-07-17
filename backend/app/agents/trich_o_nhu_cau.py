@@ -110,9 +110,43 @@ def trich_bang_llm(text: str, llm: LLM) -> ONhuCauMayLanh | None:
         return None      # sai khuon/JSON hong -> bo, duong luat da co ket qua
 
 
-def trich(text: str, llm: LLM, o_cu: ONhuCauMayLanh | None = None) -> ONhuCauMayLanh:
-    """Ham chinh. Luat truoc, LLM chi vot khi luat con thieu o BAT BUOC."""
+def _dien_theo_ngu_canh(
+    nc: ONhuCauMayLanh, text: str, o_dang_cho: str | None
+) -> ONhuCauMayLanh:
+    """Hieu cau tra loi CUT LUN theo ngu canh o vua hoi.
+
+    Bot hoi 'co nang khong a?' -> khach go 'khong' - tu nhien nhu tho. Pattern
+    chung khong bat duoc (phai 'khong nang' moi khop) -> hoi lap 8 lan nhu
+    robot hong (loi tim ra boi bo danh gia). Chi ap dung khi BIET o dang cho -
+    'khong' luc dang hoi loai phong thi khong duoc hieu thanh 'khong nang'.
+    """
+    if not o_dang_cho:
+        return nc
+    kd = bo_dau(text).lower().strip()
+    if o_dang_cho == "co_nang" and nc.co_nang is None:
+        if re.search(r"\b(khong|ko|hong)\b", kd):      # kiem 'khong' TRUOC 'co'
+            return nc.gan("co_nang", False)            # ('khong co nang' chua ca hai)
+        if re.search(r"\b(co|u|vang|dung|yes)\b", kd):
+            return nc.gan("co_nang", True)
+    if o_dang_cho == "dien_tich_m2" and nc.dien_tich_m2 is None:
+        if re.fullmatch(r"[\d.,]+", kd):               # go moi so tran: '18'
+            return nc.gan("dien_tich_m2", float(kd.replace(",", ".")))
+    return nc
+
+
+def trich(
+    text: str,
+    llm: LLM,
+    o_cu: ONhuCauMayLanh | None = None,
+    o_dang_cho: str | None = None,
+) -> ONhuCauMayLanh:
+    """Ham chinh. Luat truoc, LLM chi vot khi luat con thieu o BAT BUOC.
+
+    o_dang_cho: ten o ma bot vua hoi o luot truoc (tu may trang thai) - de
+    hieu cau tra loi cut lun 'co'/'khong'/'18'.
+    """
     nc = _gop(o_cu or ONhuCauMayLanh(), trich_bang_luat(text))
+    nc = _dien_theo_ngu_canh(nc, text, o_dang_cho)
     if nc.thieu_bat_buoc():
         them = trich_bang_llm(text, llm)
         if them is not None:

@@ -59,9 +59,52 @@ def chuan_hoa_tien(s: str) -> str:
         v = float(m.group(1).replace(",", "."))
         return str(int(v * 1_000))
 
+    def _ty(m):
+        v = float(m.group(1).replace(",", "."))
+        return str(int(v * 1_000_000_000))
+
+    # 'ty/ti' khong dau chi khop khi co SO dung truoc -> khong dinh 'ti vi'.
+    # Bai hoc tu demo that: khach go '20 tỷ' ma khong hieu -> hoi ngan sach lap
+    # vo tan. Tien VN co 4 don vi noi mieng: nghin/k, trieu/tr, ty - thieu 1 la thua.
+    s = re.sub(r"\b([\d.,]+)\s*(?:tỷ|tỉ|ty|ti)\b", _ty, s, flags=re.I)
     s = re.sub(r"\b([\d.,]+)\s*(?:tr|trieu|triệu)\b", _tr, s, flags=re.I)
     s = re.sub(r"\b([\d.,]+)\s*(?:k|nghin|nghìn)\b", _k, s, flags=re.I)
     return s
+
+
+# ── Nganh hang ngoai pham vi demo ───────────────────────────────────────────
+# File du lieu that co 14 nganh, demo moi bat may lanh. Khach hoi nganh khac
+# thi phai NOI THANG, khong duoc lai cau hoi ngan sach nhu robot hong.
+
+NGANH_KHAC = [
+    (r"\btu lanh\b", "tủ lạnh"),
+    (r"\bmay giat\b", "máy giặt"),
+    (r"\bmay say\b", "máy sấy"),
+    (r"\bmay rua (?:chen|bat)\b", "máy rửa chén"),
+    (r"\btu (?:dong|mat)\b", "tủ mát/tủ đông"),
+    (r"\bmay nuoc nong\b", "máy nước nóng"),
+    (r"\b(?:tivi|ti vi)\b", "tivi"),
+    (r"\b(?:laptop|may tinh)\b", "laptop/máy tính"),
+    (r"\bdien thoai\b", "điện thoại"),
+    (r"\bdong ho\b", "đồng hồ thông minh"),
+    (r"\bman hinh\b", "màn hình"),
+    (r"\bmay in\b", "máy in"),
+]
+
+
+def nganh_ngoai_pham_vi(text: str) -> str | None:
+    """Khach dang hoi nganh khac (khong nhac may lanh) -> tra ten nganh do.
+
+    Co nhac may lanh thi coi nhu dung pham vi (vd 'mua may lanh va tu lanh'
+    -> van tu van may lanh, nganh kia tu nhien duoc nhac trong cau tra loi).
+    """
+    kd = bo_dau(text or "").lower()
+    if re.search(r"\b(may lanh|dieu hoa|dhkk|ml)\b", kd):
+        return None
+    for mau, ten in NGANH_KHAC:
+        if re.search(mau, kd):
+            return ten
+    return None
 
 
 def chuan_hoa_don_vi(s: str) -> str:
