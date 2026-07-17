@@ -51,7 +51,9 @@ def _bang_thanh_chu(
     d = [f"NHU CẦU KHÁCH: phòng {nhu_cau.dien_tich_m2:.0f}m²"]
     if nhu_cau.co_nang:
         d.append(f"có nắng chiếu (tải nhiệt tương đương {bang.dien_tich_hieu_dung_m2}m²)")
-    if nhu_cau.ngan_sach_max:
+    if nhu_cau.ngan_sach_max and nhu_cau.ngan_sach_max >= 10**11:
+        d.append("KHÔNG giới hạn ngân sách (khách đã xác nhận)")
+    elif nhu_cau.ngan_sach_max:
         d.append(f"ngân sách tối đa {nhu_cau.ngan_sach_max/1_000_000:.0f} triệu")
     if nhu_cau.loai_phong:
         d.append("phòng ngủ" if nhu_cau.loai_phong.value == "ngu" else "phòng khách")

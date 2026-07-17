@@ -124,6 +124,53 @@ def yeu_cau_thong_so(text: str) -> bool:
                           r"xin thong so|noi thong so|spec)\b", kd))
 
 
+def bo_ngan_sach(text: str) -> bool:
+    """Khach tuyen bo KHONG quan tam tien nua ('ko can quan tam ngan sach',
+    'bao nhieu cung duoc', 'toi se tra dung gia'). Bug demo that: khach noi vay
+    ma bot van lai 'trong tam 20 trieu em chua tim duoc...' y het - vi khong co
+    duong nao xoa/noi ngan sach da chot."""
+    kd = bo_dau(text or "").lower()
+    return bool(re.search(
+        r"(?:(?:khong|ko|k) (?:can )?quan tam.{0,15}(?:ngan sach|tien|gia)"
+        r"|(?:ngan sach|tien|gia).{0,10}(?:khong|ko) (?:quan trong|thanh van de)"
+        r"|bao nhieu (?:tien )?cung (?:duoc|dc|ok)"
+        r"|gia nao cung (?:duoc|dc|ok)"
+        r"|khong gioi han(?: ngan sach| tien)?"
+        r"|bo (?:gioi han|ngan sach)"
+        r"|tra dung gia)",
+        kd,
+    ))
+
+
+def hoi_ton_kho(text: str) -> bool:
+    """Khach hoi con hang/ton kho/chi nhanh. Du lieu hien KHONG co ton kho -
+    phai NOI THANG thieu nguon va can Stock API (test case TC-008/TC-017:
+    'khong suy doan tu kien thuc nen'), khong duoc im lang bo qua."""
+    kd = bo_dau(text or "").lower()
+    return bool(re.search(
+        r"\b(con hang|ton kho|het hang|hang co san|chi nhanh|cua hang nao|"
+        r"o dau (?:co|ban)|ship (?:ve|den)|giao (?:ve|den))\b", kd))
+
+
+def hoi_chu_quan(text: str) -> str | None:
+    """Khach hoi tieu chi CHU QUAN hoac thu du lieu khong do duoc: 'dep nhat',
+    'sang nhat', 'ben nhat'. Test case TC-009/TC-025: phai neu ro day la tieu
+    chi chu quan / khong co truong du lieu, KHONG xep hang bua.
+    Tra ve ten tieu chi de dien vao template, None neu khong dinh."""
+    kd = bo_dau(text or "").lower()
+    for mau, ten in [
+        (r"\b(dep|sang|xin|thoi trang|ngau) (?:nhat|hon|nao)\b", "đẹp/sang"),
+        (r"\bmau (?:nao )?dep\b", "đẹp/sang"),
+        (r"\b(ben|ben bi) (?:nhat|hon|khong|nao)\b", "độ bền"),
+        # CHU Y khong dua 'tot nhat/ngon nhat' vao day: do la cau mo mang mo ho
+        # binh thuong - sale dap bang cach GOM NHU CAU (flow hien tai da dung),
+        # khong phai bai giang ve tinh chu quan.
+    ]:
+        if re.search(mau, kd):
+            return ten
+    return None
+
+
 def hoi_khuyen_mai(text: str) -> bool:
     """Khach hoi may dang giam gia/khuyen mai. Tra loi bang du lieu THAT
     (gia goc vs gia khuyen mai co san trong catalog) - khong doan 'hot',

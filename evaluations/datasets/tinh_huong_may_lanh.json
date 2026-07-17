@@ -258,6 +258,46 @@
       "ky_vong_giong": "ky_thuat",
       "toi_da_cau_hoi": 1,
       "_ghi_chu": "GD19: >=2 thuat ngu ky thuat -> tu chuyen giong"
+    },
+    {
+      "ten": "bo_ngan_sach_thoat_vong_lap",
+      "tin_dau": "may lanh 20tr cho phong 50m2 khong nang",
+      "ky_vong_loai": "bat_ky_khong_loi",
+      "tiep_theo": [
+        {
+          "tin": "ko can quan tam den ngan sach nua",
+          "ky_vong_loai": "tu_van"
+        }
+      ],
+      "toi_da_cau_hoi": 1,
+      "_ghi_chu": "BUG DEMO THAT: khach bo ngan sach ma bot lai nguyen van cau cu"
+    },
+    {
+      "ten": "khong_co_may_lan2_doi_loi",
+      "tin_dau": "may lanh 3tr phong 18m2 khong nang",
+      "ky_vong_loai": "bat_ky_khong_loi",
+      "tiep_theo": [
+        {
+          "tin": "sao dat vay",
+          "ky_vong_loai": "khong_co_may"
+        }
+      ],
+      "toi_da_cau_hoi": 1,
+      "_ghi_chu": "lan 2 lien tiep khong co may -> doi loi huong dan, khong lap nguyen van"
+    },
+    {
+      "ten": "tc008_hoi_ton_kho",
+      "tin_dau": "may lanh nao con hang o da nang",
+      "ky_vong_loai": "thieu_du_lieu",
+      "toi_da_cau_hoi": 0,
+      "_ghi_chu": "TC-008: noi thang thieu truong ton kho + can Stock API, khong doan bua"
+    },
+    {
+      "ten": "tc009_chu_quan_dep_nhat",
+      "tin_dau": "may lanh nao dep va sang nhat",
+      "ky_vong_loai": "chu_quan",
+      "toi_da_cau_hoi": 0,
+      "_ghi_chu": "TC-009: tieu chi chu quan -> khong xep hang bua, hoi gu + keo ve tieu chi do duoc"
     }
   ]
 }

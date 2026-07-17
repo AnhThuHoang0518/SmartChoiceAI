@@ -22,14 +22,22 @@ from backend.app.agents.trich_o_nhu_cau import trich
 from backend.app.agents.viet_lai import viet_lai
 from backend.app.core import phien
 from backend.app.core.chuan_hoa_tv import (
+    bo_ngan_sach,
     cau_hoi_cong_suat,
     co_nganh_may_lanh,
+    hoi_chu_quan,
     hoi_khuyen_mai,
+    hoi_ton_kho,
     nganh_ngoai_pham_vi,
     tu_ky_thuat_trong,
     yeu_cau_thong_so,
 )
 from backend.app.schemas.nhu_cau import UuTien
+
+# Sentinel "khong gioi han ngan sach": khach noi 'bao nhieu cung duoc' thi day
+# van la MOT cau tra loi cho o ngan sach (o bat buoc) - khong the de None vi se
+# bi hoi lai. Moi cho hien thi phai doi thanh chu 'khong gioi han'.
+KHONG_GIOI_HAN = 10**12
 from backend.app.ranking.xep_hang import cfg, xep_hang
 from backend.app.services.catalog import tai_catalog
 from backend.app.services.llm import tao_llm
@@ -93,6 +101,38 @@ def chat(t: TinNhan) -> TraLoi:
     ds = catalog()
     o_dang_cho = p["da_hoi"][-1] if p["da_hoi"] else None
     nc = trich(t.tin_nhan, llm(), p["nhu_cau"], o_dang_cho)
+
+    # Khach tuyen bo bo ngan sach ("khong quan tam tien nua") -> ghi nhan la
+    # KHONG GIOI HAN. Bug demo that: truoc day cau nay bi bo qua, bot lai
+    # nguyen van "trong tam 20 trieu em chua tim duoc..." nhu chua nghe thay.
+    if bo_ngan_sach(t.tin_nhan):
+        nc = nc.model_copy(update={"ngan_sach_max": KHONG_GIOI_HAN})
+
+    # Hoi ton kho/con hang -> noi thang du lieu KHONG co truong ton kho, can
+    # Stock API (TC-008/TC-017). Chi tra loi rieng khi cau hoi thuan tuy ve
+    # ton kho; hoi kem nhu cau thi flow thuong chay va ghi chu duoc them sau.
+    if hoi_ton_kho(t.tin_nhan) and nc.dien_tich_m2 is None:
+        phien.ghi(ma, nc, "dien_tich_m2")
+        return TraLoi(
+            phien_id=ma, loai="thieu_du_lieu",
+            text=cfg()["thieu_ton_kho"]["mau"],
+            o_nhu_cau=nc.model_dump(exclude_none=True, mode="json"),
+            thong_ke={"ms": int((time.perf_counter() - t0) * 1000), "cham_llm": 1,
+                      "giong": p.get("giong") or "binh_dan"},
+        )
+
+    # Tieu chi chu quan (dep/sang) hoac khong co truong do (ben) -> noi that,
+    # khong xep hang bua (TC-009/TC-025).
+    tieu_chi_cq = hoi_chu_quan(t.tin_nhan)
+    if tieu_chi_cq:
+        phien.ghi(ma, nc, None)
+        return TraLoi(
+            phien_id=ma, loai="chu_quan",
+            text=cfg()["chu_quan"]["mau"].format(tieu_chi=tieu_chi_cq),
+            o_nhu_cau=nc.model_dump(exclude_none=True, mode="json"),
+            thong_ke={"ms": int((time.perf_counter() - t0) * 1000), "cham_llm": 1,
+                      "giong": p.get("giong") or "binh_dan"},
+        )
 
     # ── Giong tu van: binh dan (mac dinh) / ky thuat ────────────────────────
     # Sale that doi giong theo khach. Nhan biet qua chinh ngon ngu khach go:
@@ -230,11 +270,19 @@ def chat(t: TinNhan) -> TraLoi:
         nc_khong_ngan_sach = nc.model_copy(update={"ngan_sach_max": None})
         du_tai, _ = loc_cung(ds, nc_khong_ngan_sach)
         gia_min = min((s.gia for s in du_tai), default=None)
-        text = cfg()["khong_co_may"]["mau"].format(
-            ngan_sach=(f"{nc.ngan_sach_max/1_000_000:.0f} triệu" if nc.ngan_sach_max else "này"),
-            dien_tich=(f"{nc.dien_tich_m2:.0f}" if nc.dien_tich_m2 else "?"),
-            gia_thap_nhat=(f"{gia_min/1_000_000:.1f} triệu" if gia_min else "cao hơn"),
-        )
+        if p.get("loai_truoc") == "khong_co_may":
+            # Lan thu 2 lien tiep khong co may -> DOI LOI, huong dan cu the
+            # khach phai noi gi. Lap nguyen van la robot hong (bug demo that).
+            text = cfg()["khong_co_may"]["mau_lap_lai"]
+        else:
+            ns = nc.ngan_sach_max
+            text = cfg()["khong_co_may"]["mau"].format(
+                ngan_sach=("không giới hạn" if ns and ns >= 10**11
+                           else f"{ns/1_000_000:.0f} triệu" if ns else "này"),
+                dien_tich=(f"{nc.dien_tich_m2:.0f}" if nc.dien_tich_m2 else "?"),
+                gia_thap_nhat=(f"{gia_min/1_000_000:.1f} triệu" if gia_min else "cao hơn"),
+            )
+        p["loai_truoc"] = "khong_co_may"
         return TraLoi(
             phien_id=ma,
             loai="khong_co_may",
@@ -249,11 +297,20 @@ def chat(t: TinNhan) -> TraLoi:
         )
 
     r = viet_lai(bang, nc, llm(), giong)
+    p["loai_truoc"] = "tu_van"
+
+    # Hoi ton kho KEM nhu cau -> van tu van binh thuong nhung phai ghi chu ro
+    # phan ton kho thieu nguon (khong lam nhu cau hoi do chua ton tai).
+    text_cuoi = r["text"]
+    if hoi_ton_kho(t.tin_nhan):
+        text_cuoi += ("\n\n(Về tồn kho: dữ liệu em đang có chưa gồm tồn kho theo "
+                      "khu vực — cần nối Stock API — nên em chưa xác nhận được còn "
+                      "hàng ở đâu ạ.)")
 
     return TraLoi(
         phien_id=ma,
         loai="tu_van",
-        text=r["text"],
+        text=text_cuoi,
         o_nhu_cau=nc.model_dump(exclude_none=True, mode="json"),
         vi_sao_hoi=diem,
         top3=[u.model_dump(mode="json") for u in bang.top3],

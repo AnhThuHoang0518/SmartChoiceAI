@@ -66,7 +66,16 @@
   },
   "khong_co_may": {
     "_doc": "Loc xong 0 may (ngan sach qua thap / phong qua lon). Phai noi that + goi huong, khong duoc tra chuoi rong hay bia may.",
-    "mau": "Dạ trong tầm {ngan_sach} em chưa tìm được máy nào phù hợp cho phòng {dien_tich}m² ạ. Máy đủ tải cho phòng mình đang từ khoảng {gia_thap_nhat} ạ — mình cân nhắc nới ngân sách một chút không ạ?"
+    "mau": "Dạ trong tầm {ngan_sach} em chưa tìm được máy nào phù hợp cho phòng {dien_tich}m² ạ. Máy đủ tải cho phòng mình đang từ khoảng {gia_thap_nhat} ạ — mình cân nhắc nới ngân sách một chút không ạ?",
+    "mau_lap_lai": "Dạ em vẫn chưa tìm được máy vừa các tiêu chí hiện tại ạ. Mình có thể nói cụ thể giúp em: 'nới lên 35 triệu', 'không giới hạn ngân sách', hoặc 'đổi sang phòng 20m2' — em lọc lại ngay ạ."
+  },
+  "thieu_ton_kho": {
+    "_doc": "TC-008/TC-017: hoi con hang/ton kho -> du lieu hien KHONG co truong ton kho theo khu vuc. Phai noi thang thieu nguon + can Stock API, tuyet doi khong suy doan 'chac la con'.",
+    "mau": "Dạ dữ liệu em đang có chưa bao gồm tồn kho theo khu vực ạ (cần kết nối Stock API của hệ thống — phần này đã chừa sẵn chỗ tích hợp). Nên em chưa xác nhận được máy nào còn hàng ở đâu — em KHÔNG đoán bừa ạ. Còn chọn máy phù hợp phòng mình thì em tư vấn được ngay: phòng mình bao nhiêu m² ạ?"
+  },
+  "chu_quan": {
+    "_doc": "TC-009/TC-025: tieu chi chu quan (dep/sang) hoac khong co truong do (do ben) -> noi that, khong xep hang bua.",
+    "mau": "Dạ '{tieu_chi}' thì dữ liệu của em không đo được ạ — cái này tùy gu và trải nghiệm từng người, em xếp hạng bừa là nói dối mình ạ. Những gì em SO ĐƯỢC bằng số: giá, độ ồn, tiết kiệm điện, công suất phù hợp phòng. Mình cho em diện tích phòng + ngân sách, em lọc theo mấy tiêu chí đo được đó nhé ạ?"
   },
   "ban_du_phong": {
     "_doc": "Dung khi hau kiem chan qua so lan cho phep. Kho nhung khong bia.",
