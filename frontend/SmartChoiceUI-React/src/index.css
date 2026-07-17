@@ -1,0 +1,75 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-background text-text font-sans antialiased;
+  }
+}
+
+@layer components {
+  /* Override container để giảm khoảng trắng 2 bên */
+  .container {
+    max-width: 100% !important;
+    padding-left: 3.5rem !important;
+    padding-right: 3.5rem !important;
+  }
+
+  @media (min-width: 1024px) {
+    .container {
+      padding-left: 6rem !important;
+      padding-right: 6rem !important;
+    }
+  }
+
+  @media (min-width: 1280px) {
+    .container {
+      padding-left: 8rem !important;
+      padding-right: 8rem !important;
+    }
+  }
+}
+
+@layer utilities {
+  .text-hero {
+    @apply text-[64px] font-extrabold leading-tight;
+  }
+  .text-section {
+    @apply text-[36px] font-bold leading-tight;
+  }
+  .text-card {
+    @apply text-[20px] font-semibold leading-snug;
+  }
+  .text-body {
+    @apply text-[16px] font-normal leading-relaxed;
+  }
+  .text-caption {
+    @apply text-[14px] font-medium leading-normal;
+  }
+  
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  /* Hide scrollbar for IE, Edge and Firefox */
+  .no-scrollbar {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+
+  /* Custom Hover effect for Category Navigation to ensure high specificity */
+  .nav-item-hover {
+    transition: all 0.3s ease;
+  }
+  .nav-item-hover:hover {
+    background-color: #005BFF !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+    transform: translateY(-2px) !important;
+  }
+  .nav-item-hover:hover svg,
+  .nav-item-hover:hover span {
+    color: #ffffff !important;
+  }
+}
