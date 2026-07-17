@@ -26,6 +26,12 @@ data/processed/*
 evaluations/results/*
 !evaluations/results/.gitkeep
 
+# Du lieu THAT do doi tac cap (NDA) - tuyet doi khong day len GitHub.
+# Repo public + gia von/gia goc that cua doi tac = su co, khong phai loi nho.
+# Chay `python scripts/nap_dmx.py` de sinh lai data/processed tu file goc.
+data/raw/*
+!data/raw/.gitkeep
+
 # Editors and OS
 .idea/
 .vscode/

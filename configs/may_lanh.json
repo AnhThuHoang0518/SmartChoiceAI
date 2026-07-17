@@ -1,0 +1,41 @@
+{
+  "_doc": "Cau hinh nganh hang may lanh. Khong chua bi mat -> commit duoc. Doi so o day KHONG can sua code.",
+  "tai_nhiet": {
+    "_doc": "KHONG con bang tra m2->HP nua. Ly do: cot 'Cong suat dau ra' cua du lieu THAT trong 82% (va 166 dong ghi thang chu 'Khong') -> vo dung. Nhung cot 'Pham vi su dung' phu 91% va chinh HANG da cong bo may nay danh cho phong bao nhieu m2 -> dung thang, chinh xac hon suy dien.",
+    "he_so_nang": 1.3,
+    "_doc_he_so_nang": "Phong co nang chieu truc tiep buoi chieu chiu tai nhiet tuong duong phong lon hon ~30%. Quy ve 'dien tich hieu dung' roi doi chieu pham vi hang cong bo - gon hon nhay bac thu cong va khong phu thuoc bac nao co san."
+  },
+  "cham_diem": {
+    "_doc": "Trong so sinh tu chinh loi khach noi. 'gia' luon co mat du khach khong nhac.",
+    "trong_so_uu_tien": 0.4,
+    "trong_so_gia_mac_dinh": 0.2,
+    "nhan_do_on_phong_ngu": 1.0,
+    "nhan_do_on_phong_khach": 0.4
+  },
+  "gia_tri_thong_tin": {
+    "_doc": "Do xem o trong nao dang hoi: mo phong tung gia tri -> top3 lech bao nhieu.",
+    "nguong_hoi": 0.25,
+    "trong_so_khac_tap": 0.5,
+    "trong_so_khac_thu_tu": 0.2,
+    "trong_so_doi_top1": 0.3,
+    "_doc_top1": "Vi sao tach rieng 'doi top1': Kendall tau tinh moi cap ngang nhau, nen hoan doi hang 1<->2 bi coi nhe ngang hoan doi hang 2<->3. Nhung voi khach thi may dung dau CHINH LA may ho se mua - doi no la doi ket qua tu van. Khong tach ra thi o 'phong ngu/khach' bi cham 0.10 va bi bo qua, du do la phan biet tu van co ban nhat cua nganh may lanh.",
+    "toi_da_cau_hoi_moi_luot": 1
+  },
+  "hau_kiem": {
+    "_doc": "Chot chan chong bia. dung_sai = cho phep LLM lam tron (17.890.000 -> '17,9 trieu').",
+    "dung_sai_tuong_doi": 0.005,
+    "so_lan_bat_viet_lai_toi_da": 2
+  },
+  "cau_hoi": {
+    "_doc": "Template CUNG. Khong sinh boi LLM -> khong the lan man, khong the bia.",
+    "ngan_sach_max": "Dạ mình dự tính khoảng bao nhiêu ạ?",
+    "dien_tich_m2": "Dạ phòng mình rộng khoảng bao nhiêu m² ạ?",
+    "co_nang": "Dạ phòng mình có bị nắng chiếu trực tiếp buổi chiều không ạ?",
+    "loai_phong": "Dạ mình lắp cho phòng ngủ hay phòng khách ạ?",
+    "khu_vuc": "Dạ mình ở khu vực nào để em kiểm tra hàng và lắp đặt ạ?"
+  },
+  "ban_du_phong": {
+    "_doc": "Dung khi hau kiem chan qua so lan cho phep. Kho nhung khong bia.",
+    "mau": "Dạ với phòng tải nhiệt tương đương {dien_tich_m2}m², em lọc được các máy phù hợp trong tầm giá của mình: {danh_sach}. Anh/chị cần em nói rõ thêm điểm nào không ạ?"
+  }
+}
