@@ -50,6 +50,17 @@ MAU_SO: dict[str, list[tuple[str, float]]] = {
     "nam": [(r"([\d.,]+)\s*năm", 1.0)],
     "bua": [(r"([\d.,]+)\s*bữa", 1.0)],
     "bo": [(r"([\d.,]+)\s*bộ", 1.0)],
+    # Nhom dien tu
+    "inch": [(r"([\d.,]+)\s*inch", 1.0)],
+    "gb": [(r"([\d.,]+)\s*GB", 1.0)],
+    "mah": [(r"([\d.,]+)\s*mAh", 1.0)],
+    "gam": [(r"([\d.,]+)\s*(?:gam|gram|g)\b", 1.0)],
+    "ngay": [(r"([\d.,]+)\s*ngày", 1.0)],
+    "ms": [(r"([\d.,]+)\s*ms\b", 1.0)],
+    "nit": [(r"([\d.,]+)\s*(?:nit|cd/m)", 1.0)],
+    "trang": [(r"([\d.,]+)\s*trang", 1.0)],
+    "m": [(r"([\d.,]+)\s*m\b(?!s|Ah|²)", 1.0)],
+    "gio": [(r"([\d.,]+)\s*(?:giờ|tiếng)", 1.0)],
 }
 
 # truong trong Nguon -> ro don vi (dung chung moi nganh)
@@ -65,6 +76,10 @@ _TRUONG_RO = {
     "bua_min": "bua", "bua_max": "bua", "bo_chau_au": "bo",
     "nuoc_lit": "lit", "dung_tich_min": "lit",
     "dien_kwh_ngay": "kwh", "cong_suat_w": "w",
+    "man_inch": "inch", "ram_gb": "gb", "luu_tru_gb": "gb", "ssd_gb": "gb",
+    "pin_mah": "mah", "nang_g": "gam", "pin_ngay": "ngay",
+    "dap_ung_ms": "ms", "do_sang_nit": "nit", "toc_do_trang": "trang",
+    "khoang_cach_m": "m", "pin_gio": "gio",
 }
 
 # thuoc tinh trong o nhu cau -> ro (loi khach noi cung la nguon su that)

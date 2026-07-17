@@ -1,0 +1,40 @@
+{
+  "ten_nganh": "may_tinh_ban",
+  "ten_hien_thi": "máy tính để bàn",
+  "tu_khoa_nganh": ["may tinh ban", "may tinh de ban", "\\bpc\\b", "may bo"],
+  "csv_that": "data/processed/may_tinh_ban.csv",
+  "csv_mau": "data/mock/catalog/may_tinh_ban_mau.csv",
+  "cot_so": {
+    "ram_gb": {"nguon": "catalog:RAM", "ro": "gb"},
+    "ssd_gb": {"nguon": "catalog:Ổ cứng", "ro": "gb"}
+  },
+  "cot_chu": { "cpu": {"nguon": "catalog:Loại CPU"} },
+  "o_nhu_cau": {
+    "ram_min": {
+      "kieu": "so", "bat_buoc": false,
+      "trich": ["ram\\s*(?:tu|it nhat)?\\s*(\\d{1,2})\\s*(?:gb)?"],
+      "cau_hoi": "Dạ mình cần RAM từ bao nhiêu GB ạ?",
+      "nhan": "RAM từ {:.0f} GB"
+    }
+  },
+  "cau_hoi_ngan_sach": {
+    "cau_hoi": "Dạ mình dự tính khoảng bao nhiêu cho máy tính ạ?",
+    "cau_hoi_lap": "Dạ mình cho em xin ngân sách ạ — ví dụ: 'khoảng 15 triệu'."
+  },
+  "loc_cung": [
+    {"kieu": "toi_thieu", "o": "ram_min", "cot": "ram_gb", "don_vi": "GB", "ly_do": "ram"},
+    {"kieu": "ngan_sach"}
+  ],
+  "truc_cham": [
+    {"uu_tien": "ram_lon", "ten": "RAM", "cot": "ram_gb", "thap_tot": false, "fmt": "{:.0f} GB", "mac_dinh": 0.2,
+     "trich_uu_tien": ["da nhiem", "nhieu tab"]},
+    {"uu_tien": "o_lon", "ten": "ổ cứng", "cot": "ssd_gb", "thap_tot": false, "fmt": "{:.0f} GB",
+     "trich_uu_tien": ["luu nhieu", "o lon"]},
+    {"uu_tien": "gia", "ten": "giá", "cot": "gia", "thap_tot": true, "fmt": "{:,.0f}đ", "mac_dinh": 0.3,
+     "trich_uu_tien": ["\\bre\\b", "gia re", "khuyen mai"]}
+  ],
+  "hien_thi_thong_so": [
+    {"cot": "ram_gb", "fmt": "RAM {:.0f} GB"},
+    {"cot": "ssd_gb", "fmt": "SSD {:.0f} GB"}
+  ]
+}

@@ -81,11 +81,8 @@ def chuan_hoa_tien(s: str) -> str:
 NGANH_KHAC = [
     # 'may giat' + 'may say' DA GO (18/07): chay tren khung generic configs/nganh/
     (r"\b(?:tivi|ti vi)\b", "tivi"),
-    (r"\b(?:laptop|may tinh)\b", "laptop/máy tính"),
+    (r"\b(?:laptop|may tinh xach tay)\b", "laptop"),
     (r"\bdien thoai\b", "điện thoại"),
-    (r"\bdong ho\b", "đồng hồ thông minh"),
-    (r"\bman hinh\b", "màn hình"),
-    (r"\bmay in\b", "máy in"),
 ]
 
 

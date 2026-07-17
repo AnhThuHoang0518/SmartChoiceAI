@@ -1,0 +1,46 @@
+{
+  "ten_nganh": "may_in",
+  "ten_hien_thi": "máy in",
+  "tu_khoa_nganh": ["may in"],
+  "csv_that": "data/processed/may_in.csv",
+  "csv_mau": "data/mock/catalog/may_in_mau.csv",
+  "cot_so": {
+    "toc_do_trang": {"nguon": "catalog:Tốc độ in", "ro": "trang"}
+  },
+  "cot_chu": {
+    "loai": {"nguon": "catalog:Loại sản phẩm"},
+    "ket_noi": {"nguon": "catalog:Kết nối"}
+  },
+  "o_nhu_cau": {
+    "loai": {
+      "kieu": "chu", "bat_buoc": false,
+      "trich": ["(laser|phun|in mau|den trang)"],
+      "cau_hoi": "Dạ mình cần máy in laser (văn bản, rẻ/trang) hay in phun (in màu ảnh) ạ?",
+      "nhan": "loại {}"
+    },
+    "wifi": {
+      "kieu": "chu", "bat_buoc": false,
+      "trich": ["(wifi|khong day)"],
+      "cau_hoi": "Dạ mình cần in qua WiFi không ạ?",
+      "nhan": "cần {}"
+    }
+  },
+  "cau_hoi_ngan_sach": {
+    "cau_hoi": "Dạ mình dự tính khoảng bao nhiêu cho máy in ạ?",
+    "cau_hoi_lap": "Dạ mình cho em xin ngân sách ạ — ví dụ: 'khoảng 4 triệu'."
+  },
+  "loc_cung": [
+    {"kieu": "khop_ten", "o": "loai", "cot": "loai", "ly_do": "loai"},
+    {"kieu": "ngan_sach"},
+    {"kieu": "khop_ten", "o": "wifi", "cot": "ket_noi", "ly_do": "ket_noi"}
+  ],
+  "truc_cham": [
+    {"uu_tien": "nhanh", "ten": "tốc độ in", "cot": "toc_do_trang", "thap_tot": false, "fmt": "{:.0f} trang/phút", "mac_dinh": 0.2,
+     "trich_uu_tien": ["in nhanh", "toc do"]},
+    {"uu_tien": "gia", "ten": "giá", "cot": "gia", "thap_tot": true, "fmt": "{:,.0f}đ", "mac_dinh": 0.3,
+     "trich_uu_tien": ["\\bre\\b", "gia re", "khuyen mai"]}
+  ],
+  "hien_thi_thong_so": [
+    {"cot": "toc_do_trang", "fmt": "{:.0f} trang/phút"}
+  ]
+}

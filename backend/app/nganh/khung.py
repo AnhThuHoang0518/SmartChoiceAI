@@ -188,7 +188,7 @@ class Nganh:
                     if v and s.gia > v:
                         hong = ("ngan_sach", "vượt ngân sách")
                         break
-                elif k == "toi_da":
+                elif k in ("toi_da", "toi_thieu"):
                     v = nc.lay(luat["o"])
                     if v is None:
                         continue
@@ -197,8 +197,9 @@ class Nganh:
                         # thieu so -> khong xac nhan duoc -> BO + DEM, khong doan
                         hong = ("__thieu__", "")
                         break
-                    if sv > v:
-                        hong = (luat["ly_do"], f"{sv:.0f} > {v:.0f} {luat['don_vi']}")
+                    if (k == "toi_da" and sv > v) or (k == "toi_thieu" and sv < v):
+                        dau = ">" if k == "toi_da" else "<"
+                        hong = (luat["ly_do"], f"{sv:g} {dau} {v:g} {luat['don_vi']}")
                         break
                 elif k == "khop_ten":
                     v = nc.lay(luat["o"])
@@ -247,6 +248,17 @@ class Nganh:
             for i, d in enumerate(chuan([lay(t, s) for s in con], t["thap_tot"])):
                 diem[i] += w * d
         xep = sorted(zip(con, diem), key=lambda x: -x[1])
+        # Khu trung TEN trong top 3: sheet dien tu co nhieu SKU cho 1 model
+        # (bien the mau sac) - khach nhin ten, 'Xiaomi 190123' xuat hien 3 lan
+        # trong top 3 la vo nghia (bug tim ra khi test tablet tren data that).
+        # Giu ban diem cao nhat cua moi ten.
+        da_thay, xep_khu_trung = set(), []
+        for s, d in xep:
+            if s.ten in da_thay:
+                continue
+            da_thay.add(s.ten)
+            xep_khu_trung.append((s, d))
+        xep = xep_khu_trung
         top = [s for s, _ in xep[:3]]
 
         ung = []

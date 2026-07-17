@@ -1,0 +1,62 @@
+{
+  "ten_nganh": "may_tinh_bang",
+  "ten_hien_thi": "máy tính bảng",
+  "tu_khoa_nganh": ["may tinh bang", "tablet", "ipad"],
+  "csv_that": "data/processed/may_tinh_bang.csv",
+  "csv_mau": "data/mock/catalog/may_tinh_bang_mau.csv",
+  "cot_so": {
+    "man_inch": {"nguon": "catalog:Kích thước màn hình", "ro": "inch"},
+    "ram_gb": {"nguon": "catalog:RAM", "ro": "gb"},
+    "pin_mah": {"nguon": "catalog:Dung lượng pin", "ro": "mah"},
+    "luu_tru_gb": {"nguon": "catalog:Dung lượng lưu trữ", "ro": "gb"},
+    "nang_g": {"nguon": "catalog:Khối lượng máy", "ro": "gam"}
+  },
+  "cot_chu": { "sim": {"nguon": "catalog:SIM"} },
+  "o_nhu_cau": {
+    "man_inch_min": {
+      "kieu": "so", "bat_buoc": false,
+      "trich": ["(?:man\\s*(?:hinh)?\\s*)?(?:tu|it nhat|toi thieu)?\\s*([\\d.]{1,4})\\s*inch"],
+      "cau_hoi": "Dạ mình muốn màn hình từ bao nhiêu inch ạ?",
+      "nhan": "màn từ {:.1f} inch"
+    },
+    "ram_min": {
+      "kieu": "so", "bat_buoc": false,
+      "trich": ["ram\\s*(?:tu|it nhat)?\\s*(\\d{1,2})\\s*(?:gb)?"],
+      "cau_hoi": "Dạ mình cần RAM từ bao nhiêu GB ạ?",
+      "nhan": "RAM từ {:.0f} GB"
+    },
+    "luu_tru_min": {
+      "kieu": "so", "bat_buoc": false,
+      "trich": ["(?:bo nho|luu tru)\\s*(?:tu)?\\s*(\\d{2,4})\\s*(?:gb)?"],
+      "cau_hoi": "Dạ mình cần bộ nhớ từ bao nhiêu GB ạ?",
+      "nhan": "bộ nhớ từ {:.0f} GB"
+    }
+  },
+  "cau_hoi_ngan_sach": {
+    "cau_hoi": "Dạ mình dự tính khoảng bao nhiêu cho máy tính bảng ạ?",
+    "cau_hoi_lap": "Dạ mình cho em xin ngân sách ạ — ví dụ: 'khoảng 8 triệu'."
+  },
+  "loc_cung": [
+    {"kieu": "toi_thieu", "o": "man_inch_min", "cot": "man_inch", "don_vi": "inch", "ly_do": "man_hinh"},
+    {"kieu": "ngan_sach"},
+    {"kieu": "toi_thieu", "o": "ram_min", "cot": "ram_gb", "don_vi": "GB", "ly_do": "ram"},
+    {"kieu": "toi_thieu", "o": "luu_tru_min", "cot": "luu_tru_gb", "don_vi": "GB", "ly_do": "luu_tru"}
+  ],
+  "truc_cham": [
+    {"uu_tien": "pin_trau", "ten": "pin", "cot": "pin_mah", "thap_tot": false, "fmt": "{:.0f} mAh", "mac_dinh": 0.2,
+     "trich_uu_tien": ["pin trau", "pin khoe", "pin lau"]},
+    {"uu_tien": "nhe", "ten": "khối lượng", "cot": "nang_g", "thap_tot": true, "fmt": "{:.0f} g",
+     "trich_uu_tien": ["\\bnhe\\b", "gon nhe"]},
+    {"uu_tien": "man_to", "ten": "màn hình", "cot": "man_inch", "thap_tot": false, "fmt": "{:.1f} inch",
+     "trich_uu_tien": ["man to", "man lon"]},
+    {"uu_tien": "gia", "ten": "giá", "cot": "gia", "thap_tot": true, "fmt": "{:,.0f}đ", "mac_dinh": 0.2,
+     "trich_uu_tien": ["\\bre\\b", "gia re", "khuyen mai"]}
+  ],
+  "hien_thi_thong_so": [
+    {"cot": "man_inch", "fmt": "màn {:.1f} inch"},
+    {"cot": "ram_gb", "fmt": "RAM {:.0f} GB"},
+    {"cot": "luu_tru_gb", "fmt": "bộ nhớ {:.0f} GB"},
+    {"cot": "pin_mah", "fmt": "pin {:.0f} mAh"},
+    {"cot": "nang_g", "fmt": "nặng {:.0f} g"}
+  ]
+}

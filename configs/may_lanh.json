@@ -29,7 +29,7 @@
   },
   "chao_hoi": {
     "_doc": "Mo man nhu sale that: khach chao trong ('hi', 'tu van cho minh') thi hoi quan tam san pham gi TRUOC, khong nhay vao hoi ngan sach. Khach da neu nganh/da cho thong tin phong-tien thi KHONG bat chao lai.",
-    "mau": "Em chào mình ạ! Mình đang quan tâm sản phẩm nào ạ — máy lạnh, tủ lạnh, máy giặt, tivi...? Mình cứ nói tự nhiên, em tư vấn theo đúng nhu cầu của mình ạ.",
+    "mau": "Em chào mình ạ! Mình đang quan tâm sản phẩm nào ạ — máy lạnh, tủ lạnh, máy giặt, máy sấy, máy rửa chén, tủ đông, máy nước nóng, máy tính bảng, đồng hồ thông minh, màn hình, máy tính để bàn, máy in hay micro? Mình cứ nói tự nhiên, em tư vấn theo đúng nhu cầu ạ.",
     "mau_lap_lai": "Dạ mình cho em biết đang cần tìm sản phẩm nào ạ — ví dụ: 'máy lạnh cho phòng ngủ' — để em tư vấn đúng ạ."
   },
   "cau_hoi": {
@@ -53,11 +53,26 @@
     "mau": "Dạ máy lạnh chọn công suất theo DIỆN TÍCH phòng chứ không theo số người ạ (số người ảnh hưởng rất ít so với kích thước phòng và nắng). Ước nhanh: dưới 15m² ~1HP · 15–20m² ~1.5HP · 20–30m² ~2HP · trên 30m² từ 2.5HP. Phòng bị nắng chiếu trực tiếp thì lên một bậc ạ. Phòng mình rộng khoảng bao nhiêu m² để em chọn đúng máy ạ?",
     "mau_da_biet_dien_tich": "Dạ công suất chọn theo diện tích phòng ạ — phòng {dien_tich}m²{nang_chu} thì ước nhanh cần máy khoảng {hp}HP ạ. Mình cho em xin ngân sách để em lọc luôn máy phù hợp nhé ạ?",
     "bang_uoc_hp": [
-      { "m2_max": 15, "hp": 1.0 },
-      { "m2_max": 20, "hp": 1.5 },
-      { "m2_max": 30, "hp": 2.0 },
-      { "m2_max": 45, "hp": 2.5 },
-      { "m2_max": 999, "hp": 3.0 }
+      {
+        "m2_max": 15,
+        "hp": 1.0
+      },
+      {
+        "m2_max": 20,
+        "hp": 1.5
+      },
+      {
+        "m2_max": 30,
+        "hp": 2.0
+      },
+      {
+        "m2_max": 45,
+        "hp": 2.5
+      },
+      {
+        "m2_max": 999,
+        "hp": 3.0
+      }
     ]
   },
   "ngoai_pham_vi": {

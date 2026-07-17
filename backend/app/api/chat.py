@@ -219,8 +219,9 @@ def chat(t: TinNhan) -> TraLoi:
 
     # Khach hoi nganh khac (tu lanh, may giat...) -> noi that pham vi, dung lai
     # cau hoi ngan sach nhu robot hong. Phat hien tu demo that.
+    from backend.app.nganh.khung import tim_nganh as _tim
     nganh = nganh_ngoai_pham_vi(t.tin_nhan)
-    if nganh:
+    if nganh and _tim(t.tin_nhan) is None:
         return TraLoi(
             phien_id=ma,
             loai="ngoai_pham_vi",

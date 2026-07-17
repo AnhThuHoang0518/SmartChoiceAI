@@ -432,6 +432,53 @@
       "ky_vong_loai": "bat_ky_khong_loi",
       "toi_da_cau_hoi": 1,
       "_ghi_chu": "nganh may nuoc nong: tu khoa 'binh nong lanh' cung vao dung | ket cuc tha long: catalog mau co the khong co may truc tiep <=4tr - khong_co_may la tra loi DUNG"
+    },
+    {
+      "ten": "tablet_11inch_pin_trau",
+      "tin_dau": "tablet man tu 11 inch pin trau khoang 10 trieu",
+      "ky_vong_loai": "tu_van",
+      "toi_da_cau_hoi": 1,
+      "_ghi_chu": "nhom B: loc toi_thieu inch + uu tien pin, khong trung ten trong top3"
+    },
+    {
+      "ten": "dong_ho_pin_7_ngay",
+      "tin_dau": "dong ho pin 7 ngay tam 3 trieu",
+      "ky_vong_loai": "bat_ky_khong_loi",
+      "toi_da_cau_hoi": 1,
+      "_ghi_chu": "nhom B: toi_thieu pin_ngay (catalog mau co the khong co -> khong_co_may hop le)"
+    },
+    {
+      "ten": "man_hinh_27_2k",
+      "tin_dau": "man hinh 27 inch 2k khoang 7 trieu",
+      "ky_vong_loai": "bat_ky_khong_loi",
+      "toi_da_cau_hoi": 1,
+      "_ghi_chu": "nhom B: inch + khop phan giai"
+    },
+    {
+      "ten": "pc_ram16",
+      "tin_dau": "may tinh ban ram 16gb khoang 15 trieu",
+      "ky_vong_loai": "bat_ky_khong_loi",
+      "toi_da_cau_hoi": 1
+    },
+    {
+      "ten": "may_in_laser_wifi",
+      "tin_dau": "may in laser co wifi tam 4 trieu",
+      "ky_vong_loai": "bat_ky_khong_loi",
+      "toi_da_cau_hoi": 1
+    },
+    {
+      "ten": "laptop_van_tu_choi",
+      "tin_dau": "laptop cho sinh vien 15tr",
+      "ky_vong_loai": "ngoai_pham_vi",
+      "toi_da_cau_hoi": 0,
+      "_ghi_chu": "laptop KHONG co sheet du lieu -> van phai noi that, khong gia vo tu van"
+    },
+    {
+      "ten": "micro_thu_am",
+      "tin_dau": "mic thu am khong day tam 1 trieu",
+      "ky_vong_loai": "bat_ky_khong_loi",
+      "toi_da_cau_hoi": 1,
+      "_ghi_chu": "nganh 13 (2 sheet micro gop 1): loc nhom karaoke/thu am"
     }
   ]
 }
