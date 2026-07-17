@@ -27,6 +27,11 @@
     "so_lan_bat_viet_lai_toi_da": 1,
     "_doc_toc_do": "Tran 1 (truoc la 2): demo that do 10.4s khi bi chan 1 lan tren DeepSeek. Moi luot viet lai ton 3-5s -> tha roi ve ban du phong som con hon bat khach doi."
   },
+  "chao_hoi": {
+    "_doc": "Mo man nhu sale that: khach chao trong ('hi', 'tu van cho minh') thi hoi quan tam san pham gi TRUOC, khong nhay vao hoi ngan sach. Khach da neu nganh/da cho thong tin phong-tien thi KHONG bat chao lai.",
+    "mau": "Em chào mình ạ! Mình đang quan tâm sản phẩm nào ạ — máy lạnh, tủ lạnh, máy giặt, tivi...? Mình cứ nói tự nhiên, em tư vấn theo đúng nhu cầu của mình ạ.",
+    "mau_lap_lai": "Dạ mình cho em biết đang cần tìm sản phẩm nào ạ — ví dụ: 'máy lạnh cho phòng ngủ' — để em tư vấn đúng ạ."
+  },
   "cau_hoi": {
     "_doc": "Template CUNG. Khong sinh boi LLM -> khong the lan man, khong the bia.",
     "ngan_sach_max": "Dạ mình dự tính khoảng bao nhiêu ạ?",

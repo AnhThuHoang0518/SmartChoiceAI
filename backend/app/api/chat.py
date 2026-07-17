@@ -21,7 +21,13 @@ from backend.app.agents.gia_tri_thong_tin import bang_diem, chon_cau_hoi
 from backend.app.agents.trich_o_nhu_cau import trich
 from backend.app.agents.viet_lai import viet_lai
 from backend.app.core import phien
-from backend.app.core.chuan_hoa_tv import cau_hoi_cong_suat, nganh_ngoai_pham_vi
+from backend.app.core.chuan_hoa_tv import (
+    cau_hoi_cong_suat,
+    co_nganh_may_lanh,
+    nganh_ngoai_pham_vi,
+    tu_ky_thuat_trong,
+    yeu_cau_thong_so,
+)
 from backend.app.ranking.xep_hang import cfg, xep_hang
 from backend.app.services.catalog import tai_catalog
 from backend.app.services.llm import tao_llm
@@ -85,6 +91,38 @@ def chat(t: TinNhan) -> TraLoi:
     ds = catalog()
     o_dang_cho = p["da_hoi"][-1] if p["da_hoi"] else None
     nc = trich(t.tin_nhan, llm(), p["nhu_cau"], o_dang_cho)
+
+    # ── Giong tu van: binh dan (mac dinh) / ky thuat ────────────────────────
+    # Sale that doi giong theo khach. Nhan biet qua chinh ngon ngu khach go:
+    # >=2 thuat ngu ky thuat (cong don ca phien) hoac khach chu dong doi
+    # "cho xin thong so chi tiet" -> ky thuat, sticky den het phien.
+    p["tu_kt"] = set(p.get("tu_kt") or set()) | tu_ky_thuat_trong(t.tin_nhan)
+    if yeu_cau_thong_so(t.tin_nhan) or len(p["tu_kt"]) >= 2:
+        p["giong"] = "ky_thuat"
+    giong = p.get("giong") or "binh_dan"
+
+    # ── Nganh hang: slot so 0 cua sale ──────────────────────────────────────
+    # Khach da nhac may lanh -> chot nganh. Chua biet nganh + cau mo man khong
+    # co thong tin gi -> CHAO va hoi quan tam san pham nao (sale khong tu van
+    # thu khach chua chon). Nhung khach da cho dien tich/ngan sach thi khong
+    # bat chao lai - hoi thu khach vua ngu y la cung nhac.
+    if co_nganh_may_lanh(t.tin_nhan) or cau_hoi_cong_suat(t.tin_nhan):
+        p["nganh"] = "may_lanh"
+    if p.get("nganh") is None and not nc.model_dump(exclude_none=True, exclude={"uu_tien"}) \
+            and not nc.uu_tien:
+        da_chao = "nganh" in p["da_hoi"]
+        phien.ghi(ma, nc, "nganh")
+        mau = cfg()["chao_hoi"]["mau_lap_lai" if da_chao else "mau"]
+        return TraLoi(
+            phien_id=ma,
+            loai="cau_hoi",
+            text=mau,
+            o_nhu_cau=nc.model_dump(exclude_none=True, mode="json"),
+            thong_ke={"ms": int((time.perf_counter() - t0) * 1000), "cham_llm": 1,
+                      "giong": giong},
+        )
+    if p.get("nganh") is None:
+        p["nganh"] = "may_lanh"      # co thong tin phong/tien -> nganh dang bat duy nhat
 
     # Che do GIAI THICH: khach hoi kien thuc ("cong suat bao nhieu?") chu khong
     # phai nho chon may. Truoc day bi tra loi bang nguyen van cau tu van cu -
@@ -168,7 +206,7 @@ def chat(t: TinNhan) -> TraLoi:
             },
         )
 
-    r = viet_lai(bang, nc, llm())
+    r = viet_lai(bang, nc, llm(), giong)
 
     return TraLoi(
         phien_id=ma,
@@ -186,5 +224,6 @@ def chat(t: TinNhan) -> TraLoi:
             "nguon_llm": r["nguon_llm"],
             "so_lan_chan_bia": r["so_lan_bi_chan"],
             "loi_da_chan": r["loi_da_chan"],
+            "giong": giong,
         },
     )

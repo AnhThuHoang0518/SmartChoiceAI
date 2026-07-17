@@ -115,12 +115,17 @@ def chay_tinh_huong(c: TestClient, th: dict, mac_dinh: dict) -> dict:
         d, t, l = so_sanh_o(th["ky_vong_o"], r.get("o_nhu_cau", {}))
         ket["o_dung"], ket["o_tong"] = d, t
         ket["loi"] += l
+    kvg = th.get("ky_vong_giong")
+    if kvg and r.get("thong_ke", {}).get("giong") != kvg:
+        ket["loi"].append(f"giong: muon {kvg} duoc {r['thong_ke'].get('giong')}")
     return ket
 
 
 def _doan_o(text: str) -> str:
     """Map cau hoi template -> ten o. Template cung nen map cung duoc."""
     t = text.lower()
+    if "sản phẩm nào" in t or "sản phẩm gì" in t or "tìm sản phẩm" in t:
+        return "nganh"
     if "bao nhiêu" in t and "m²" in t:
         return "dien_tich_m2"
     if "dự tính" in t or "ngân sách" in t:

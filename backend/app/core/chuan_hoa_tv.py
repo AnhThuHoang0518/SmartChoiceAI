@@ -92,6 +92,38 @@ NGANH_KHAC = [
 ]
 
 
+def co_nganh_may_lanh(text: str) -> bool:
+    """Khach co nhac toi may lanh (nganh dang bat trong demo) khong."""
+    return bool(re.search(r"\b(may lanh|dieu hoa|dhkk|ml)\b", bo_dau(text or "").lower()))
+
+
+# ── Nhan biet khach ranh ky thuat ───────────────────────────────────────────
+# Sale that doi giong theo khach: khach binh dan thi noi loi ich, khach ranh
+# ky thuat thi noi thang so. Nhan biet qua CHINH ngon ngu khach go - dung
+# regex chu khong dung LLM: chac chan, giai trinh duoc, 0ms.
+
+TU_KY_THUAT = (
+    "cspf", "btu", "hp", "db", "decibel", "gas r32", "r32", "r410",
+    "dan nong", "dan lanh", "2 chieu", "hai chieu", "cong suat lanh",
+    "nhan nang luong", "eer", "seer",
+)
+
+
+def tu_ky_thuat_trong(text: str) -> set[str]:
+    """Tap thuat ngu ky thuat xuat hien trong cau. Cong don qua ca phien:
+    >=2 thuat ngu khac nhau -> khach ranh ky thuat."""
+    kd = bo_dau(text or "").lower()
+    return {t for t in TU_KY_THUAT if re.search(rf"\b{re.escape(t)}\b", kd)}
+
+
+def yeu_cau_thong_so(text: str) -> bool:
+    """Khach chu dong doi xem thong so ('cho xin thong so chi tiet') - chuyen
+    giong ky thuat ngay, khoi cho du 2 thuat ngu."""
+    kd = bo_dau(text or "").lower()
+    return bool(re.search(r"\b(thong so (chi tiet|day du|ky thuat)|chi tiet thong so|"
+                          r"xin thong so|noi thong so|spec)\b", kd))
+
+
 def cau_hoi_cong_suat(text: str) -> bool:
     """Khach hoi KIEN THUC ve cong suat ('gia dinh 5 nguoi mua cong suat bao
     nhieu?', 'phong nay can may HP?') - khac voi nho tu van chon may.

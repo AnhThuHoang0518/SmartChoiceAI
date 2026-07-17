@@ -110,6 +110,10 @@ def tai_catalog(duong_dan: str | Path = MAC_DINH) -> list[SanPham]:
                         "do_on_db": _nguon("do_on_db", do_on, ma, "catalog:Độ ồn"),
                         "cspf": _nguon("cspf", cspf, ma, "catalog:Nhãn năng lượng"),
                         "inverter": _nguon("inverter", r["inverter"], ma, "catalog:Loại Inverter"),
+                        # 2 truong duoi phuc vu GIONG KY THUAT (khach ranh thong so
+                        # duoc xem day du) - phai co nguon thi hau kiem moi cho noi.
+                        "sao": _nguon("sao", sao, ma, "catalog:Nhãn năng lượng"),
+                        "gia_goc": _nguon("gia_goc", gia_goc, ma, "price_api"),
                     },
                 )
             )

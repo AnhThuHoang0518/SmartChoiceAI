@@ -25,7 +25,13 @@ HAN_GIAY = 60 * 60
 def tao_phien() -> str:
     ma = uuid.uuid4().hex[:12]
     _KHO[ma] = {"nhu_cau": ONhuCauMayLanh(), "luc": time.time(), "so_luot": 0,
-                "da_hoi": []}
+                "da_hoi": [],
+                # nganh: None = chua biet khach quan tam gi (sale se hoi truoc)
+                "nganh": None,
+                # giong: binh_dan (mac dinh) / ky_thuat - sticky ca phien
+                "giong": None,
+                # tu_kt: thuat ngu ky thuat khach da dung, cong don qua cac luot
+                "tu_kt": set()}
     return ma
 
 
@@ -40,7 +46,8 @@ def lay(ma: str) -> dict | None:
 
 
 def ghi(ma: str, nhu_cau: ONhuCauMayLanh, o_vua_hoi: str | None = None) -> None:
-    p = _KHO.setdefault(ma, {"nhu_cau": ONhuCauMayLanh(), "so_luot": 0, "da_hoi": []})
+    p = _KHO.setdefault(ma, {"nhu_cau": ONhuCauMayLanh(), "so_luot": 0, "da_hoi": [],
+                             "nganh": None, "giong": None, "tu_kt": set()})
     p["nhu_cau"] = nhu_cau
     p["luc"] = time.time()
     p["so_luot"] += 1

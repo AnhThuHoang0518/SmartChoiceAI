@@ -84,6 +84,11 @@ def tap_hop_le(bang: BangKetQua, nhu_cau=None) -> dict[str, set[float]]:
                 ro["db"].add(v)
             elif n.truong == "cspf" and v:
                 ro["cspf"].add(v)
+            elif n.truong == "sao" and v:
+                ro["sao"].add(v)
+            elif n.truong == "gia_goc" and v:
+                # gia goc + muc giam ("giam 1,3 trieu") deu la tien hop le
+                ro["tien"].add(v)
             elif n.truong == "pham_vi":
                 for x in re.findall(r"[\d.]+", str(n.gia_tri)):
                     if (v2 := _so(x)) is not None:
@@ -94,6 +99,12 @@ def tap_hop_le(bang: BangKetQua, nhu_cau=None) -> dict[str, set[float]]:
         for j in range(len(gia)):
             if i != j:
                 ro["tien"].add(abs(gia[i] - gia[j]))
+
+    # Muc giam khuyen mai ("dang giam 1,3 trieu") = gia_goc - gia ban.
+    for u in bang.top3:
+        for n in u.nguon:
+            if n.truong == "gia_goc" and (v := _so(str(n.gia_tri))):
+                ro["tien"].add(abs(v - float(u.gia)))
 
     if bang.dien_tich_hieu_dung_m2:
         ro["m2"].add(float(bang.dien_tich_hieu_dung_m2))

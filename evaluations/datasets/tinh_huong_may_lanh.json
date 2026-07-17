@@ -5,7 +5,8 @@
     "dien_tich_m2": "phòng 18m2",
     "co_nang": "không có nắng",
     "loai_phong": "phòng ngủ",
-    "khu_vuc": "Hà Nội"
+    "khu_vuc": "Hà Nội",
+    "nganh": "máy lạnh"
   },
   "tinh_huong": [
     {
@@ -242,6 +243,21 @@
         }
       ],
       "toi_da_cau_hoi": 1
+    },
+    {
+      "ten": "chao_trong_roi_chon_nganh",
+      "tin_dau": "hi ban oi",
+      "ky_vong_loai": "tu_van",
+      "toi_da_cau_hoi": 5,
+      "_ghi_chu": "GD18: mo man trong -> hoi nganh truoc (sale that), roi moi gom nhu cau"
+    },
+    {
+      "ten": "khach_ky_thuat_tu_nhan_biet",
+      "tin_dau": "may lanh 2 chieu gas r32 phong 18m2 tam 20tr khong nang",
+      "ky_vong_loai": "tu_van",
+      "ky_vong_giong": "ky_thuat",
+      "toi_da_cau_hoi": 1,
+      "_ghi_chu": "GD19: >=2 thuat ngu ky thuat -> tu chuyen giong"
     }
   ]
 }
