@@ -46,6 +46,18 @@
   dialog td{padding:3px 6px;border-bottom:1px solid var(--vien);font-size:13px}
   .goi-y{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 10px}
   .goi-y button{background:var(--the);border:1px solid var(--vien);border-radius:18px;padding:6px 14px;font-size:13.5px;cursor:pointer;color:var(--muc)}
+  .goi-y button:hover{border-color:var(--chinh);color:var(--chinh)}
+  .chip-bot{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
+  .chip-bot button{background:var(--chinh-nhat);border:1px solid transparent;border-radius:16px;padding:5px 12px;font-size:13px;cursor:pointer;color:var(--chinh)}
+  .chip-bot button:hover{border-color:var(--chinh)}
+  .gia-goc{color:var(--phu);text-decoration:line-through;font-weight:400;font-size:12.5px}
+  .giam{background:#d64545;color:#fff;border-radius:4px;padding:1px 6px;font-size:11.5px;margin-left:5px;font-weight:600}
+  .nut-ss{margin-top:8px;background:none;border:1px solid var(--vien);border-radius:14px;padding:4px 11px;font-size:12.5px;cursor:pointer;color:var(--phu)}
+  .nut-ss:hover{border-color:var(--chinh);color:var(--chinh)}
+  .cham i{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--phu);margin:0 2px;animation:nhun 1s infinite}
+  .cham i:nth-child(2){animation-delay:.15s}
+  .cham i:nth-child(3){animation-delay:.3s}
+  @keyframes nhun{0%,60%,100%{transform:translateY(0);opacity:.35}30%{transform:translateY(-5px);opacity:1}}
 </style>
 </head>
 <body>
@@ -87,11 +99,25 @@ const khung = document.getElementById('khung');
 const oNhap = document.getElementById('o-nhap');
 const nut = document.getElementById('nut');
 
+// Nhan tieng Viet cho badge nguon: lay tu backend (1 nguon su that) - fail
+// thi roi ve ten truong tho, khong chan trang.
+let NHAN = {};
+fetch('/api/nhan-truong').then(r => r.json()).then(d => NHAN = d).catch(() => {});
+const nhan = t => NHAN[t] || t;
+
+// Markdown toi gian: chi **dam** va xuong dong (pre-wrap lo). Truoc day **
+// hien tho tren man hinh - thay ngay tren demo that.
+function md(t){
+  return t.replace(/</g,'&lt;').replace(/\*\*([^*]+)\*\*/g,'<b>$1</b>');
+}
+
 function dienMau(b){
   // Bam nut la GUI luon - bat khach bam Gui them lan nua la thua mot cham.
   oNhap.value = b.textContent.replace(/^\u{1F525}\s*/u, '');
   document.querySelector('form').requestSubmit();
 }
+
+function guiVB(t){ oNhap.value = t; document.querySelector('form').requestSubmit(); }
 
 function them(html, lop){
   const d = document.createElement('div');
@@ -105,7 +131,7 @@ function them(html, lop){
 function moNguon(n){
   const h = document.getElementById('hop-nguon');
   h.innerHTML = '<h4>Nguồn dữ liệu</h4><table>'
-    + '<tr><td>Trường</td><td><b>' + n.truong + '</b></td></tr>'
+    + '<tr><td>Trường</td><td><b>' + nhan(n.truong) + '</b></td></tr>'
     + '<tr><td>Giá trị</td><td>' + n.gia_tri + '</td></tr>'
     + '<tr><td>Nguồn</td><td>' + n.nguon + '</td></tr>'
     + '<tr><td>Lấy lúc</td><td>' + n.lay_luc + '</td></tr>'
@@ -116,16 +142,30 @@ function moNguon(n){
 }
 
 function veSanPham(u, i){
-  let s = '<div class="the-sp"><div class="hang-to"><b>' + (i+1) + '. ' + u.ten + '</b>'
-        + '<span class="gia">' + u.gia.toLocaleString('vi-VN') + 'đ</span></div>';
-  (u.hon||[]).forEach(h => s += '<div class="to hon">+ Hơn về ' + h.truc + ': ' + h.cua_minh + ' (so với ' + h.doi_thu + ')</div>');
-  (u.kem||[]).forEach(k => s += '<div class="to kem">− Kém về ' + k.truc + ': ' + k.cua_minh + ' (so với ' + k.doi_thu + ')</div>');
+  // Gia khuyen mai: co gia_goc > gia ban -> gach gia goc + badge % giam (so
+  // % tinh tu 2 gia THAT trong catalog, khong phai so trang tri).
+  const ng = (u.nguon||[]).find(n => n.truong === 'gia_goc');
+  const gg = ng ? parseFloat(ng.gia_tri) : null;
+  let giaHtml = '<span class="gia">';
+  if (gg && gg > u.gia){
+    const pt = Math.round((1 - u.gia/gg) * 100);
+    giaHtml = '<span class="gia"><span class="gia-goc">' + gg.toLocaleString('vi-VN') + 'đ</span> ';
+    giaHtml += u.gia.toLocaleString('vi-VN') + 'đ<span class="giam">-' + pt + '%</span></span>';
+  } else {
+    giaHtml += u.gia.toLocaleString('vi-VN') + 'đ</span>';
+  }
+  let s = '<div class="the-sp"><div class="hang-to"><b>' + (i+1) + '. ' + u.ten + '</b>' + giaHtml + '</div>';
+  (u.hon||[]).forEach(h => s += '<div class="to hon">✓ ' + (h.truc === 'giá' ? 'Rẻ hơn' : 'Nhỉnh hơn về ' + h.truc) + ': ' + h.cua_minh + ' (so với ' + h.doi_thu + ')</div>');
+  (u.kem||[]).forEach(k => s += '<div class="to kem">△ ' + (k.truc === 'giá' ? 'Đắt hơn' : 'Chịu thiệt về ' + k.truc) + ': ' + k.cua_minh + ' (so với ' + k.doi_thu + ')</div>');
   s += '<div>';
   (u.nguon||[]).forEach(n => {
     if (n.gia_tri && n.gia_tri !== 'None')
-      s += '<button class="badge" onclick=\'moNguon(' + JSON.stringify(n).replace(/'/g,"&#39;") + ')\'>' + n.truong + ' ⓘ</button>';
+      s += '<button class="badge" onclick=\'moNguon(' + JSON.stringify(n).replace(/'/g,"&#39;") + ')\'>' + nhan(n.truong) + ' ⓘ</button>';
   });
-  return s + '</div></div>';
+  s += '</div>';
+  if (i > 0)
+    s += '<button class="nut-ss" onclick="guiVB(\'so sánh máy 1 và máy ' + (i+1) + '\')">⚖ So sánh với máy 1</button>';
+  return s + '</div>';
 }
 
 // Giong noi: Web Speech API cua trinh duyet (Chrome/Edge), nhan vi-VN.
@@ -157,7 +197,7 @@ async function gui(e){
   document.getElementById('goiy')?.remove();
   them(tin.replace(/</g,'&lt;'), 'khach');
   oNhap.value = ''; nut.disabled = true;
-  const cho = them('<i>Đang xử lý…</i>', 'bot');
+  const cho = them('<span class="cham"><i></i><i></i><i></i></span>', 'bot');
 
   try {
     const r = await fetch('/api/chat', {
@@ -166,7 +206,7 @@ async function gui(e){
     });
     const d = await r.json();
     phienId = d.phien_id;
-    let html = d.text.replace(/</g,'&lt;');
+    let html = md(d.text);
 
     if (d.loai === 'cau_hoi' && d.vi_sao_hoi?.length){
       html += '<div class="giai-trinh">Vì sao hỏi câu này: '
@@ -182,6 +222,10 @@ async function gui(e){
             + '<span>' + t.ms + 'ms</span><span>chạm LLM: ' + t.cham_llm + '</span>'
             + (t.so_lan_chan_bia ? '<span>đã chặn bịa: ' + t.so_lan_chan_bia + ' lần</span>' : '') + '</div>';
     }
+    // Chip goi y cau tiep theo tu backend - bam gui luon, khach khoi nghi cau.
+    if (d.goi_y?.length)
+      html += '<div class="chip-bot">' + d.goi_y.map(g =>
+        '<button onclick="guiVB(this.textContent)">' + g.replace(/</g,'&lt;') + '</button>').join('') + '</div>';
     cho.querySelector('.bong').innerHTML = html;
   } catch(err){
     cho.querySelector('.bong').innerHTML = 'Lỗi kết nối server — kiểm tra backend đang chạy chưa.';

@@ -1,484 +1,536 @@
 {
-  "_doc": "20 tinh huong khach that cho nganh may lanh. Chay: python scripts/danh_gia.py. Moi tinh huong: tin_dau (cau mo man), tra_loi (khach dap gi khi bot hoi tung o), ky_vong_loai (ket cuc), ky_vong_o (o nhu cau phai trich dung), toi_da_cau_hoi.",
-  "tra_loi_mac_dinh": {
-    "ngan_sach_max": "khoảng 15 triệu",
-    "dien_tich_m2": "phòng 18m2",
-    "co_nang": "không có nắng",
-    "loai_phong": "phòng ngủ",
-    "khu_vuc": "Hà Nội",
-    "nganh": "máy lạnh",
-    "so_nguoi": "4 người",
-    "tai_kg": "9 kg",
-    "so_bua": "3 bua"
+ "_doc": "20 tinh huong khach that cho nganh may lanh. Chay: python scripts/danh_gia.py. Moi tinh huong: tin_dau (cau mo man), tra_loi (khach dap gi khi bot hoi tung o), ky_vong_loai (ket cuc), ky_vong_o (o nhu cau phai trich dung), toi_da_cau_hoi.",
+ "tra_loi_mac_dinh": {
+  "ngan_sach_max": "khoảng 15 triệu",
+  "dien_tich_m2": "phòng 18m2",
+  "co_nang": "không có nắng",
+  "loai_phong": "phòng ngủ",
+  "khu_vuc": "Hà Nội",
+  "nganh": "máy lạnh",
+  "so_nguoi": "4 người",
+  "tai_kg": "9 kg",
+  "so_bua": "3 bua"
+ },
+ "tinh_huong": [
+  {
+   "ten": "kich_ban_chuan_de_bai",
+   "tin_dau": "e muon mua may lanh duoi 20tr cho phong 18m2, tk dien, it on",
+   "tra_loi": {
+    "co_nang": "có, chiều nắng lắm"
+   },
+   "ky_vong_loai": "tu_van",
+   "ky_vong_o": {
+    "ngan_sach_max": 20000000,
+    "dien_tich_m2": 18,
+    "co_nang": true,
+    "uu_tien_chua": [
+     "tiet_kiem_dien",
+     "do_on"
+    ]
+   },
+   "toi_da_cau_hoi": 2
   },
-  "tinh_huong": [
+  {
+   "ten": "du_thong_tin_1_luot",
+   "tin_dau": "máy lạnh dưới 20 triệu phòng ngủ 18m² có nắng, tiết kiệm điện ít ồn",
+   "ky_vong_loai": "tu_van",
+   "ky_vong_o": {
+    "ngan_sach_max": 20000000,
+    "dien_tich_m2": 18,
+    "co_nang": true,
+    "loai_phong": "ngu"
+   },
+   "toi_da_cau_hoi": 1
+  },
+  {
+   "ten": "khong_dau_viet_tat",
+   "tin_dau": "ml duoi 15tr cho pn 12m2 tk dien",
+   "ky_vong_loai": "tu_van",
+   "ky_vong_o": {
+    "ngan_sach_max": 15000000,
+    "dien_tich_m2": 12,
+    "loai_phong": "ngu",
+    "uu_tien_chua": [
+     "tiet_kiem_dien"
+    ]
+   },
+   "toi_da_cau_hoi": 2
+  },
+  {
+   "ten": "don_vi_ty",
+   "tin_dau": "toi co 1 ty mua may lanh cho phong 30m2",
+   "ky_vong_loai": "tu_van",
+   "ky_vong_o": {
+    "ngan_sach_max": 1000000000,
+    "dien_tich_m2": 30
+   },
+   "toi_da_cau_hoi": 2
+  },
+  {
+   "ten": "don_vi_nghin_k",
+   "tin_dau": "may lanh tam 9990k cho phong 10m2",
+   "ky_vong_loai": "tu_van",
+   "ky_vong_o": {
+    "ngan_sach_max": 9990000,
+    "dien_tich_m2": 10
+   },
+   "toi_da_cau_hoi": 2
+  },
+  {
+   "ten": "tu_lanh_vao_luong_that",
+   "tin_dau": "có Tủ lạnh nào xịn không",
+   "ky_vong_loai": "tu_van",
+   "toi_da_cau_hoi": 3,
+   "_ghi_chu": "Truoc 18/07: tu choi lich su. Nay: vertical tu lanh that"
+  },
+  {
+   "ten": "may_giat_vao_luong_that",
+   "tin_dau": "can mua may giat 10kg cho gia dinh 4 nguoi",
+   "ky_vong_loai": "tu_van",
+   "toi_da_cau_hoi": 3,
+   "_ghi_chu": "Truoc: tu choi. Nay: nganh may giat tren khung generic"
+  },
+  {
+   "ten": "ngoai_pham_vi_tivi",
+   "tin_dau": "co ti vi 55 inch nao khong",
+   "ky_vong_loai": "ngoai_pham_vi",
+   "toi_da_cau_hoi": 0
+  },
+  {
+   "ten": "nhac_ca_hai_nganh_van_tu_van",
+   "tin_dau": "mua máy lạnh và tủ lạnh cho nhà mới",
+   "ky_vong_loai": "tu_van",
+   "toi_da_cau_hoi": 4
+  },
+  {
+   "ten": "mo_man_khong_thong_tin",
+   "tin_dau": "cai nao ngon nhat",
+   "ky_vong_loai": "tu_van",
+   "toi_da_cau_hoi": 4
+  },
+  {
+   "ten": "phong_khach_lam_lanh_nhanh",
+   "tin_dau": "may lanh phong khach 25m2 uu tien lam lanh nhanh, tam 25tr",
+   "tra_loi": {
+    "co_nang": "khong"
+   },
+   "ky_vong_loai": "tu_van",
+   "ky_vong_o": {
+    "dien_tich_m2": 25,
+    "loai_phong": "khach",
+    "uu_tien_chua": [
+     "lam_lanh_nhanh"
+    ]
+   },
+   "toi_da_cau_hoi": 2
+  },
+  {
+   "ten": "ngan_sach_qua_thap",
+   "tin_dau": "may lanh 3tr cho phong 18m2 khong nang",
+   "ky_vong_loai": "khong_co_may",
+   "toi_da_cau_hoi": 2
+  },
+  {
+   "ten": "phong_rat_lon",
+   "tin_dau": "may lanh cho hoi truong 60m2 ngan sach 40tr khong nang",
+   "ky_vong_loai": "bat_ky_khong_loi",
+   "toi_da_cau_hoi": 3
+  },
+  {
+   "ten": "so_thap_phan",
+   "tin_dau": "phong 18,5m2 mua may lanh tam 15,5tr khong nang",
+   "ky_vong_loai": "tu_van",
+   "ky_vong_o": {
+    "dien_tich_m2": 18.5,
+    "ngan_sach_max": 15500000
+   },
+   "toi_da_cau_hoi": 2
+  },
+  {
+   "ten": "chi_co_dien_tich",
+   "tin_dau": "phong 22m2 nen mua may lanh nao",
+   "tra_loi": {
+    "ngan_sach_max": "20 trieu do ban"
+   },
+   "ky_vong_loai": "tu_van",
+   "ky_vong_o": {
+    "dien_tich_m2": 22,
+    "ngan_sach_max": 20000000
+   },
+   "toi_da_cau_hoi": 2,
+   "_ghi_chu": "22m2: nang khong doi ket qua (van dai 20-30m2) -> thuat toan tu bo cau hoi nang la DUNG"
+  },
+  {
+   "ten": "uu_tien_gia_re",
+   "tin_dau": "may lanh re nhat cho phong 15m2 duoi 10tr khong nang",
+   "ky_vong_loai": "tu_van",
+   "ky_vong_o": {
+    "uu_tien_chua": [
+     "gia"
+    ]
+   },
+   "toi_da_cau_hoi": 2
+  },
+  {
+   "ten": "tra_loi_lac_de_roi_chot",
+   "tin_dau": "mua may lanh",
+   "lac_de_truoc": "cai nao cung dc ban chon ho minh",
+   "ky_vong_loai": "tu_van",
+   "ky_vong_hoi_lai_co_vi_du": true,
+   "toi_da_cau_hoi": 5
+  },
+  {
+   "ten": "tu_khoa_inverter",
+   "tin_dau": "may lanh inverter phong 18m2 khoang 18tr khong nang",
+   "ky_vong_loai": "tu_van",
+   "ky_vong_o": {
+    "uu_tien_chua": [
+     "tiet_kiem_dien"
+    ]
+   },
+   "toi_da_cau_hoi": 2
+  },
+  {
+   "ten": "goi_dieu_hoa",
+   "tin_dau": "dieu hoa cho phong 20m2 tam 15tr khong co nang",
+   "ky_vong_loai": "tu_van",
+   "ky_vong_o": {
+    "dien_tich_m2": 20,
+    "ngan_sach_max": 15000000
+   },
+   "toi_da_cau_hoi": 2
+  },
+  {
+   "ten": "hoi_dap_tung_buoc",
+   "tin_dau": "muon mua may lanh moi",
+   "tra_loi": {
+    "ngan_sach_max": "10 trieu",
+    "dien_tich_m2": "12m2 thoi",
+    "co_nang": "khong co nang dau"
+   },
+   "ky_vong_loai": "tu_van",
+   "ky_vong_o": {
+    "ngan_sach_max": 10000000,
+    "dien_tich_m2": 12
+   },
+   "toi_da_cau_hoi": 4
+  },
+  {
+   "ten": "doi_y_giam_ngan_sach",
+   "tin_dau": "may lanh 20tr phong 18m2 co nang phong ngu tk dien",
+   "ky_vong_loai": "bat_ky_khong_loi",
+   "tiep_theo": [
     {
-      "ten": "kich_ban_chuan_de_bai",
-      "tin_dau": "e muon mua may lanh duoi 20tr cho phong 18m2, tk dien, it on",
-      "tra_loi": {
-        "co_nang": "có, chiều nắng lắm"
-      },
-      "ky_vong_loai": "tu_van",
-      "ky_vong_o": {
-        "ngan_sach_max": 20000000,
-        "dien_tich_m2": 18,
-        "co_nang": true,
-        "uu_tien_chua": [
-          "tiet_kiem_dien",
-          "do_on"
-        ]
-      },
-      "toi_da_cau_hoi": 2
-    },
-    {
-      "ten": "du_thong_tin_1_luot",
-      "tin_dau": "máy lạnh dưới 20 triệu phòng ngủ 18m² có nắng, tiết kiệm điện ít ồn",
-      "ky_vong_loai": "tu_van",
-      "ky_vong_o": {
-        "ngan_sach_max": 20000000,
-        "dien_tich_m2": 18,
-        "co_nang": true,
-        "loai_phong": "ngu"
-      },
-      "toi_da_cau_hoi": 1
-    },
-    {
-      "ten": "khong_dau_viet_tat",
-      "tin_dau": "ml duoi 15tr cho pn 12m2 tk dien",
-      "ky_vong_loai": "tu_van",
-      "ky_vong_o": {
-        "ngan_sach_max": 15000000,
-        "dien_tich_m2": 12,
-        "loai_phong": "ngu",
-        "uu_tien_chua": [
-          "tiet_kiem_dien"
-        ]
-      },
-      "toi_da_cau_hoi": 2
-    },
-    {
-      "ten": "don_vi_ty",
-      "tin_dau": "toi co 1 ty mua may lanh cho phong 30m2",
-      "ky_vong_loai": "tu_van",
-      "ky_vong_o": {
-        "ngan_sach_max": 1000000000,
-        "dien_tich_m2": 30
-      },
-      "toi_da_cau_hoi": 2
-    },
-    {
-      "ten": "don_vi_nghin_k",
-      "tin_dau": "may lanh tam 9990k cho phong 10m2",
-      "ky_vong_loai": "tu_van",
-      "ky_vong_o": {
-        "ngan_sach_max": 9990000,
-        "dien_tich_m2": 10
-      },
-      "toi_da_cau_hoi": 2
-    },
-    {
-      "ten": "tu_lanh_vao_luong_that",
-      "tin_dau": "có Tủ lạnh nào xịn không",
-      "ky_vong_loai": "tu_van",
-      "toi_da_cau_hoi": 3,
-      "_ghi_chu": "Truoc 18/07: tu choi lich su. Nay: vertical tu lanh that"
-    },
-    {
-      "ten": "may_giat_vao_luong_that",
-      "tin_dau": "can mua may giat 10kg cho gia dinh 4 nguoi",
-      "ky_vong_loai": "tu_van",
-      "toi_da_cau_hoi": 3,
-      "_ghi_chu": "Truoc: tu choi. Nay: nganh may giat tren khung generic"
-    },
-    {
-      "ten": "ngoai_pham_vi_tivi",
-      "tin_dau": "co ti vi 55 inch nao khong",
-      "ky_vong_loai": "ngoai_pham_vi",
-      "toi_da_cau_hoi": 0
-    },
-    {
-      "ten": "nhac_ca_hai_nganh_van_tu_van",
-      "tin_dau": "mua máy lạnh và tủ lạnh cho nhà mới",
-      "ky_vong_loai": "tu_van",
-      "toi_da_cau_hoi": 4
-    },
-    {
-      "ten": "mo_man_khong_thong_tin",
-      "tin_dau": "cai nao ngon nhat",
-      "ky_vong_loai": "tu_van",
-      "toi_da_cau_hoi": 4
-    },
-    {
-      "ten": "phong_khach_lam_lanh_nhanh",
-      "tin_dau": "may lanh phong khach 25m2 uu tien lam lanh nhanh, tam 25tr",
-      "tra_loi": {
-        "co_nang": "khong"
-      },
-      "ky_vong_loai": "tu_van",
-      "ky_vong_o": {
-        "dien_tich_m2": 25,
-        "loai_phong": "khach",
-        "uu_tien_chua": [
-          "lam_lanh_nhanh"
-        ]
-      },
-      "toi_da_cau_hoi": 2
-    },
-    {
-      "ten": "ngan_sach_qua_thap",
-      "tin_dau": "may lanh 3tr cho phong 18m2 khong nang",
-      "ky_vong_loai": "khong_co_may",
-      "toi_da_cau_hoi": 2
-    },
-    {
-      "ten": "phong_rat_lon",
-      "tin_dau": "may lanh cho hoi truong 60m2 ngan sach 40tr khong nang",
-      "ky_vong_loai": "bat_ky_khong_loi",
-      "toi_da_cau_hoi": 3
-    },
-    {
-      "ten": "so_thap_phan",
-      "tin_dau": "phong 18,5m2 mua may lanh tam 15,5tr khong nang",
-      "ky_vong_loai": "tu_van",
-      "ky_vong_o": {
-        "dien_tich_m2": 18.5,
-        "ngan_sach_max": 15500000
-      },
-      "toi_da_cau_hoi": 2
-    },
-    {
-      "ten": "chi_co_dien_tich",
-      "tin_dau": "phong 22m2 nen mua may lanh nao",
-      "tra_loi": {
-        "ngan_sach_max": "20 trieu do ban"
-      },
-      "ky_vong_loai": "tu_van",
-      "ky_vong_o": {
-        "dien_tich_m2": 22,
-        "ngan_sach_max": 20000000
-      },
-      "toi_da_cau_hoi": 2,
-      "_ghi_chu": "22m2: nang khong doi ket qua (van dai 20-30m2) -> thuat toan tu bo cau hoi nang la DUNG"
-    },
-    {
-      "ten": "uu_tien_gia_re",
-      "tin_dau": "may lanh re nhat cho phong 15m2 duoi 10tr khong nang",
-      "ky_vong_loai": "tu_van",
-      "ky_vong_o": {
-        "uu_tien_chua": [
-          "gia"
-        ]
-      },
-      "toi_da_cau_hoi": 2
-    },
-    {
-      "ten": "tra_loi_lac_de_roi_chot",
-      "tin_dau": "mua may lanh",
-      "lac_de_truoc": "cai nao cung dc ban chon ho minh",
-      "ky_vong_loai": "tu_van",
-      "ky_vong_hoi_lai_co_vi_du": true,
-      "toi_da_cau_hoi": 5
-    },
-    {
-      "ten": "tu_khoa_inverter",
-      "tin_dau": "may lanh inverter phong 18m2 khoang 18tr khong nang",
-      "ky_vong_loai": "tu_van",
-      "ky_vong_o": {
-        "uu_tien_chua": [
-          "tiet_kiem_dien"
-        ]
-      },
-      "toi_da_cau_hoi": 2
-    },
-    {
-      "ten": "goi_dieu_hoa",
-      "tin_dau": "dieu hoa cho phong 20m2 tam 15tr khong co nang",
-      "ky_vong_loai": "tu_van",
-      "ky_vong_o": {
-        "dien_tich_m2": 20,
-        "ngan_sach_max": 15000000
-      },
-      "toi_da_cau_hoi": 2
-    },
-    {
-      "ten": "hoi_dap_tung_buoc",
-      "tin_dau": "muon mua may lanh moi",
-      "tra_loi": {
-        "ngan_sach_max": "10 trieu",
-        "dien_tich_m2": "12m2 thoi",
-        "co_nang": "khong co nang dau"
-      },
-      "ky_vong_loai": "tu_van",
-      "ky_vong_o": {
-        "ngan_sach_max": 10000000,
-        "dien_tich_m2": 12
-      },
-      "toi_da_cau_hoi": 4
-    },
-    {
-      "ten": "doi_y_giam_ngan_sach",
-      "tin_dau": "may lanh 20tr phong 18m2 co nang phong ngu tk dien",
-      "ky_vong_loai": "bat_ky_khong_loi",
-      "tiep_theo": [
-        {
-          "tin": "neu giam con 10 trieu thi sao",
-          "ky_vong_loai": "bat_ky_khong_loi",
-          "ky_vong_o": {
-            "ngan_sach_max": 10000000,
-            "dien_tich_m2": 18,
-            "co_nang": true
-          }
-        }
-      ],
-      "toi_da_cau_hoi": 1,
-      "_ghi_chu": "BAY DEMO: truoc day o da biet khong ghi de -> bot lang le tu van theo 20tr cu | ket cuc tha long: phu thuoc catalog, cai phai dung la o ngan_sach bi ghi de"
-    },
-    {
-      "ten": "doi_y_phong_khac",
-      "tin_dau": "may lanh 15tr cho phong 12m2 khong nang",
-      "ky_vong_loai": "tu_van",
-      "tiep_theo": [
-        {
-          "tin": "doi sang phong 28m2 thi may nao",
-          "ky_vong_loai": "bat_ky_khong_loi",
-          "ky_vong_o": {
-            "dien_tich_m2": 28,
-            "ngan_sach_max": 15000000
-          }
-        }
-      ],
-      "toi_da_cau_hoi": 1
-    },
-    {
-      "ten": "chao_trong_roi_chon_nganh",
-      "tin_dau": "hi ban oi",
-      "ky_vong_loai": "tu_van",
-      "toi_da_cau_hoi": 5,
-      "_ghi_chu": "GD18: mo man trong -> hoi nganh truoc (sale that), roi moi gom nhu cau"
-    },
-    {
-      "ten": "khach_ky_thuat_tu_nhan_biet",
-      "tin_dau": "may lanh 2 chieu gas r32 phong 18m2 tam 20tr khong nang",
-      "ky_vong_loai": "tu_van",
-      "ky_vong_giong": "ky_thuat",
-      "toi_da_cau_hoi": 1,
-      "_ghi_chu": "GD19: >=2 thuat ngu ky thuat -> tu chuyen giong"
-    },
-    {
-      "ten": "bo_ngan_sach_thoat_vong_lap",
-      "tin_dau": "may lanh 20tr cho phong 50m2 khong nang",
-      "ky_vong_loai": "bat_ky_khong_loi",
-      "tiep_theo": [
-        {
-          "tin": "ko can quan tam den ngan sach nua",
-          "ky_vong_loai": "tu_van"
-        }
-      ],
-      "toi_da_cau_hoi": 1,
-      "_ghi_chu": "BUG DEMO THAT: khach bo ngan sach ma bot lai nguyen van cau cu"
-    },
-    {
-      "ten": "khong_co_may_lan2_doi_loi",
-      "tin_dau": "may lanh 3tr phong 18m2 khong nang",
-      "ky_vong_loai": "bat_ky_khong_loi",
-      "tiep_theo": [
-        {
-          "tin": "sao dat vay",
-          "ky_vong_loai": "khong_co_may"
-        }
-      ],
-      "toi_da_cau_hoi": 1,
-      "_ghi_chu": "lan 2 lien tiep khong co may -> doi loi huong dan, khong lap nguyen van"
-    },
-    {
-      "ten": "tc008_hoi_ton_kho",
-      "tin_dau": "may lanh nao con hang o da nang",
-      "ky_vong_loai": "thieu_du_lieu",
-      "toi_da_cau_hoi": 0,
-      "_ghi_chu": "TC-008: noi thang thieu truong ton kho + can Stock API, khong doan bua"
-    },
-    {
-      "ten": "tc009_chu_quan_dep_nhat",
-      "tin_dau": "may lanh nao dep va sang nhat",
-      "ky_vong_loai": "chu_quan",
-      "toi_da_cau_hoi": 0,
-      "_ghi_chu": "TC-009: tieu chi chu quan -> khong xep hang bua, hoi gu + keo ve tieu chi do duoc"
-    },
-    {
-      "ten": "tc001_tu_lanh_4_nguoi_tkd",
-      "tin_dau": "Nhà 4 người, tôi cần tủ lạnh vừa đủ dùng và tiết kiệm điện",
-      "tra_loi": {
-        "ngan_sach_max": "khoang 15 trieu"
-      },
-      "ky_vong_loai": "tu_van",
-      "ky_vong_o": {
-        "so_nguoi": 4,
-        "ngan_sach_max": 15000000,
-        "uu_tien_chua": [
-          "tiet_kiem_dien"
-        ]
-      },
-      "toi_da_cau_hoi": 2,
-      "_ghi_chu": "TC-001: map so nguoi -> dai hang cong bo, hoi ngan sach vi thieu"
-    },
-    {
-      "ten": "tc002_tu_lanh_hoc_75cm",
-      "tin_dau": "bep toi chi rong 75 cm, tim tu lanh dat vua, nha 3 nguoi, tam 12tr",
-      "ky_vong_loai": "bat_ky_khong_loi",
-      "ky_vong_o": {
-        "so_nguoi": 3,
-        "ngang_cm": 75,
-        "ngan_sach_max": 12000000
-      },
-      "toi_da_cau_hoi": 1,
-      "_ghi_chu": "TC-002: Ngang lam hard filter; may thieu kich thuoc khong duoc doan"
-    },
-    {
-      "ten": "tu_lanh_tra_loi_cut_lun",
-      "tin_dau": "tủ lạnh",
-      "tra_loi": {
-        "so_nguoi": "5",
-        "ngan_sach_max": "20 trieu"
-      },
-      "ky_vong_loai": "tu_van",
-      "ky_vong_o": {
-        "so_nguoi": 5,
-        "ngan_sach_max": 20000000
-      },
-      "toi_da_cau_hoi": 3,
-      "_ghi_chu": "go so tran '5' khi dang hoi so nguoi -> dien dung o (ngu canh)"
-    },
-    {
-      "ten": "tc019_may_giat_5_nguoi",
-      "tin_dau": "Gia đình 5 người nên mua máy giặt bao nhiêu kg?",
-      "tra_loi": {
-        "ngan_sach_max": "tam 10 trieu"
-      },
-      "ky_vong_loai": "tu_van",
-      "ky_vong_o": {
-        "so_nguoi": 5,
-        "ngan_sach_max": 10000000
-      },
-      "toi_da_cau_hoi": 2,
-      "_ghi_chu": "TC-019: map so nguoi -> tai theo cong bo hang"
-    },
-    {
-      "ten": "tc020_may_giat_kich_thuoc",
-      "tin_dau": "cho dat may giat rong 62 cm, sau 60 cm, nha 4 nguoi, tam 12tr",
-      "ky_vong_loai": "bat_ky_khong_loi",
-      "ky_vong_o": {
-        "so_nguoi": 4,
-        "ngang_cm": 62,
-        "sau_cm": 60
-      },
-      "toi_da_cau_hoi": 1,
-      "_ghi_chu": "TC-020: hard filter kich thuoc"
-    },
-    {
-      "ten": "tc031_may_say_hoc",
-      "tin_dau": "may say phai vua hoc 60x65x86 cm, tai 9kg, tam 15tr",
-      "ky_vong_loai": "tu_van",
-      "ky_vong_o": {
-        "tai_kg": 9,
-        "ngang_cm": 60,
-        "sau_cm": 65,
-        "cao_cm": 86
-      },
-      "toi_da_cau_hoi": 1,
-      "_ghi_chu": "TC-031: loc du 3 chieu, khong dao Ngang/Sau - cau khach THAT da hoi trong demo"
-    },
-    {
-      "ten": "tc029_may_say_bom_nhiet",
-      "tin_dau": "may say bom nhiet 9kg khoang 15 trieu",
-      "ky_vong_loai": "tu_van",
-      "toi_da_cau_hoi": 1,
-      "_ghi_chu": "TC-029: khop loai bo dau ca 2 phia (bug loai oan da vet)"
-    },
-    {
-      "ten": "tc037_rua_chen_4_nguoi_3_bua",
-      "tin_dau": "Nhà 4 người ăn 3 bữa/ngày cần máy rửa chén nào?",
-      "tra_loi": {
-        "ngan_sach_max": "tam 20 trieu"
-      },
-      "ky_vong_loai": "tu_van",
-      "ky_vong_o": {
-        "so_bua": 3,
-        "ngan_sach_max": 20000000
-      },
-      "toi_da_cau_hoi": 2,
-      "_ghi_chu": "TC-037: parse bua an Viet, hoi ngan sach"
-    },
-    {
-      "ten": "tc038_rua_chen_em_47db",
-      "tin_dau": "may rua chen em duoi 47 db, 3 bua, tam 22tr",
-      "ky_vong_loai": "tu_van",
-      "ky_vong_o": {
-        "do_on_max": 47,
-        "so_bua": 3
-      },
-      "toi_da_cau_hoi": 1,
-      "_ghi_chu": "TC-038: hard filter dB - da kiem top3 deu <=47dB"
-    },
-    {
-      "ten": "tu_dong_tru_thit",
-      "tin_dau": "can tu dong tru thit ca khoang 8 trieu",
-      "ky_vong_loai": "tu_van",
-      "toi_da_cau_hoi": 2,
-      "_ghi_chu": "nganh tu dong/mat: loc loai theo tu khoa"
-    },
-    {
-      "ten": "may_nuoc_nong_truc_tiep",
-      "tin_dau": "binh nong lanh truc tiep khoang 4 trieu",
-      "ky_vong_loai": "bat_ky_khong_loi",
-      "toi_da_cau_hoi": 1,
-      "_ghi_chu": "nganh may nuoc nong: tu khoa 'binh nong lanh' cung vao dung | ket cuc tha long: catalog mau co the khong co may truc tiep <=4tr - khong_co_may la tra loi DUNG"
-    },
-    {
-      "ten": "tablet_11inch_pin_trau",
-      "tin_dau": "tablet man tu 11 inch pin trau khoang 10 trieu",
-      "ky_vong_loai": "tu_van",
-      "toi_da_cau_hoi": 1,
-      "_ghi_chu": "nhom B: loc toi_thieu inch + uu tien pin, khong trung ten trong top3"
-    },
-    {
-      "ten": "dong_ho_pin_7_ngay",
-      "tin_dau": "dong ho pin 7 ngay tam 3 trieu",
-      "ky_vong_loai": "bat_ky_khong_loi",
-      "toi_da_cau_hoi": 1,
-      "_ghi_chu": "nhom B: toi_thieu pin_ngay (catalog mau co the khong co -> khong_co_may hop le)"
-    },
-    {
-      "ten": "man_hinh_27_2k",
-      "tin_dau": "man hinh 27 inch 2k khoang 7 trieu",
-      "ky_vong_loai": "bat_ky_khong_loi",
-      "toi_da_cau_hoi": 1,
-      "_ghi_chu": "nhom B: inch + khop phan giai"
-    },
-    {
-      "ten": "pc_ram16",
-      "tin_dau": "may tinh ban ram 16gb khoang 15 trieu",
-      "ky_vong_loai": "bat_ky_khong_loi",
-      "toi_da_cau_hoi": 1
-    },
-    {
-      "ten": "may_in_laser_wifi",
-      "tin_dau": "may in laser co wifi tam 4 trieu",
-      "ky_vong_loai": "bat_ky_khong_loi",
-      "toi_da_cau_hoi": 1
-    },
-    {
-      "ten": "laptop_van_tu_choi",
-      "tin_dau": "laptop cho sinh vien 15tr",
-      "ky_vong_loai": "ngoai_pham_vi",
-      "toi_da_cau_hoi": 0,
-      "_ghi_chu": "laptop KHONG co sheet du lieu -> van phai noi that, khong gia vo tu van"
-    },
-    {
-      "ten": "micro_thu_am",
-      "tin_dau": "mic thu am khong day tam 1 trieu",
-      "ky_vong_loai": "bat_ky_khong_loi",
-      "toi_da_cau_hoi": 1,
-      "_ghi_chu": "nganh 13 (2 sheet micro gop 1): loc nhom karaoke/thu am"
+     "tin": "neu giam con 10 trieu thi sao",
+     "ky_vong_loai": "bat_ky_khong_loi",
+     "ky_vong_o": {
+      "ngan_sach_max": 10000000,
+      "dien_tich_m2": 18,
+      "co_nang": true
+     }
     }
-  ]
+   ],
+   "toi_da_cau_hoi": 1,
+   "_ghi_chu": "BAY DEMO: truoc day o da biet khong ghi de -> bot lang le tu van theo 20tr cu | ket cuc tha long: phu thuoc catalog, cai phai dung la o ngan_sach bi ghi de"
+  },
+  {
+   "ten": "doi_y_phong_khac",
+   "tin_dau": "may lanh 15tr cho phong 12m2 khong nang",
+   "ky_vong_loai": "tu_van",
+   "tiep_theo": [
+    {
+     "tin": "doi sang phong 28m2 thi may nao",
+     "ky_vong_loai": "bat_ky_khong_loi",
+     "ky_vong_o": {
+      "dien_tich_m2": 28,
+      "ngan_sach_max": 15000000
+     }
+    }
+   ],
+   "toi_da_cau_hoi": 1
+  },
+  {
+   "ten": "chao_trong_roi_chon_nganh",
+   "tin_dau": "hi ban oi",
+   "ky_vong_loai": "tu_van",
+   "toi_da_cau_hoi": 5,
+   "_ghi_chu": "GD18: mo man trong -> hoi nganh truoc (sale that), roi moi gom nhu cau"
+  },
+  {
+   "ten": "khach_ky_thuat_tu_nhan_biet",
+   "tin_dau": "may lanh 2 chieu gas r32 phong 18m2 tam 20tr khong nang",
+   "ky_vong_loai": "tu_van",
+   "ky_vong_giong": "ky_thuat",
+   "toi_da_cau_hoi": 1,
+   "_ghi_chu": "GD19: >=2 thuat ngu ky thuat -> tu chuyen giong"
+  },
+  {
+   "ten": "bo_ngan_sach_thoat_vong_lap",
+   "tin_dau": "may lanh 20tr cho phong 50m2 khong nang",
+   "ky_vong_loai": "bat_ky_khong_loi",
+   "tiep_theo": [
+    {
+     "tin": "ko can quan tam den ngan sach nua",
+     "ky_vong_loai": "tu_van"
+    }
+   ],
+   "toi_da_cau_hoi": 1,
+   "_ghi_chu": "BUG DEMO THAT: khach bo ngan sach ma bot lai nguyen van cau cu"
+  },
+  {
+   "ten": "khong_co_may_lan2_doi_loi",
+   "tin_dau": "may lanh 3tr phong 18m2 khong nang",
+   "ky_vong_loai": "bat_ky_khong_loi",
+   "tiep_theo": [
+    {
+     "tin": "sao dat vay",
+     "ky_vong_loai": "khong_co_may"
+    }
+   ],
+   "toi_da_cau_hoi": 1,
+   "_ghi_chu": "lan 2 lien tiep khong co may -> doi loi huong dan, khong lap nguyen van"
+  },
+  {
+   "ten": "tc008_hoi_ton_kho",
+   "tin_dau": "may lanh nao con hang o da nang",
+   "ky_vong_loai": "thieu_du_lieu",
+   "toi_da_cau_hoi": 0,
+   "_ghi_chu": "TC-008: noi thang thieu truong ton kho + can Stock API, khong doan bua"
+  },
+  {
+   "ten": "tc009_chu_quan_dep_nhat",
+   "tin_dau": "may lanh nao dep va sang nhat",
+   "ky_vong_loai": "chu_quan",
+   "toi_da_cau_hoi": 0,
+   "_ghi_chu": "TC-009: tieu chi chu quan -> khong xep hang bua, hoi gu + keo ve tieu chi do duoc"
+  },
+  {
+   "ten": "tc001_tu_lanh_4_nguoi_tkd",
+   "tin_dau": "Nhà 4 người, tôi cần tủ lạnh vừa đủ dùng và tiết kiệm điện",
+   "tra_loi": {
+    "ngan_sach_max": "khoang 15 trieu"
+   },
+   "ky_vong_loai": "tu_van",
+   "ky_vong_o": {
+    "so_nguoi": 4,
+    "ngan_sach_max": 15000000,
+    "uu_tien_chua": [
+     "tiet_kiem_dien"
+    ]
+   },
+   "toi_da_cau_hoi": 2,
+   "_ghi_chu": "TC-001: map so nguoi -> dai hang cong bo, hoi ngan sach vi thieu"
+  },
+  {
+   "ten": "tc002_tu_lanh_hoc_75cm",
+   "tin_dau": "bep toi chi rong 75 cm, tim tu lanh dat vua, nha 3 nguoi, tam 12tr",
+   "ky_vong_loai": "bat_ky_khong_loi",
+   "ky_vong_o": {
+    "so_nguoi": 3,
+    "ngang_cm": 75,
+    "ngan_sach_max": 12000000
+   },
+   "toi_da_cau_hoi": 1,
+   "_ghi_chu": "TC-002: Ngang lam hard filter; may thieu kich thuoc khong duoc doan"
+  },
+  {
+   "ten": "tu_lanh_tra_loi_cut_lun",
+   "tin_dau": "tủ lạnh",
+   "tra_loi": {
+    "so_nguoi": "5",
+    "ngan_sach_max": "20 trieu"
+   },
+   "ky_vong_loai": "tu_van",
+   "ky_vong_o": {
+    "so_nguoi": 5,
+    "ngan_sach_max": 20000000
+   },
+   "toi_da_cau_hoi": 3,
+   "_ghi_chu": "go so tran '5' khi dang hoi so nguoi -> dien dung o (ngu canh)"
+  },
+  {
+   "ten": "tc019_may_giat_5_nguoi",
+   "tin_dau": "Gia đình 5 người nên mua máy giặt bao nhiêu kg?",
+   "tra_loi": {
+    "ngan_sach_max": "tam 10 trieu"
+   },
+   "ky_vong_loai": "tu_van",
+   "ky_vong_o": {
+    "so_nguoi": 5,
+    "ngan_sach_max": 10000000
+   },
+   "toi_da_cau_hoi": 2,
+   "_ghi_chu": "TC-019: map so nguoi -> tai theo cong bo hang"
+  },
+  {
+   "ten": "tc020_may_giat_kich_thuoc",
+   "tin_dau": "cho dat may giat rong 62 cm, sau 60 cm, nha 4 nguoi, tam 12tr",
+   "ky_vong_loai": "bat_ky_khong_loi",
+   "ky_vong_o": {
+    "so_nguoi": 4,
+    "ngang_cm": 62,
+    "sau_cm": 60
+   },
+   "toi_da_cau_hoi": 1,
+   "_ghi_chu": "TC-020: hard filter kich thuoc"
+  },
+  {
+   "ten": "tc031_may_say_hoc",
+   "tin_dau": "may say phai vua hoc 60x65x86 cm, tai 9kg, tam 15tr",
+   "ky_vong_loai": "tu_van",
+   "ky_vong_o": {
+    "tai_kg": 9,
+    "ngang_cm": 60,
+    "sau_cm": 65,
+    "cao_cm": 86
+   },
+   "toi_da_cau_hoi": 1,
+   "_ghi_chu": "TC-031: loc du 3 chieu, khong dao Ngang/Sau - cau khach THAT da hoi trong demo"
+  },
+  {
+   "ten": "tc029_may_say_bom_nhiet",
+   "tin_dau": "may say bom nhiet 9kg khoang 15 trieu",
+   "ky_vong_loai": "tu_van",
+   "toi_da_cau_hoi": 1,
+   "_ghi_chu": "TC-029: khop loai bo dau ca 2 phia (bug loai oan da vet)"
+  },
+  {
+   "ten": "tc037_rua_chen_4_nguoi_3_bua",
+   "tin_dau": "Nhà 4 người ăn 3 bữa/ngày cần máy rửa chén nào?",
+   "tra_loi": {
+    "ngan_sach_max": "tam 20 trieu"
+   },
+   "ky_vong_loai": "tu_van",
+   "ky_vong_o": {
+    "so_bua": 3,
+    "ngan_sach_max": 20000000
+   },
+   "toi_da_cau_hoi": 2,
+   "_ghi_chu": "TC-037: parse bua an Viet, hoi ngan sach"
+  },
+  {
+   "ten": "tc038_rua_chen_em_47db",
+   "tin_dau": "may rua chen em duoi 47 db, 3 bua, tam 22tr",
+   "ky_vong_loai": "tu_van",
+   "ky_vong_o": {
+    "do_on_max": 47,
+    "so_bua": 3
+   },
+   "toi_da_cau_hoi": 1,
+   "_ghi_chu": "TC-038: hard filter dB - da kiem top3 deu <=47dB"
+  },
+  {
+   "ten": "tu_dong_tru_thit",
+   "tin_dau": "can tu dong tru thit ca khoang 8 trieu",
+   "ky_vong_loai": "tu_van",
+   "toi_da_cau_hoi": 2,
+   "_ghi_chu": "nganh tu dong/mat: loc loai theo tu khoa"
+  },
+  {
+   "ten": "may_nuoc_nong_truc_tiep",
+   "tin_dau": "binh nong lanh truc tiep khoang 4 trieu",
+   "ky_vong_loai": "bat_ky_khong_loi",
+   "toi_da_cau_hoi": 1,
+   "_ghi_chu": "nganh may nuoc nong: tu khoa 'binh nong lanh' cung vao dung | ket cuc tha long: catalog mau co the khong co may truc tiep <=4tr - khong_co_may la tra loi DUNG"
+  },
+  {
+   "ten": "tablet_11inch_pin_trau",
+   "tin_dau": "tablet man tu 11 inch pin trau khoang 10 trieu",
+   "ky_vong_loai": "tu_van",
+   "toi_da_cau_hoi": 1,
+   "_ghi_chu": "nhom B: loc toi_thieu inch + uu tien pin, khong trung ten trong top3"
+  },
+  {
+   "ten": "dong_ho_pin_7_ngay",
+   "tin_dau": "dong ho pin 7 ngay tam 3 trieu",
+   "ky_vong_loai": "bat_ky_khong_loi",
+   "toi_da_cau_hoi": 1,
+   "_ghi_chu": "nhom B: toi_thieu pin_ngay (catalog mau co the khong co -> khong_co_may hop le)"
+  },
+  {
+   "ten": "man_hinh_27_2k",
+   "tin_dau": "man hinh 27 inch 2k khoang 7 trieu",
+   "ky_vong_loai": "bat_ky_khong_loi",
+   "toi_da_cau_hoi": 1,
+   "_ghi_chu": "nhom B: inch + khop phan giai"
+  },
+  {
+   "ten": "pc_ram16",
+   "tin_dau": "may tinh ban ram 16gb khoang 15 trieu",
+   "ky_vong_loai": "bat_ky_khong_loi",
+   "toi_da_cau_hoi": 1
+  },
+  {
+   "ten": "may_in_laser_wifi",
+   "tin_dau": "may in laser co wifi tam 4 trieu",
+   "ky_vong_loai": "bat_ky_khong_loi",
+   "toi_da_cau_hoi": 1
+  },
+  {
+   "ten": "laptop_van_tu_choi",
+   "tin_dau": "laptop cho sinh vien 15tr",
+   "ky_vong_loai": "ngoai_pham_vi",
+   "toi_da_cau_hoi": 0,
+   "_ghi_chu": "laptop KHONG co sheet du lieu -> van phai noi that, khong gia vo tu van"
+  },
+  {
+   "ten": "micro_thu_am",
+   "tin_dau": "mic thu am khong day tam 1 trieu",
+   "ky_vong_loai": "bat_ky_khong_loi",
+   "toi_da_cau_hoi": 1,
+   "_ghi_chu": "nganh 13 (2 sheet micro gop 1): loc nhom karaoke/thu am"
+  },
+  {
+   "ten": "so_sanh_truc_tiep_2_may",
+   "tin_dau": "tablet man 11 inch pin trau tam 10tr",
+   "ky_vong_loai": "so_sanh",
+   "toi_da_cau_hoi": 1,
+   "tiep_theo": [
+    {
+     "tin": "so sánh máy 1 và máy 2",
+     "ky_vong_loai": "so_sanh"
+    }
+   ],
+   "_ghi_chu": "de bai ten la 'so sanh san pham': lenh so sanh truc tiep, bang do code dung - khong LLM"
+  },
+  {
+   "ten": "doi_nganh_giu_ngan_sach",
+   "tin_dau": "tablet man 11 inch pin trau tam 10tr",
+   "ky_vong_loai": "tu_van",
+   "toi_da_cau_hoi": 1,
+   "tiep_theo": [
+    {
+     "tin": "thế còn đồng hồ thông minh thì sao",
+     "ky_vong_loai": "tu_van",
+     "ky_vong_o": {
+      "ngan_sach_max": 10000000
+     }
+    }
+   ],
+   "_ghi_chu": "doi nganh giua phien: mang ngan sach 10tr theo, khong bat khai lai"
+  },
+  {
+   "ten": "tam_trung_theo_phan_bo_gia",
+   "tin_dau": "mua máy giặt cho nhà 4 người, tầm trung thôi",
+   "ky_vong_loai": "tu_van",
+   "toi_da_cau_hoi": 1,
+   "_ghi_chu": "khong hoi ngan sach nua: 'tam trung' -> tercile gia that cua nganh, khong bia nguong"
+  },
+  {
+   "ten": "doi_y_ngan_sach_nganh_khung",
+   "tin_dau": "máy giặt cho nhà 4 người tầm 15 triệu",
+   "ky_vong_loai": "tu_van",
+   "toi_da_cau_hoi": 1,
+   "tiep_theo": [
+    {
+     "tin": "thôi lấy tầm 7 triệu thôi",
+     "ky_vong_loai": "bat_ky_khong_loi",
+     "ky_vong_o": {
+      "ngan_sach_max": 7000000
+     }
+    }
+   ],
+   "_ghi_chu": "so moi GHI DE so cu tren nganh khung - truoc day bi lang le giu 15tr"
+  }
+ ]
 }

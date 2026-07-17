@@ -35,6 +35,20 @@ class TrucSoSanh(BaseModel):
     doi_thu: str = Field(description="vd: May B 29 dB")
 
 
+def dong_so_sanh(x: "TrucSoSanh", la_hon: bool) -> str:
+    """Dien dat 1 truc trade-off thanh cau tu nhien cho LLM/ban du phong.
+
+    Truoc day serialize "HƠN về giá / KÉM về giá" -> LLM nhai lai nguyen van
+    ("Kém về giá vì đắt hơn") nghe nhu may dich (thay tren demo that). Truc
+    'giá' co tu rieng (rẻ/đắt), truc khac dung 'nhỉnh hơn / chịu thiệt'.
+    """
+    if x.truc == "giá":
+        dau = "Rẻ hơn" if la_hon else "Đắt hơn"
+        return f"   {dau}: {x.cua_minh} (so với {x.doi_thu})"
+    dau = f"Nhỉnh hơn về {x.truc}" if la_hon else f"Chịu thiệt về {x.truc}"
+    return f"   {dau}: {x.cua_minh} (so với {x.doi_thu})"
+
+
 class UngVien(BaseModel):
     ma_sp: str
     ten: str

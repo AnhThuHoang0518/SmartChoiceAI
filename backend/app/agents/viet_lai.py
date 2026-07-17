@@ -12,7 +12,7 @@ from __future__ import annotations
 
 from backend.app.guardrails.hau_kiem import ban_du_phong, hau_kiem
 from backend.app.ranking.xep_hang import cfg
-from backend.app.schemas.ket_qua import BangKetQua
+from backend.app.schemas.ket_qua import BangKetQua, dong_so_sanh
 from backend.app.schemas.nhu_cau import ONhuCauMayLanh
 from backend.app.services.llm import LLM
 
@@ -24,6 +24,8 @@ LUẬT TUYỆT ĐỐI:
 3. Không khen đều tất cả. Mỗi máy PHẢI nêu rõ được gì và MẤT gì.
 4. Nếu bảng có mục "Không đề xuất", phải chủ động nói vì sao không đề xuất máy đó.
 5. TỐI ĐA 150 từ. Dài hơn là bị cắt.
+6. Diễn đạt như người nói chuyện: "rẻ hơn", "đắt hơn nhưng được...", "êm hơn".
+   TUYỆT ĐỐI không viết các cụm "Hơn về", "Kém về", "đối thủ".
 
 Trả lời thẳng, không chào hỏi dài."""
 
@@ -67,9 +69,9 @@ def _bang_thanh_chu(
     for i, u in enumerate(bang.top3, 1):
         ra.append(f"{i}. {u.ten} — giá {u.gia:,d}đ".replace(",", "."))
         for h in u.hon:
-            ra.append(f"   HƠN về {h.truc}: {h.cua_minh} (đối thủ: {h.doi_thu})")
+            ra.append(dong_so_sanh(h, la_hon=True))
         for k in u.kem:
-            ra.append(f"   KÉM về {k.truc}: {k.cua_minh} (đối thủ: {k.doi_thu})")
+            ra.append(dong_so_sanh(k, la_hon=False))
         if not u.hon and not u.kem:
             ra.append("   (ngang bằng các máy còn lại trên mọi tiêu chí khách quan tâm)")
         if giong == "ky_thuat":

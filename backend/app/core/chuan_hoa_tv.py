@@ -192,6 +192,40 @@ def cau_hoi_cong_suat(text: str) -> bool:
     return bool(re.search(r"\b(bao nhieu|bn|nao|the nao|sao|can|nen|du)\b", kd))
 
 
+def yeu_cau_so_sanh(text: str) -> tuple[int, int] | None:
+    """Khach xin SO SANH truc tiep 2 may trong top 3 vua tu van.
+
+    'so sánh máy 1 và máy 2' -> (0, 1) | 'so sánh máy 1 với 3' -> (0, 2)
+    'so sánh 2 máy đầu' / 'so sánh đi' -> (0, 1) mặc định.
+    Chi tra chi so - viec co top 3 de so hay khong do router quyet.
+    """
+    kd = bo_dau(text or "").lower()
+    if not re.search(r"\bso sanh\b", kd):
+        return None
+    # bat cap chi so ro rang truoc ('may 1 va may 3'); '2 may dau' khong tinh
+    so = [int(x) for x in re.findall(r"(?:may|tu|cai|san pham|sp|so|thu)\s*([123])\b", kd)]
+    if len(so) >= 2 and so[0] != so[1]:
+        return so[0] - 1, so[1] - 1
+    return 0, 1
+
+
+def muc_gia(text: str) -> str | None:
+    """Khach noi TAM GIA thay vi con so: 'tầm trung', 'giá rẻ thôi', 'cao cấp'.
+
+    Chi tra nhan muc - nguong tien cu the do code tinh tu PHAN BO GIA THAT cua
+    catalog nganh do (tercile), khong bia nguong. Co y KHONG bat chu 're' tran
+    (do la uu tien gia, da co duong rieng) - chi bat khi khach ro rang noi ve
+    tam gia."""
+    kd = bo_dau(text or "").lower()
+    if re.search(r"\btam trung\b|\btam gia trung\b|gia trung binh", kd):
+        return "trung"
+    if re.search(r"\b(gia re thoi|re nhat co the|loai re|hang binh dan|phan khuc re|cang re cang tot)\b", kd):
+        return "re"
+    if re.search(r"\b(cao cap|hang xin|phan khuc cao|flagship)\b", kd):
+        return "cao"
+    return None
+
+
 def nganh_ngoai_pham_vi(text: str) -> str | None:
     """Khach dang hoi nganh khac (khong nhac may lanh) -> tra ten nganh do.
 

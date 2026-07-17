@@ -29,10 +29,13 @@ from backend.app.core.chuan_hoa_tv import (
     hoi_chu_quan,
     hoi_khuyen_mai,
     hoi_ton_kho,
+    muc_gia,
     nganh_ngoai_pham_vi,
     tu_ky_thuat_trong,
+    yeu_cau_so_sanh,
     yeu_cau_thong_so,
 )
+from backend.app.core.nhan_truong import dinh_dang
 from backend.app.schemas.nhu_cau import UuTien
 
 # Sentinel "khong gioi han ngan sach": khach noi 'bao nhieu cung duoc' thi day
@@ -79,6 +82,83 @@ class TraLoi(BaseModel):
     top3: list[dict] = Field(default_factory=list)
     loai_noi_bat: dict | None = None
     thong_ke: dict = Field(default_factory=dict)
+    # Chip goi y cau tiep theo - khach bam gui luon, khoi nghi cau. Code chon
+    # theo ngu canh (dang hoi o nao / vua tu van xong), KHONG qua LLM.
+    goi_y: list[str] = Field(default_factory=list)
+
+
+# Chip goi y theo o dang hoi. "Tầm trung"/"Giá rẻ thôi" di qua muc_gia ->
+# nguong tinh tu phan bo gia THAT cua nganh (tercile), khong bia so.
+GOI_Y_O = {
+    "ngan_sach_max": ["Tầm trung", "Giá rẻ thôi", "Không giới hạn ngân sách"],
+    "co_nang": ["Có nắng", "Không nắng"],
+    "loai_phong": ["Phòng ngủ", "Phòng khách"],
+    "so_nguoi": ["2 người", "4 người", "6 người"],
+}
+
+
+def _goi_y_tu_van(top3, giong: str) -> list[str]:
+    ra = []
+    if len(top3) >= 2:
+        ra.append("So sánh máy 1 và máy 2")
+    if giong != "ky_thuat":
+        ra.append("Cho xin thông số chi tiết")
+    return ra
+
+
+def _ngan_sach_muc(gia_cac_may: list, muc: str) -> float:
+    """'re'/'trung'/'cao' -> nguong tien tu TERCILE gia that cua nganh dang tu
+    van. Khong co bang nguong tu che - re = 1/3 gia thap nhat, trung = 2/3."""
+    if muc == "cao":
+        return float(KHONG_GIOI_HAN)
+    gs = sorted(gia_cac_may)
+    return float(gs[len(gs) // 3] if muc == "re" else gs[(2 * len(gs)) // 3])
+
+
+def _so_sanh_2_may(t: TinNhan, ma: str, p: dict, t0: float,
+                   cap: tuple[int, int]) -> TraLoi:
+    """SO SANH TRUC TIEP 2 may trong top 3 vua tu van - de bai ten la 'so sanh
+    san pham' nen day la lenh rieng. Bang do CODE dung tu du lieu da luu trong
+    phien (moi so co nguon san) - khong qua LLM, khong the bia, tra ve tuc thi.
+    """
+    top = p["top3_truoc"]
+    i, j = cap
+    if i >= len(top) or j >= len(top):
+        return TraLoi(phien_id=ma, loai="so_sanh",
+                      text=f"Dạ bảng gần nhất em chỉ có {len(top)} máy ạ — mình chọn "
+                           f"trong số đó giúp em nhé (ví dụ: 'so sánh máy 1 và máy 2').",
+                      thong_ke={"ms": int((time.perf_counter() - t0) * 1000), "cham_llm": 0})
+    a, b = top[i], top[j]
+    tha = {n["truong"]: n["gia_tri"] for n in a["nguon"]}
+    thb = {n["truong"]: n["gia_tri"] for n in b["nguon"]}
+
+    dong = [f"Dạ em so nhanh **{a['ten']}** (máy {i + 1}) và **{b['ten']}** (máy {j + 1}) nhé ạ:"]
+    for truong in tha:
+        va, vb = tha.get(truong), thb.get(truong)
+        if truong not in thb or va in (None, "None", "") or vb in (None, "None", ""):
+            continue
+        if truong == "gia_goc" and tha.get("gia") == va and thb.get("gia") == vb:
+            continue                       # khong khuyen mai -> gia goc trung gia ban, bo qua
+        nhan, xa = dinh_dang(truong, va)
+        _, xb = dinh_dang(truong, vb)
+        if xa == xb:
+            dong.append(f"• {nhan}: {xa} (bằng nhau)")
+        else:
+            dong.append(f"• {nhan}: {xa}  —  {xb}")
+
+    chenh = abs(a["gia"] - b["gia"])
+    if chenh:
+        re_hon = a if a["gia"] < b["gia"] else b
+        dong.append("")
+        dong.append(f"→ **{re_hon['ten']}** rẻ hơn {chenh:,d}đ.".replace(",", "."))
+        dong.append("Mình ưu tiên tiêu chí nào để em chốt giúp một máy ạ?")
+    return TraLoi(
+        phien_id=ma, loai="so_sanh", text="\n".join(dong),
+        top3=[a, b],
+        goi_y=["Máy nào đang giảm giá?"] if p.get("nganh") == "may_lanh" else [],
+        thong_ke={"ms": int((time.perf_counter() - t0) * 1000), "cham_llm": 0,
+                  "nganh": p.get("nganh")},
+    )
 
 
 def _xu_ly_tu_lanh(t: TinNhan, ma: str, p: dict, t0: float, giong: str) -> TraLoi:
@@ -111,6 +191,13 @@ def _xu_ly_tu_lanh(t: TinNhan, ma: str, p: dict, t0: float, giong: str) -> TraLo
     nc = trich_tu_lanh(t.tin_nhan, p.get("nhu_cau_tl"), o_cho)
     if bo_ngan_sach(t.tin_nhan):
         nc = nc.model_copy(update={"ngan_sach_max": KHONG_GIOI_HAN})
+    if nc.ngan_sach_max is None and (mg := muc_gia(t.tin_nhan)):
+        nc = nc.model_copy(update={"ngan_sach_max": int(_ngan_sach_muc([s.gia for s in ds], mg))})
+    # Doi nganh giua phien: mang ngan sach da chot theo, khong bat khai lai.
+    if nc.ngan_sach_max is None and p.get("ngan_sach_chung"):
+        nc = nc.model_copy(update={"ngan_sach_max": int(p["ngan_sach_chung"])})
+    if nc.ngan_sach_max:
+        p["ngan_sach_chung"] = nc.ngan_sach_max
     p["nhu_cau_tl"] = nc
     p["luc"] = time.time()
 
@@ -121,6 +208,7 @@ def _xu_ly_tu_lanh(t: TinNhan, ma: str, p: dict, t0: float, giong: str) -> TraLo
         p["da_hoi"].append(o)
         return TraLoi(phien_id=ma, loai="cau_hoi", text=text,
                       o_nhu_cau=nc.model_dump(exclude_none=True, mode="json"),
+                      goi_y=GOI_Y_O.get(o, []),
                       thong_ke={"ms": int((time.perf_counter() - t0) * 1000),
                                 "cham_llm": 0, "giong": giong, "nganh": "tu_lanh"})
 
@@ -135,10 +223,12 @@ def _xu_ly_tu_lanh(t: TinNhan, ma: str, p: dict, t0: float, giong: str) -> TraLo
     mo_ta = bang_thanh_chu_tu_lanh(bang, nc, thieu_kt, giong)
     r = viet_lai(bang, nc, llm(), giong, mo_ta_nhu_cau=mo_ta)
     p["loai_truoc"] = "tu_van"
+    p["top3_truoc"] = [u.model_dump(mode="json") for u in bang.top3]
     return TraLoi(
         phien_id=ma, loai="tu_van", text=r["text"],
         o_nhu_cau=nc.model_dump(exclude_none=True, mode="json"),
-        top3=[u.model_dump(mode="json") for u in bang.top3],
+        goi_y=_goi_y_tu_van(bang.top3, giong),
+        top3=p["top3_truoc"],
         loai_noi_bat=bang.loai_noi_bat.model_dump(mode="json") if bang.loai_noi_bat else None,
         thong_ke={"ms": int((time.perf_counter() - t0) * 1000), "cham_llm": 2,
                   "truoc_loc": bang.tong_truoc_loc, "sau_loc": bang.con_lai_sau_loc,
@@ -170,6 +260,13 @@ def _xu_ly_nganh_khung(t: TinNhan, ma: str, p: dict, t0: float, giong: str,
     nc = nganh.trich(t.tin_nhan, p.get(khoa), o_cho)
     if bo_ngan_sach(t.tin_nhan):
         nc.gia_tri["ngan_sach_max"] = float(KHONG_GIOI_HAN)
+    if nc.lay("ngan_sach_max") is None and (mg := muc_gia(t.tin_nhan)):
+        nc.gia_tri["ngan_sach_max"] = _ngan_sach_muc([s.gia for s in ds], mg)
+    # Doi nganh giua phien: mang ngan sach da chot theo, khong bat khai lai.
+    if nc.lay("ngan_sach_max") is None and p.get("ngan_sach_chung"):
+        nc.gia_tri["ngan_sach_max"] = float(p["ngan_sach_chung"])
+    if nc.lay("ngan_sach_max"):
+        p["ngan_sach_chung"] = nc.lay("ngan_sach_max")
     p[khoa] = nc
     p["luc"] = time.time()
 
@@ -180,6 +277,7 @@ def _xu_ly_nganh_khung(t: TinNhan, ma: str, p: dict, t0: float, giong: str,
         p["da_hoi"].append(o)
         return TraLoi(phien_id=ma, loai="cau_hoi", text=text,
                       o_nhu_cau=nc.dump(),
+                      goi_y=GOI_Y_O.get(o, []),
                       thong_ke={"ms": int((time.perf_counter() - t0) * 1000),
                                 "cham_llm": 0, "giong": giong, "nganh": nganh.ten})
 
@@ -199,10 +297,12 @@ def _xu_ly_nganh_khung(t: TinNhan, ma: str, p: dict, t0: float, giong: str,
     nc_shim = SimpleNamespace(**{k: v for k, v in nc.gia_tri.items() if v is not None})
     r = viet_lai(bang, nc_shim, llm(), giong, mo_ta_nhu_cau=mo_ta)
     p["loai_truoc"] = "tu_van"
+    p["top3_truoc"] = [u.model_dump(mode="json") for u in bang.top3]
     return TraLoi(
         phien_id=ma, loai="tu_van", text=r["text"],
         o_nhu_cau=nc.dump(),
-        top3=[u.model_dump(mode="json") for u in bang.top3],
+        goi_y=_goi_y_tu_van(bang.top3, giong),
+        top3=p["top3_truoc"],
         loai_noi_bat=bang.loai_noi_bat.model_dump(mode="json") if bang.loai_noi_bat else None,
         thong_ke={"ms": int((time.perf_counter() - t0) * 1000), "cham_llm": 2,
                   "truoc_loc": bang.tong_truoc_loc, "sau_loc": bang.con_lai_sau_loc,
@@ -211,11 +311,25 @@ def _xu_ly_nganh_khung(t: TinNhan, ma: str, p: dict, t0: float, giong: str,
     )
 
 
+@router.get("/nhan-truong")
+def nhan_truong() -> dict[str, str]:
+    """Ten truong ky thuat -> nhan tieng Viet cho badge UI (1 nguon su that,
+    frontend khong hardcode)."""
+    from backend.app.core.nhan_truong import NHAN
+    return {k: v[0] for k, v in NHAN.items()}
+
+
 @router.post("/chat", response_model=TraLoi)
 def chat(t: TinNhan) -> TraLoi:
     t0 = time.perf_counter()
     ma = t.phien_id if t.phien_id and phien.lay(t.phien_id) else phien.tao_phien()
     p = phien.lay(ma)
+
+    # SO SANH TRUC TIEP 2 may trong top 3 vua tu van - bang do code dung tu
+    # du lieu da luu, khong LLM. Chi bat khi phien DA co bang ket qua.
+    cap = yeu_cau_so_sanh(t.tin_nhan)
+    if cap and p.get("top3_truoc"):
+        return _so_sanh_2_may(t, ma, p, t0, cap)
 
     # Khach hoi nganh khac (tu lanh, may giat...) -> noi that pham vi, dung lai
     # cau hoi ngan sach nhu robot hong. Phat hien tu demo that.
@@ -239,6 +353,15 @@ def chat(t: TinNhan) -> TraLoi:
     # nguyen van "trong tam 20 trieu em chua tim duoc..." nhu chua nghe thay.
     if bo_ngan_sach(t.tin_nhan):
         nc = nc.model_copy(update={"ngan_sach_max": KHONG_GIOI_HAN})
+
+    # Khach noi TAM GIA ("tam trung", "gia re thoi") -> nguong tinh tu tercile
+    # gia THAT cua nganh, khong bia. Doi nganh giua phien -> mang ngan sach theo.
+    if nc.ngan_sach_max is None and (mg := muc_gia(t.tin_nhan)):
+        nc = nc.model_copy(update={"ngan_sach_max": int(_ngan_sach_muc([s.gia for s in ds], mg))})
+    if nc.ngan_sach_max is None and p.get("ngan_sach_chung") and p.get("nganh") != "may_lanh":
+        nc = nc.model_copy(update={"ngan_sach_max": int(p["ngan_sach_chung"])})
+    if nc.ngan_sach_max:
+        p["ngan_sach_chung"] = nc.ngan_sach_max
 
     # Hoi ton kho/con hang -> noi thang du lieu KHONG co truong ton kho, can
     # Stock API (TC-008/TC-017). Chi tra loi rieng khi cau hoi thuan tuy ve
@@ -406,6 +529,7 @@ def chat(t: TinNhan) -> TraLoi:
             phien_id=ma,
             loai="cau_hoi",
             text=text,
+            goi_y=GOI_Y_O.get(hoi.o_hoi, []),
             o_nhu_cau=nc.model_dump(exclude_none=True, mode="json"),
             # Dang thieu o BAT BUOC thi bang diem gia tri thong tin chua co
             # nghia (chua loc duoc gi) - hien toan 0.00 chi gay roi.
@@ -441,6 +565,7 @@ def chat(t: TinNhan) -> TraLoi:
             phien_id=ma,
             loai="khong_co_may",
             text=text,
+            goi_y=["Không giới hạn ngân sách"],
             o_nhu_cau=nc.model_dump(exclude_none=True, mode="json"),
             thong_ke={
                 "ms": int((time.perf_counter() - t0) * 1000),
@@ -452,6 +577,7 @@ def chat(t: TinNhan) -> TraLoi:
 
     r = viet_lai(bang, nc, llm(), giong)
     p["loai_truoc"] = "tu_van"
+    p["top3_truoc"] = [u.model_dump(mode="json") for u in bang.top3]
 
     # Hoi ton kho KEM nhu cau -> van tu van binh thuong nhung phai ghi chu ro
     # phan ton kho thieu nguon (khong lam nhu cau hoi do chua ton tai).
@@ -467,7 +593,8 @@ def chat(t: TinNhan) -> TraLoi:
         text=text_cuoi,
         o_nhu_cau=nc.model_dump(exclude_none=True, mode="json"),
         vi_sao_hoi=diem,
-        top3=[u.model_dump(mode="json") for u in bang.top3],
+        goi_y=_goi_y_tu_van(bang.top3, giong),
+        top3=p["top3_truoc"],
         loai_noi_bat=bang.loai_noi_bat.model_dump(mode="json") if bang.loai_noi_bat else None,
         thong_ke={
             "ms": int((time.perf_counter() - t0) * 1000),

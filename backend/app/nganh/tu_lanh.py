@@ -24,7 +24,14 @@ from pathlib import Path
 from pydantic import BaseModel, Field
 
 from backend.app.core.chuan_hoa_tv import bo_dau, chuan_hoa
-from backend.app.schemas.ket_qua import BangKetQua, LyDoLoai, Nguon, TrucSoSanh, UngVien
+from backend.app.schemas.ket_qua import (
+    BangKetQua,
+    LyDoLoai,
+    Nguon,
+    TrucSoSanh,
+    UngVien,
+    dong_so_sanh,
+)
 
 MAC_DINH = Path("data/processed/tu_lanh.csv")
 DU_PHONG_MAU = Path("data/mock/catalog/tu_lanh_mau.csv")
@@ -156,10 +163,11 @@ def trich_tu_lanh(text: str, cu: ONhuCauTuLanh | None = None,
     if m and nc.so_nguoi is None:
         nc.so_nguoi = int(m.group(1))
 
-    # ngan sach (chuan_hoa da doi 15tr -> 15000000)
+    # ngan sach (chuan_hoa da doi 15tr -> 15000000). So moi GHI DE so cu -
+    # khach doi y "thoi 10tr thoi" phai an, khong lang le giu so cu.
     m = re.search(r"(?:duoi|khoang|tam|toi da|max|gia)\s*([\d]{6,})", kd) \
         or re.search(r"\b([\d]{7,})\b", kd)
-    if m and nc.ngan_sach_max is None:
+    if m:
         nc.ngan_sach_max = int(m.group(1))
 
     # hoc bep: "60x65x86", "hoc 60 x 65 x 86 cm" (Ngang x Sau x Cao theo thoi quen ghi)
@@ -318,9 +326,9 @@ def bang_thanh_chu_tu_lanh(bang: BangKetQua, nc: ONhuCauTuLanh,
         if chi_tiet:
             ra.append("   " + " · ".join(chi_tiet))
         for h in u.hon:
-            ra.append(f"   HƠN về {h.truc}: {h.cua_minh} (đối thủ: {h.doi_thu})")
+            ra.append(dong_so_sanh(h, la_hon=True))
         for k in u.kem:
-            ra.append(f"   KÉM về {k.truc}: {k.cua_minh} (đối thủ: {k.doi_thu})")
+            ra.append(dong_so_sanh(k, la_hon=False))
 
     if bang.loai_noi_bat:
         ra += ["", f"KHÔNG ĐỀ XUẤT: {bang.loai_noi_bat.ten} — {bang.loai_noi_bat.chi_tiet}"]

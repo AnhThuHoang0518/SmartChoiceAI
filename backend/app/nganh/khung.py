@@ -30,7 +30,14 @@ from pathlib import Path
 from pydantic import BaseModel, Field
 
 from backend.app.core.chuan_hoa_tv import bo_dau, chuan_hoa
-from backend.app.schemas.ket_qua import BangKetQua, LyDoLoai, Nguon, TrucSoSanh, UngVien
+from backend.app.schemas.ket_qua import (
+    BangKetQua,
+    LyDoLoai,
+    Nguon,
+    TrucSoSanh,
+    UngVien,
+    dong_so_sanh,
+)
 
 
 class SanPhamChung(BaseModel):
@@ -135,12 +142,13 @@ class Nganh:
                     nc.gia_tri[o] = float(v) if spec["kieu"] == "so" else v
                     break
 
-        # ngan sach dung chung (chuan_hoa da doi 15tr -> 15000000)
-        if nc.lay("ngan_sach_max") is None:
-            m = re.search(r"(?:duoi|khoang|tam|toi da|max|gia)\s*([\d]{6,})", kd) \
-                or re.search(r"\b([\d]{7,})\b", kd)
-            if m:
-                nc.gia_tri["ngan_sach_max"] = float(m.group(1))
+        # ngan sach dung chung (chuan_hoa da doi 15tr -> 15000000).
+        # Khach noi so moi la GHI DE so cu ("thoi lay tam 5tr thoi") - giu
+        # lang le so cu la bug doi y kinh dien.
+        m = re.search(r"(?:duoi|khoang|tam|toi da|max|gia)\s*([\d]{6,})", kd) \
+            or re.search(r"\b([\d]{7,})\b", kd)
+        if m:
+            nc.gia_tri["ngan_sach_max"] = float(m.group(1))
 
         for ut in self.cfg["truc_cham"]:
             if any(re.search(m, kd) for m in ut.get("trich_uu_tien", [])) \
@@ -315,9 +323,9 @@ class Nganh:
             if chi_tiet:
                 ra.append("   " + " · ".join(chi_tiet))
             for h in u.hon:
-                ra.append(f"   HƠN về {h.truc}: {h.cua_minh} (đối thủ: {h.doi_thu})")
+                ra.append(dong_so_sanh(h, la_hon=True))
             for k in u.kem:
-                ra.append(f"   KÉM về {k.truc}: {k.cua_minh} (đối thủ: {k.doi_thu})")
+                ra.append(dong_so_sanh(k, la_hon=False))
         if bang.loai_noi_bat:
             ra += ["", f"KHÔNG ĐỀ XUẤT: {bang.loai_noi_bat.ten} — {bang.loai_noi_bat.chi_tiet}"]
         if thieu:
