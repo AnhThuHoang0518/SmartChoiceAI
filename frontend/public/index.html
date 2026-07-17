@@ -5,7 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Smart Choice — Trợ lý tư vấn điện máy</title>
 <style>
-  :root{--nen:#f4f6f8;--the:#fff;--vien:#e3e8ee;--chinh:#0f6e56;--chinh-nhat:#e1f5ee;--muc:#1a2733;--phu:#5f6e7c}
+  :root{--nen:#f4f6f8;--the:#fff;--vien:#e3e8ee;--chinh:#0f6e56;--chinh-nhat:#e1f5ee;--muc:#1a2733;--phu:#5f6e7c;
+        --hon:#1d7a43;--kem:#b3541e;--canh-nen:#fdf3ec}
+  [data-theme="dark"]{--nen:#12171c;--the:#1c2329;--vien:#2e3a44;--chinh:#2fae8a;--chinh-nhat:#173c31;--muc:#e8edf2;--phu:#93a3b1;
+        --hon:#4cc47e;--kem:#e0854a;--canh-nen:#2b2118}
+  [data-theme="dark"] input{background:var(--the);color:var(--muc)}
+  [data-theme="dark"] dialog{background:var(--the);color:var(--muc)}
   *{box-sizing:border-box;margin:0}
   body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--nen);color:var(--muc);height:100vh;display:flex;flex-direction:column}
   header{background:var(--the);border-bottom:1px solid var(--vien);padding:14px 20px;display:flex;align-items:center;gap:10px}
@@ -22,11 +27,11 @@
   .hang-to{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
   .gia{color:var(--chinh);font-weight:700;white-space:nowrap}
   .to{margin-top:6px;font-size:13.5px}
-  .to .hon{color:#1d7a43}
-  .to .kem{color:#b3541e}
+  .to .hon{color:var(--hon)}
+  .to .kem{color:var(--kem)}
   .badge{display:inline-block;background:var(--chinh-nhat);color:var(--chinh);border-radius:20px;padding:1px 9px;font-size:12px;margin:2px 3px 0 0;cursor:pointer;border:none}
   .badge:hover{filter:brightness(.93)}
-  .loai-noi-bat{margin-top:8px;padding:10px 14px;border-left:3px solid #b3541e;background:#fdf3ec;border-radius:0;font-size:13.5px}
+  .loai-noi-bat{margin-top:8px;padding:10px 14px;border-left:3px solid var(--kem);background:var(--canh-nen);border-radius:0;font-size:13.5px}
   .giai-trinh{margin-top:6px;font-size:12.5px;color:var(--phu)}
   .giai-trinh span{margin-right:10px}
   form{display:flex;gap:10px;padding:14px 20px;background:var(--the);border-top:1px solid var(--vien)}
@@ -44,7 +49,7 @@
 </style>
 </head>
 <body>
-<header><b>Smart Choice</b><span>· tư vấn theo nhu cầu thật · mọi con số đều có nguồn</span></header>
+<header><b>Smart Choice</b><span>· tư vấn theo nhu cầu thật · mọi con số đều có nguồn</span><button id="doi-nen" title="Đổi giao diện sáng/tối" style="margin-left:auto;background:none;border:1px solid var(--vien);border-radius:18px;padding:4px 12px;cursor:pointer;font-size:15px;color:var(--muc)">🌙</button></header>
 
 <div id="khung">
   <div class="dong bot"><div class="bong">Em chào mình ạ! Mình đang quan tâm sản phẩm nào ạ — máy lạnh, tủ lạnh, máy giặt...? Cứ nói tự nhiên, viết tắt hay không dấu đều được. Muốn xem thông số chi tiết thì bảo em "cho xin thông số chi tiết" nhé ạ.</div></div>
@@ -57,7 +62,7 @@
 
 <form onsubmit="gui(event)">
   <div>
-    <input id="o-nhap" placeholder="Nhập tin nhắn hoặc bấm 🎤 nói..." autocomplete="off">
+    <input id="o-nhap" placeholder="Nhập tin nhắn hoặc bấm 🎤 nói..." autocomplete="off" autofocus>
     <button type="button" class="gui" id="mic" title="Nói tiếng Việt" style="background:#5f6e7c">🎤</button>
     <button class="gui" id="nut">Gửi</button>
   </div>
@@ -66,12 +71,26 @@
 <dialog id="hop-nguon"></dialog>
 
 <script>
+// Giao dien sang/toi: uu tien lua chon da luu, chua co thi theo he dieu hanh.
+const goc = document.documentElement;
+const nutNen = document.getElementById('doi-nen');
+function apDungNen(t){ goc.dataset.theme = t; nutNen.textContent = t === 'dark' ? '☀️' : '🌙'; }
+apDungNen(localStorage.getItem('giao_dien') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
+nutNen.onclick = () => {
+  const t = goc.dataset.theme === 'dark' ? 'light' : 'dark';
+  localStorage.setItem('giao_dien', t); apDungNen(t);
+};
+
 let phienId = null;
 const khung = document.getElementById('khung');
 const oNhap = document.getElementById('o-nhap');
 const nut = document.getElementById('nut');
 
-function dienMau(b){ oNhap.value = b.textContent; oNhap.focus(); }
+function dienMau(b){
+  // Bam nut la GUI luon - bat khach bam Gui them lan nua la thua mot cham.
+  oNhap.value = b.textContent.replace(/^\u{1F525}\s*/u, '');
+  document.querySelector('form').requestSubmit();
+}
 
 function them(html, lop){
   const d = document.createElement('div');
@@ -169,6 +188,7 @@ async function gui(e){
   nut.disabled = false; oNhap.focus();
   khung.scrollTop = khung.scrollHeight;
 }
+window.addEventListener('load', () => oNhap.focus());
 </script>
 </body>
 </html>

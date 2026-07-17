@@ -6,7 +6,8 @@
     "co_nang": "không có nắng",
     "loai_phong": "phòng ngủ",
     "khu_vuc": "Hà Nội",
-    "nganh": "máy lạnh"
+    "nganh": "máy lạnh",
+    "so_nguoi": "4 người"
   },
   "tinh_huong": [
     {
@@ -74,10 +75,11 @@
       "toi_da_cau_hoi": 2
     },
     {
-      "ten": "ngoai_pham_vi_tu_lanh",
+      "ten": "tu_lanh_vao_luong_that",
       "tin_dau": "có Tủ lạnh nào xịn không",
-      "ky_vong_loai": "ngoai_pham_vi",
-      "toi_da_cau_hoi": 0
+      "ky_vong_loai": "tu_van",
+      "toi_da_cau_hoi": 3,
+      "_ghi_chu": "Truoc 18/07: tu choi lich su. Nay: vertical tu lanh that"
     },
     {
       "ten": "ngoai_pham_vi_may_giat",
@@ -298,6 +300,50 @@
       "ky_vong_loai": "chu_quan",
       "toi_da_cau_hoi": 0,
       "_ghi_chu": "TC-009: tieu chi chu quan -> khong xep hang bua, hoi gu + keo ve tieu chi do duoc"
+    },
+    {
+      "ten": "tc001_tu_lanh_4_nguoi_tkd",
+      "tin_dau": "Nhà 4 người, tôi cần tủ lạnh vừa đủ dùng và tiết kiệm điện",
+      "tra_loi": {
+        "ngan_sach_max": "khoang 15 trieu"
+      },
+      "ky_vong_loai": "tu_van",
+      "ky_vong_o": {
+        "so_nguoi": 4,
+        "ngan_sach_max": 15000000,
+        "uu_tien_chua": [
+          "tiet_kiem_dien"
+        ]
+      },
+      "toi_da_cau_hoi": 2,
+      "_ghi_chu": "TC-001: map so nguoi -> dai hang cong bo, hoi ngan sach vi thieu"
+    },
+    {
+      "ten": "tc002_tu_lanh_hoc_75cm",
+      "tin_dau": "bep toi chi rong 75 cm, tim tu lanh dat vua, nha 3 nguoi, tam 12tr",
+      "ky_vong_loai": "bat_ky_khong_loi",
+      "ky_vong_o": {
+        "so_nguoi": 3,
+        "ngang_cm": 75,
+        "ngan_sach_max": 12000000
+      },
+      "toi_da_cau_hoi": 1,
+      "_ghi_chu": "TC-002: Ngang lam hard filter; may thieu kich thuoc khong duoc doan"
+    },
+    {
+      "ten": "tu_lanh_tra_loi_cut_lun",
+      "tin_dau": "tủ lạnh",
+      "tra_loi": {
+        "so_nguoi": "5",
+        "ngan_sach_max": "20 trieu"
+      },
+      "ky_vong_loai": "tu_van",
+      "ky_vong_o": {
+        "so_nguoi": 5,
+        "ngan_sach_max": 20000000
+      },
+      "toi_da_cau_hoi": 3,
+      "_ghi_chu": "go so tran '5' khi dang hoi so nguoi -> dien dung o (ngu canh)"
     }
   ]
 }

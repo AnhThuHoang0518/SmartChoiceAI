@@ -1,0 +1,14 @@
+{
+  "_doc": "Cau hinh nganh TU LANH - minh chung 'them nganh = them config'.",
+  "cau_hoi": {
+    "so_nguoi": "Dạ nhà mình mấy người dùng tủ ạ? Hãng công bố sức chứa theo số người nên em hỏi để chọn đúng cỡ ạ.",
+    "ngan_sach_max": "Dạ mình dự tính khoảng bao nhiêu cho tủ lạnh ạ?"
+  },
+  "cau_hoi_lap_lai": {
+    "so_nguoi": "Dạ em vẫn cần biết nhà mình mấy người ạ — ví dụ: '4 người'.",
+    "ngan_sach_max": "Dạ mình cho em xin ngân sách ạ — ví dụ: 'khoảng 12 triệu'."
+  },
+  "khong_co_may": {
+    "mau": "Dạ với các tiêu chí hiện tại em chưa tìm được tủ nào phù hợp ạ. Mình có thể nới ngân sách, hoặc bỏ bớt ràng buộc kích thước/kiểu dáng — em lọc lại ngay ạ."
+  }
+}

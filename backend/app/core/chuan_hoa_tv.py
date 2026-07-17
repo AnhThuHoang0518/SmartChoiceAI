@@ -76,8 +76,9 @@ def chuan_hoa_tien(s: str) -> str:
 # File du lieu that co 14 nganh, demo moi bat may lanh. Khach hoi nganh khac
 # thi phai NOI THANG, khong duoc lai cau hoi ngan sach nhu robot hong.
 
+# 'tu lanh' DA GO khoi danh sach nay: tu 18/07 nganh tu lanh co vertical rieng
+# (backend/app/nganh/tu_lanh.py) - router trong api se dan sang, khong tu choi nua.
 NGANH_KHAC = [
-    (r"\btu lanh\b", "tủ lạnh"),
     (r"\bmay giat\b", "máy giặt"),
     (r"\bmay say\b", "máy sấy"),
     (r"\bmay rua (?:chen|bat)\b", "máy rửa chén"),
@@ -95,6 +96,11 @@ NGANH_KHAC = [
 def co_nganh_may_lanh(text: str) -> bool:
     """Khach co nhac toi may lanh (nganh dang bat trong demo) khong."""
     return bool(re.search(r"\b(may lanh|dieu hoa|dhkk|ml)\b", bo_dau(text or "").lower()))
+
+
+def co_nganh_tu_lanh(text: str) -> bool:
+    """Khach nhac tu lanh - nganh thu 2 da co vertical rieng."""
+    return bool(re.search(r"\btu lanh\b", bo_dau(text or "").lower()))
 
 
 # ── Nhan biet khach ranh ky thuat ───────────────────────────────────────────

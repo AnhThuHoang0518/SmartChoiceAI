@@ -94,12 +94,21 @@ def _bang_thanh_chu(
 
 
 def viet_lai(
-    bang: BangKetQua, nhu_cau: ONhuCauMayLanh, llm: LLM, giong: str = "binh_dan"
+    bang: BangKetQua,
+    nhu_cau,
+    llm: LLM,
+    giong: str = "binh_dan",
+    mo_ta_nhu_cau: str | None = None,
 ) -> dict:
-    """Tra {text, nguon_llm, so_lan_bi_chan, loi_da_chan, ms}."""
+    """Tra {text, nguon_llm, so_lan_bi_chan, loi_da_chan, ms}.
+
+    mo_ta_nhu_cau: nganh khac (tu lanh...) tu xay chuoi mo ta nhu cau + bang
+    ket qua roi dua vao day - vong hau kiem/viet lai dung chung, chi phan
+    serialize la rieng tung nganh.
+    """
     c = cfg()["hau_kiem"]
     he_thong = HE_THONG_KY_THUAT if giong == "ky_thuat" else HE_THONG
-    du_lieu = _bang_thanh_chu(bang, nhu_cau, giong)
+    du_lieu = mo_ta_nhu_cau if mo_ta_nhu_cau is not None else _bang_thanh_chu(bang, nhu_cau, giong)
     nguoi_dung = du_lieu
     da_chan: list[str] = []
     tong_ms = 0
@@ -134,8 +143,15 @@ def viet_lai(
             + "\n\nViết lại. Chỉ dùng số có trong bảng trên. Bỏ hẳn các số bị chặn."
         )
 
+    # Nganh khac (di qua mo_ta_nhu_cau) khong duoc muon template may lanh -
+    # "tai nhiet ?m²" voi tu lanh la vo nghia. Dung mau chung chi liet ke ten+gia.
+    mau_du_phong = (
+        cfg()["ban_du_phong"]["mau"] if mo_ta_nhu_cau is None
+        else "Dạ trong tầm giá của mình, em gợi ý: {danh_sach}. "
+             "Anh/chị muốn em nói kỹ hơn máy nào không ạ?"
+    )
     return {
-        "text": ban_du_phong(bang, cfg()["ban_du_phong"]["mau"]),
+        "text": ban_du_phong(bang, mau_du_phong),
         "nguon_llm": "ban_du_phong",
         "so_lan_bi_chan": c["so_lan_bat_viet_lai_toi_da"] + 1,
         "loi_da_chan": da_chan,

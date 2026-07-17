@@ -25,6 +25,7 @@ from backend.app.core.chuan_hoa_tv import (
     bo_ngan_sach,
     cau_hoi_cong_suat,
     co_nganh_may_lanh,
+    co_nganh_tu_lanh,
     hoi_chu_quan,
     hoi_khuyen_mai,
     hoi_ton_kho,
@@ -78,6 +79,72 @@ class TraLoi(BaseModel):
     top3: list[dict] = Field(default_factory=list)
     loai_noi_bat: dict | None = None
     thong_ke: dict = Field(default_factory=dict)
+
+
+def _xu_ly_tu_lanh(t: TinNhan, ma: str, p: dict, t0: float, giong: str) -> TraLoi:
+    """Luong tu van TU LANH - cung khung sale nhu may lanh: gom o bat buoc ->
+    loc cung theo cong bo cua hang -> top 3 + trade-off -> LLM dien dat ->
+    hau kiem (ro don vi lit/kwh/cm/nguoi da co san trong guardrail chung).
+    """
+    import json as _json
+    from pathlib import Path as _Path
+
+    from backend.app.agents.viet_lai import viet_lai
+    from backend.app.nganh.tu_lanh import (
+        bang_thanh_chu_tu_lanh,
+        tai_catalog_tu_lanh,
+        trich_tu_lanh,
+        xep_hang_tu_lanh,
+    )
+
+    cfg_tl = _json.loads(_Path("configs/tu_lanh.json").read_text(encoding="utf-8"))
+    ds = tai_catalog_tu_lanh()
+    if not ds:
+        # Chua co du lieu nganh nay tren may dang chay -> noi that.
+        return TraLoi(phien_id=ma, loai="ngoai_pham_vi",
+                      text="Dạ dữ liệu tủ lạnh chưa được nạp trên hệ thống này ạ — "
+                           "mình cần máy lạnh thì em tư vấn được ngay ạ!",
+                      thong_ke={"ms": int((time.perf_counter() - t0) * 1000), "cham_llm": 0})
+
+    p["nganh"] = "tu_lanh"
+    o_cho = p["da_hoi"][-1] if p["da_hoi"] else None
+    nc = trich_tu_lanh(t.tin_nhan, p.get("nhu_cau_tl"), o_cho)
+    if bo_ngan_sach(t.tin_nhan):
+        nc = nc.model_copy(update={"ngan_sach_max": KHONG_GIOI_HAN})
+    p["nhu_cau_tl"] = nc
+    p["luc"] = time.time()
+
+    thieu = nc.thieu_bat_buoc()
+    if thieu:
+        o = thieu[0]
+        text = cfg_tl["cau_hoi_lap_lai" if o in p["da_hoi"] else "cau_hoi"][o]
+        p["da_hoi"].append(o)
+        return TraLoi(phien_id=ma, loai="cau_hoi", text=text,
+                      o_nhu_cau=nc.model_dump(exclude_none=True, mode="json"),
+                      thong_ke={"ms": int((time.perf_counter() - t0) * 1000),
+                                "cham_llm": 0, "giong": giong, "nganh": "tu_lanh"})
+
+    bang, thieu_kt = xep_hang_tu_lanh(ds, nc)
+    if not bang.top3:
+        p["loai_truoc"] = "khong_co_may"
+        return TraLoi(phien_id=ma, loai="khong_co_may", text=cfg_tl["khong_co_may"]["mau"],
+                      o_nhu_cau=nc.model_dump(exclude_none=True, mode="json"),
+                      thong_ke={"ms": int((time.perf_counter() - t0) * 1000),
+                                "cham_llm": 0, "nganh": "tu_lanh"})
+
+    mo_ta = bang_thanh_chu_tu_lanh(bang, nc, thieu_kt, giong)
+    r = viet_lai(bang, nc, llm(), giong, mo_ta_nhu_cau=mo_ta)
+    p["loai_truoc"] = "tu_van"
+    return TraLoi(
+        phien_id=ma, loai="tu_van", text=r["text"],
+        o_nhu_cau=nc.model_dump(exclude_none=True, mode="json"),
+        top3=[u.model_dump(mode="json") for u in bang.top3],
+        loai_noi_bat=bang.loai_noi_bat.model_dump(mode="json") if bang.loai_noi_bat else None,
+        thong_ke={"ms": int((time.perf_counter() - t0) * 1000), "cham_llm": 2,
+                  "truoc_loc": bang.tong_truoc_loc, "sau_loc": bang.con_lai_sau_loc,
+                  "nguon_llm": r["nguon_llm"], "so_lan_chan_bia": r["so_lan_bi_chan"],
+                  "loi_da_chan": r["loi_da_chan"], "giong": giong, "nganh": "tu_lanh"},
+    )
 
 
 @router.post("/chat", response_model=TraLoi)
@@ -142,6 +209,16 @@ def chat(t: TinNhan) -> TraLoi:
     if yeu_cau_thong_so(t.tin_nhan) or len(p["tu_kt"]) >= 2:
         p["giong"] = "ky_thuat"
     giong = p.get("giong") or "binh_dan"
+
+    # ── ROUTER NGANH: tu lanh co vertical rieng ─────────────────────────────
+    # May lanh thang khi khach nhac CA HAI ("mua may lanh va tu lanh") - giu
+    # hanh vi cu: tu van nganh chinh truoc, nganh kia nhac trong cau tra loi.
+    if (co_nganh_tu_lanh(t.tin_nhan) and not co_nganh_may_lanh(t.tin_nhan)) \
+            or p.get("nganh") == "tu_lanh":
+        if co_nganh_may_lanh(t.tin_nhan):
+            p["nganh"] = "may_lanh"          # khach doi sang may lanh giua chung
+        else:
+            return _xu_ly_tu_lanh(t, ma, p, t0, giong)
 
     # ── Nganh hang: slot so 0 cua sale ──────────────────────────────────────
     # Khach da nhac may lanh -> chot nganh. Chua biet nganh + cau mo man khong

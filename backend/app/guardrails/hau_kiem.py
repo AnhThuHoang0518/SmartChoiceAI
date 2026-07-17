@@ -36,6 +36,26 @@ MAU_SO: dict[str, list[tuple[str, float]]] = {
     "sao": [(r"([\d.,]+)\s*sao\b", 1.0)],
     "m2": [(r"([\d.,]+)\s*m²", 1.0)],
     "phan_tram": [(r"([\d.,]+)\s*%", 1.0)],
+    # Nganh tu lanh (moi don vi mot ro rieng - bai hoc "18 dB lot vi 18m2")
+    "lit": [(r"([\d.,]+)\s*(?:lít|lit|L)\b", 1.0)],
+    "kwh": [(r"([\d.,]+)\s*kWh", 1.0)],
+    "cm": [(r"([\d.,]+)\s*cm\b", 1.0)],
+    "nguoi": [(r"([\d.,]+)\s*người", 1.0)],
+}
+
+# truong trong Nguon -> ro don vi (dung chung moi nganh)
+_TRUONG_RO = {
+    "gia": "tien", "gia_goc": "tien",
+    "do_on_db": "db", "cspf": "cspf", "sao": "sao",
+    "dung_tich_lit": "lit", "dien_kwh_nam": "kwh",
+    "ngang_cm": "cm", "cao_cm": "cm", "sau_cm": "cm",
+    "so_nguoi": "nguoi",
+}
+
+# thuoc tinh trong o nhu cau -> ro (loi khach noi cung la nguon su that)
+_NHU_CAU_RO = {
+    "dien_tich_m2": "m2", "ngan_sach_max": "tien", "so_nguoi": "nguoi",
+    "ngang_cm": "cm", "cao_cm": "cm", "sau_cm": "cm",
 }
 
 
@@ -78,21 +98,15 @@ def tap_hop_le(bang: BangKetQua, nhu_cau=None) -> dict[str, set[float]]:
         gia.append(float(u.gia))
         for n in u.nguon:
             v = _so(str(n.gia_tri))
-            if n.truong == "gia" and v:
-                ro["tien"].add(v)
-            elif n.truong == "do_on_db" and v:
-                ro["db"].add(v)
-            elif n.truong == "cspf" and v:
-                ro["cspf"].add(v)
-            elif n.truong == "sao" and v:
-                ro["sao"].add(v)
-            elif n.truong == "gia_goc" and v:
-                # gia goc + muc giam ("giam 1,3 trieu") deu la tien hop le
-                ro["tien"].add(v)
-            elif n.truong == "pham_vi":
+            ten_ro = _TRUONG_RO.get(n.truong)
+            if ten_ro and v is not None:
+                ro[ten_ro].add(v)
+            elif n.truong in ("pham_vi", "nguoi_phu_hop"):
+                # dang khoang '15.0-20.0m²' / '3-4 nguoi' -> tach 2 dau
+                ro_khoang = "m2" if n.truong == "pham_vi" else "nguoi"
                 for x in re.findall(r"[\d.]+", str(n.gia_tri)):
                     if (v2 := _so(x)) is not None:
-                        ro["m2"].add(v2)
+                        ro[ro_khoang].add(v2)
 
     # So SUY RA: chenh gia doi mot ("re hon X trieu").
     for i in range(len(gia)):
@@ -110,10 +124,9 @@ def tap_hop_le(bang: BangKetQua, nhu_cau=None) -> dict[str, set[float]]:
         ro["m2"].add(float(bang.dien_tich_hieu_dung_m2))
 
     if nhu_cau is not None:
-        if x := getattr(nhu_cau, "dien_tich_m2", None):
-            ro["m2"].add(float(x))
-        if x := getattr(nhu_cau, "ngan_sach_max", None):
-            ro["tien"].add(float(x))
+        for thuoc_tinh, ten_ro in _NHU_CAU_RO.items():
+            if x := getattr(nhu_cau, thuoc_tinh, None):
+                ro[ten_ro].add(float(x))
 
     # 'phan_tram' co chu y de RONG: catalog khong co truong % nao. Moi con so %
     # deu la LLM tu nghi ra ("tiet kiem 40% dien") -> chan sach.

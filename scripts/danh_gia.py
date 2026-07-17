@@ -126,6 +126,10 @@ def _doan_o(text: str) -> str:
     t = text.lower()
     if "sản phẩm nào" in t or "sản phẩm gì" in t or "tìm sản phẩm" in t:
         return "nganh"
+    if "mấy người" in t or "người dùng tủ" in t:
+        return "so_nguoi"
+    if "cho tủ lạnh" in t:
+        return "ngan_sach_max"
     if "bao nhiêu" in t and "m²" in t:
         return "dien_tich_m2"
     if "dự tính" in t or "ngân sách" in t:
