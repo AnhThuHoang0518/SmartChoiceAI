@@ -80,9 +80,6 @@ def chuan_hoa_tien(s: str) -> str:
 # (backend/app/nganh/tu_lanh.py) - router trong api se dan sang, khong tu choi nua.
 NGANH_KHAC = [
     # 'may giat' + 'may say' DA GO (18/07): chay tren khung generic configs/nganh/
-    (r"\bmay rua (?:chen|bat)\b", "máy rửa chén"),
-    (r"\btu (?:dong|mat)\b", "tủ mát/tủ đông"),
-    (r"\bmay nuoc nong\b", "máy nước nóng"),
     (r"\b(?:tivi|ti vi)\b", "tivi"),
     (r"\b(?:laptop|may tinh)\b", "laptop/máy tính"),
     (r"\bdien thoai\b", "điện thoại"),

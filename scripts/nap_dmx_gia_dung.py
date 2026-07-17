@@ -67,6 +67,27 @@ def p_nam(s):
     return float(m.group(1)) if m else None
 
 
+def p_khoang_bua(s):
+    """'4 - 5 bua an Viet (13 bo chau Au)' -> (4,5). Cat ngoac truoc."""
+    return p_khoang_nguoi(s)          # cung dang "a - b" + cat "("
+
+
+def p_bo_chau_au(s):
+    """'... (13 bo chau Au)' -> 13 (TC-037: parse ca bua Viet lan bo chau Au)."""
+    if la_rong(s):
+        return None
+    m = re.search(r"\((\d+)\s*bộ", str(s).lower())
+    return float(m.group(1)) if m else None
+
+
+def p_nuoc_lit(s):
+    """'4 ~ 14 lit/lan rua' -> 14 (lay MAX de khong noi dep hon thuc te)."""
+    if la_rong(s):
+        return None
+    so = re.findall(r"[\d.]+", str(s))
+    return max(float(x) for x in so) if so else None
+
+
 SPEC = {
     "may_giat": {
         "sheet": "Máy giặt",
@@ -101,6 +122,41 @@ SPEC = {
         # khoang nguoi chi de loc khi CO. Bat buoc: tai hoac nguoi deu chap nhan
         # -> de trong, loc mem trong config.
         "bat_buoc": ["tai_kg"],
+    },
+    "may_rua_chen": {
+        "sheet": "Máy rửa chén",
+        "cot": {
+            "bua_min": ("Số lượng", lambda s: (p_khoang_bua(s) or (None,))[0]),
+            "bua_max": ("Số lượng", lambda s: (p_khoang_bua(s) or (None, None))[1]),
+            "bo_chau_au": ("Số lượng", p_bo_chau_au),
+            "do_on_db": ("Độ ồn", p_so),
+            "nuoc_lit": ("Tiêu thụ nước", p_nuoc_lit),
+            "ngang_cm": ("Ngang", p_cm),
+            "cao_cm": ("Cao", p_cm),
+            "sau_cm": ("Sâu", p_cm),
+        },
+        "chu": {"loai": "Loại sản phẩm"},
+        "bat_buoc": ["bua_min", "bua_max"],
+    },
+    "tu_dong_mat": {
+        "sheet": "Tủ mát, tủ đông",
+        "cot": {
+            "dung_tich_lit": ("Dung tích tổng", p_so),
+            "dien_kwh_ngay": ("Điện năng tiêu thụ", p_so),
+            "ngang_cm": ("Ngang", p_cm),
+            "cao_cm": ("Cao", p_cm),
+            "sau_cm": ("Sâu", p_cm),
+        },
+        "chu": {"loai": "Loại sản phẩm"},
+        "bat_buoc": ["dung_tich_lit"],
+    },
+    "may_nuoc_nong": {
+        "sheet": "Máy nước nóng",
+        "cot": {
+            "cong_suat_w": ("Công suất đầu ra", p_so),
+        },
+        "chu": {"loai": "Loại máy", "an_toan": "Tính năng an toàn"},
+        "bat_buoc": [],
     },
 }
 

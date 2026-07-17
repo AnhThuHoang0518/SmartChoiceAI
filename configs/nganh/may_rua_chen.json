@@ -1,0 +1,63 @@
+{
+  "ten_nganh": "may_rua_chen",
+  "ten_hien_thi": "máy rửa chén",
+  "tu_khoa_nganh": ["may rua chen", "may rua bat"],
+  "csv_that": "data/processed/may_rua_chen.csv",
+  "csv_mau": "data/mock/catalog/may_rua_chen_mau.csv",
+  "cot_so": {
+    "bua_min": {"nguon": "catalog:Số lượng", "ro": "bua"},
+    "bua_max": {"nguon": "catalog:Số lượng", "ro": "bua"},
+    "bo_chau_au": {"nguon": "catalog:Số lượng", "ro": "bo"},
+    "do_on_db": {"nguon": "catalog:Độ ồn", "ro": "db"},
+    "nuoc_lit": {"nguon": "catalog:Tiêu thụ nước", "ro": "lit"},
+    "ngang_cm": {"nguon": "catalog:Ngang", "ro": "cm"},
+    "cao_cm": {"nguon": "catalog:Cao", "ro": "cm"},
+    "sau_cm": {"nguon": "catalog:Sâu", "ro": "cm"}
+  },
+  "cot_chu": { "loai": {"nguon": "catalog:Loại sản phẩm"} },
+  "o_nhu_cau": {
+    "so_bua": {
+      "kieu": "so", "bat_buoc": true,
+      "trich": ["(\\d{1,2})\\s*bua"],
+      "cau_hoi": "Dạ nhà mình mỗi ngày rửa khoảng mấy bữa cơm ạ? (hãng công bố sức chứa theo bữa ăn Việt nên em hỏi để chọn đúng cỡ ạ)",
+      "cau_hoi_lap": "Dạ mình cho em biết mỗi ngày mấy bữa ạ — ví dụ: '3 bữa'.",
+      "nhan": "khoảng {:.0f} bữa/ngày"
+    },
+    "do_on_max": {
+      "kieu": "so", "bat_buoc": false,
+      "trich": ["(?:em |duoi |on duoi )\\s*(\\d{2})\\s*db"],
+      "cau_hoi": "Dạ mình cần máy êm dưới bao nhiêu dB ạ?",
+      "nhan": "độ ồn dưới {:.0f} dB"
+    },
+    "ngang_cm": {
+      "kieu": "so", "bat_buoc": false,
+      "trich": ["(?:rong|ngang|vua)\\s*(?:may\\s*)?(?:chi\\s*)?(\\d{2,3})\\s*cm"],
+      "cau_hoi": "Dạ chỗ đặt máy rộng bao nhiêu cm ạ?",
+      "nhan": "chỗ đặt ngang {:.0f} cm"
+    }
+  },
+  "cau_hoi_ngan_sach": {
+    "cau_hoi": "Dạ mình dự tính khoảng bao nhiêu cho máy rửa chén ạ?",
+    "cau_hoi_lap": "Dạ mình cho em xin ngân sách ạ — ví dụ: 'khoảng 15 triệu'."
+  },
+  "loc_cung": [
+    {"kieu": "khoang_hang_cong_bo", "o": "so_bua", "cot_min": "bua_min", "cot_max": "bua_max", "don_vi": "bữa", "ly_do": "so_bua"},
+    {"kieu": "ngan_sach"},
+    {"kieu": "toi_da", "o": "do_on_max", "cot": "do_on_db", "don_vi": "dB", "ly_do": "do_on"},
+    {"kieu": "toi_da", "o": "ngang_cm", "cot": "ngang_cm", "don_vi": "cm", "ly_do": "kich_thuoc"}
+  ],
+  "truc_cham": [
+    {"uu_tien": "em", "ten": "độ ồn", "cot": "do_on_db", "thap_tot": true, "fmt": "{:.0f} dB", "mac_dinh": 0.2,
+     "trich_uu_tien": ["\\bem\\b", "it on", "yen tinh"]},
+    {"uu_tien": "tiet_kiem_nuoc", "ten": "nước mỗi lần rửa", "cot": "nuoc_lit", "thap_tot": true, "fmt": "{:.1f} lít/lần",
+     "trich_uu_tien": ["tiet kiem nuoc", "it nuoc"]},
+    {"uu_tien": "gia", "ten": "giá", "cot": "gia", "thap_tot": true, "fmt": "{:,.0f}đ", "mac_dinh": 0.2,
+     "trich_uu_tien": ["\\bre\\b", "gia re", "khuyen mai"]}
+  ],
+  "hien_thi_thong_so": [
+    {"cot": "bo_chau_au", "fmt": "{:.0f} bộ chén châu Âu"},
+    {"cot": "do_on_db", "fmt": "ồn {:.0f} dB"},
+    {"cot": "nuoc_lit", "fmt": "tối đa {:.1f} lít nước/lần"},
+    {"cot": "ngang_cm", "fmt": "ngang {:.0f} cm"}
+  ]
+}

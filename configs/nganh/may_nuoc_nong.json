@@ -1,0 +1,39 @@
+{
+  "ten_nganh": "may_nuoc_nong",
+  "ten_hien_thi": "máy nước nóng",
+  "tu_khoa_nganh": ["may nuoc nong", "binh nong lanh", "binh nuoc nong"],
+  "csv_that": "data/processed/may_nuoc_nong.csv",
+  "csv_mau": "data/mock/catalog/may_nuoc_nong_mau.csv",
+  "cot_so": {
+    "cong_suat_w": {"nguon": "catalog:Công suất đầu ra", "ro": "w"}
+  },
+  "cot_chu": {
+    "loai": {"nguon": "catalog:Loại máy"},
+    "an_toan": {"nguon": "catalog:Tính năng an toàn"}
+  },
+  "o_nhu_cau": {
+    "loai": {
+      "kieu": "chu", "bat_buoc": false,
+      "trich": ["(truc tiep|gian tiep)"],
+      "cau_hoi": "Dạ mình muốn máy nóng TRỰC TIẾP (nóng ngay, gọn) hay GIÁN TIẾP (bình chứa, nhiều người tắm liên tục) ạ?",
+      "nhan": "loại làm nóng {}"
+    }
+  },
+  "cau_hoi_ngan_sach": {
+    "cau_hoi": "Dạ mình dự tính khoảng bao nhiêu cho máy nước nóng ạ?",
+    "cau_hoi_lap": "Dạ mình cho em xin ngân sách ạ — ví dụ: 'khoảng 4 triệu'."
+  },
+  "loc_cung": [
+    {"kieu": "khop_ten", "o": "loai", "cot": "loai", "ly_do": "loai"},
+    {"kieu": "ngan_sach"}
+  ],
+  "truc_cham": [
+    {"uu_tien": "manh", "ten": "công suất", "cot": "cong_suat_w", "thap_tot": false, "fmt": "{:.0f} W", "mac_dinh": 0.2,
+     "trich_uu_tien": ["nong nhanh", "manh"]},
+    {"uu_tien": "gia", "ten": "giá", "cot": "gia", "thap_tot": true, "fmt": "{:,.0f}đ", "mac_dinh": 0.2,
+     "trich_uu_tien": ["\\bre\\b", "gia re", "khuyen mai"]}
+  ],
+  "hien_thi_thong_so": [
+    {"cot": "cong_suat_w", "fmt": "công suất {:.0f} W"}
+  ]
+}

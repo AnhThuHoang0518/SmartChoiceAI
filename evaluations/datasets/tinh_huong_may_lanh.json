@@ -8,7 +8,8 @@
     "khu_vuc": "Hà Nội",
     "nganh": "máy lạnh",
     "so_nguoi": "4 người",
-    "tai_kg": "9 kg"
+    "tai_kg": "9 kg",
+    "so_bua": "3 bua"
   },
   "tinh_huong": [
     {
@@ -392,6 +393,45 @@
       "ky_vong_loai": "tu_van",
       "toi_da_cau_hoi": 1,
       "_ghi_chu": "TC-029: khop loai bo dau ca 2 phia (bug loai oan da vet)"
+    },
+    {
+      "ten": "tc037_rua_chen_4_nguoi_3_bua",
+      "tin_dau": "Nhà 4 người ăn 3 bữa/ngày cần máy rửa chén nào?",
+      "tra_loi": {
+        "ngan_sach_max": "tam 20 trieu"
+      },
+      "ky_vong_loai": "tu_van",
+      "ky_vong_o": {
+        "so_bua": 3,
+        "ngan_sach_max": 20000000
+      },
+      "toi_da_cau_hoi": 2,
+      "_ghi_chu": "TC-037: parse bua an Viet, hoi ngan sach"
+    },
+    {
+      "ten": "tc038_rua_chen_em_47db",
+      "tin_dau": "may rua chen em duoi 47 db, 3 bua, tam 22tr",
+      "ky_vong_loai": "tu_van",
+      "ky_vong_o": {
+        "do_on_max": 47,
+        "so_bua": 3
+      },
+      "toi_da_cau_hoi": 1,
+      "_ghi_chu": "TC-038: hard filter dB - da kiem top3 deu <=47dB"
+    },
+    {
+      "ten": "tu_dong_tru_thit",
+      "tin_dau": "can tu dong tru thit ca khoang 8 trieu",
+      "ky_vong_loai": "tu_van",
+      "toi_da_cau_hoi": 2,
+      "_ghi_chu": "nganh tu dong/mat: loc loai theo tu khoa"
+    },
+    {
+      "ten": "may_nuoc_nong_truc_tiep",
+      "tin_dau": "binh nong lanh truc tiep khoang 4 trieu",
+      "ky_vong_loai": "bat_ky_khong_loi",
+      "toi_da_cau_hoi": 1,
+      "_ghi_chu": "nganh may nuoc nong: tu khoa 'binh nong lanh' cung vao dung | ket cuc tha long: catalog mau co the khong co may truc tiep <=4tr - khong_co_may la tra loi DUNG"
     }
   ]
 }

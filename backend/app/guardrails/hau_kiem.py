@@ -48,6 +48,8 @@ MAU_SO: dict[str, list[tuple[str, float]]] = {
     "w": [(r"([\d.,]+)\s*W\b(?!h)", 1.0)],
     "doc": [(r"([\d.,]+)\s*°C", 1.0)],
     "nam": [(r"([\d.,]+)\s*năm", 1.0)],
+    "bua": [(r"([\d.,]+)\s*bữa", 1.0)],
+    "bo": [(r"([\d.,]+)\s*bộ", 1.0)],
 }
 
 # truong trong Nguon -> ro don vi (dung chung moi nganh)
@@ -60,6 +62,9 @@ _TRUONG_RO = {
     "tai_kg": "kg", "vat_vong": "vong", "dien_wh_kg": "whkg", "dien_w": "w",
     "nhiet_toi_da_c": "doc", "bao_hanh_dc_nam": "nam",
     "nguoi_min": "nguoi", "nguoi_max": "nguoi",
+    "bua_min": "bua", "bua_max": "bua", "bo_chau_au": "bo",
+    "nuoc_lit": "lit", "dung_tich_min": "lit",
+    "dien_kwh_ngay": "kwh", "cong_suat_w": "w",
 }
 
 # thuoc tinh trong o nhu cau -> ro (loi khach noi cung la nguon su that)
