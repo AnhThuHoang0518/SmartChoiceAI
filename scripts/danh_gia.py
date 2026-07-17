@@ -86,6 +86,20 @@ def chay_tinh_huong(c: TestClient, th: dict, mac_dinh: dict) -> dict:
         elif th.get("ky_vong_hoi_lai_co_vi_du") and "ví dụ" in r.get("text", ""):
             ket["hoi_lai_ok"] = True
 
+    # Cau tiep noi SAU khi da tu van xong ("neu giam con 10 trieu?") - kiem
+    # duong DOI Y: o phai duoc ghi de, khong duoc lang le giu gia tri cu.
+    for buoc in th.get("tiep_theo", []):
+        r = c.post("/api/chat", json={"tin_nhan": buoc["tin"], "phien_id": pid}).json()
+        ket["ms"].append(r["thong_ke"]["ms"])
+        kvl = buoc.get("ky_vong_loai")
+        if kvl and kvl != "bat_ky_khong_loi" and r["loai"] != kvl:
+            ket["loi"].append(f"tiep noi: muon {kvl} duoc {r['loai']}")
+        if "ky_vong_o" in buoc:
+            d2, t2, l2 = so_sanh_o(buoc["ky_vong_o"], r.get("o_nhu_cau", {}))
+            ket["o_dung"] = ket.get("o_dung", 0) + d2
+            ket["o_tong"] = ket.get("o_tong", 0) + t2
+            ket["loi"] += [f"tiep noi: {x}" for x in l2]
+
     ket["loai_cuoi"] = r["loai"]
     ket["text_cuoi"] = r["text"][:120]
 

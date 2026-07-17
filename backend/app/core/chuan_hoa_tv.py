@@ -92,6 +92,20 @@ NGANH_KHAC = [
 ]
 
 
+def cau_hoi_cong_suat(text: str) -> bool:
+    """Khach hoi KIEN THUC ve cong suat ('gia dinh 5 nguoi mua cong suat bao
+    nhieu?', 'phong nay can may HP?') - khac voi nho tu van chon may.
+
+    Phat hien tu demo that: he chi co 2 che do (hoi nguoc / top 3) nen cau hoi
+    kien thuc bi tra loi bang... nguyen van cau tu van cu. Can che do thu 3:
+    GIAI THICH - template co can cu, khong qua LLM.
+    """
+    kd = bo_dau(text or "").lower()
+    if not re.search(r"\b(cong suat|hp|btu|ngua)\b", kd):
+        return False
+    return bool(re.search(r"\b(bao nhieu|bn|nao|the nao|sao|can|nen|du)\b", kd))
+
+
 def nganh_ngoai_pham_vi(text: str) -> str | None:
     """Khach dang hoi nganh khac (khong nhac may lanh) -> tra ten nganh do.
 

@@ -208,6 +208,40 @@
         "dien_tich_m2": 12
       },
       "toi_da_cau_hoi": 4
+    },
+    {
+      "ten": "doi_y_giam_ngan_sach",
+      "tin_dau": "may lanh 20tr phong 18m2 co nang phong ngu tk dien",
+      "ky_vong_loai": "tu_van",
+      "tiep_theo": [
+        {
+          "tin": "neu giam con 10 trieu thi sao",
+          "ky_vong_loai": "tu_van",
+          "ky_vong_o": {
+            "ngan_sach_max": 10000000,
+            "dien_tich_m2": 18,
+            "co_nang": true
+          }
+        }
+      ],
+      "toi_da_cau_hoi": 1,
+      "_ghi_chu": "BAY DEMO: truoc day o da biet khong ghi de -> bot lang le tu van theo 20tr cu"
+    },
+    {
+      "ten": "doi_y_phong_khac",
+      "tin_dau": "may lanh 15tr cho phong 12m2 khong nang",
+      "ky_vong_loai": "tu_van",
+      "tiep_theo": [
+        {
+          "tin": "doi sang phong 28m2 thi may nao",
+          "ky_vong_loai": "bat_ky_khong_loi",
+          "ky_vong_o": {
+            "dien_tich_m2": 28,
+            "ngan_sach_max": 15000000
+          }
+        }
+      ],
+      "toi_da_cau_hoi": 1
     }
   ]
 }

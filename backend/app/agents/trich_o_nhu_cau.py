@@ -85,15 +85,33 @@ def trich_bang_luat(text: str) -> ONhuCauMayLanh:
     return nc
 
 
-def _gop(cu: ONhuCauMayLanh, moi: ONhuCauMayLanh) -> ONhuCauMayLanh:
-    """Gop o moi vao o cu. O da biet KHONG bi ghi de - tranh LLM lat nguoc
-    thong tin khach da xac nhan o luot truoc (nguyen nhan kinh dien cua troi flow).
+# Dau hieu khach DOI Y: "neu giam con 15 trieu?", "doi sang phong 25m2",
+# "tang len 25tr duoc khong". Khong co dau hieu nay thi o da biet KHONG bao
+# gio bi ghi de (chong troi flow). 'ha'/'con' dung mot minh KHONG dua vao:
+# 'ha noi' chua 'ha', 'con thu hai' chua 'con' -> ghi de oan.
+_MAU_DOI_Y = re.compile(
+    r"\b(giam|tang|doi (?:sang|lai|thanh)|thay vi|chi con|neu|xuong con|len)\b"
+)
+
+
+def _khach_doi_y(text: str) -> bool:
+    return bool(_MAU_DOI_Y.search(bo_dau(text).lower()))
+
+
+def _gop(cu: ONhuCauMayLanh, moi: ONhuCauMayLanh, ghi_de: bool = False) -> ONhuCauMayLanh:
+    """Gop o moi vao o cu.
+
+    ghi_de=False (mac dinh): o da biet giu nguyen - tranh LLM lat nguoc thong
+    tin khach da xac nhan (nguyen nhan kinh dien cua troi flow).
+    ghi_de=True: khach DOI Y ("neu giam con 15 trieu?") - o nao khach vua noi
+    gia tri moi thi de len. Khong co duong nay thi bot lang le tu van theo
+    ngan sach CU = sai ma khong ai biet (bay demo nguy hiem nhat).
     """
     d = cu.model_dump()
     for k, v in moi.model_dump().items():
         if k == "uu_tien":
             d[k] = list(dict.fromkeys((d.get(k) or []) + (v or [])))
-        elif d.get(k) is None and v is not None:
+        elif v is not None and (ghi_de or d.get(k) is None):
             d[k] = v
     return ONhuCauMayLanh(**d)
 
@@ -145,10 +163,10 @@ def trich(
     o_dang_cho: ten o ma bot vua hoi o luot truoc (tu may trang thai) - de
     hieu cau tra loi cut lun 'co'/'khong'/'18'.
     """
-    nc = _gop(o_cu or ONhuCauMayLanh(), trich_bang_luat(text))
+    nc = _gop(o_cu or ONhuCauMayLanh(), trich_bang_luat(text), ghi_de=_khach_doi_y(text))
     nc = _dien_theo_ngu_canh(nc, text, o_dang_cho)
     if nc.thieu_bat_buoc():
         them = trich_bang_llm(text, llm)
         if them is not None:
-            nc = _gop(nc, them)
+            nc = _gop(nc, them)      # duong LLM khong bao gio duoc ghi de
     return nc

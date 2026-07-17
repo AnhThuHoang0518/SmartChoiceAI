@@ -21,7 +21,7 @@ from backend.app.agents.gia_tri_thong_tin import bang_diem, chon_cau_hoi
 from backend.app.agents.trich_o_nhu_cau import trich
 from backend.app.agents.viet_lai import viet_lai
 from backend.app.core import phien
-from backend.app.core.chuan_hoa_tv import nganh_ngoai_pham_vi
+from backend.app.core.chuan_hoa_tv import cau_hoi_cong_suat, nganh_ngoai_pham_vi
 from backend.app.ranking.xep_hang import cfg, xep_hang
 from backend.app.services.catalog import tai_catalog
 from backend.app.services.llm import tao_llm
@@ -85,6 +85,37 @@ def chat(t: TinNhan) -> TraLoi:
     ds = catalog()
     o_dang_cho = p["da_hoi"][-1] if p["da_hoi"] else None
     nc = trich(t.tin_nhan, llm(), p["nhu_cau"], o_dang_cho)
+
+    # Che do GIAI THICH: khach hoi kien thuc ("cong suat bao nhieu?") chu khong
+    # phai nho chon may. Truoc day bi tra loi bang nguyen van cau tu van cu -
+    # phat hien tu demo that. Template cung + van trich duoc thong tin trong
+    # cau hoi (vd "phong 40m2 can bao nhieu HP" -> dien luon dien tich).
+    if cau_hoi_cong_suat(t.tin_nhan):
+        g = cfg()["giai_thich_cong_suat"]
+        if nc.dien_tich_m2:
+            # Khach da cho dien tich ("phong 40m2 can bao nhieu HP") -> tra loi
+            # thang con so uoc, dung hoi lai thu khach vua noi.
+            from backend.app.ranking.xep_hang import dien_tich_hieu_dung
+
+            m2 = dien_tich_hieu_dung(nc.dien_tich_m2, nc.co_nang)
+            hp = next(b["hp"] for b in g["bang_uoc_hp"] if m2 <= b["m2_max"])
+            text = g["mau_da_biet_dien_tich"].format(
+                dien_tich=f"{nc.dien_tich_m2:g}",
+                nang_chu=" có nắng" if nc.co_nang else "",
+                hp=f"{hp:g}",
+            )
+            o_cho = "ngan_sach_max" if nc.ngan_sach_max is None else None
+        else:
+            text = g["mau"]
+            o_cho = "dien_tich_m2"
+        phien.ghi(ma, nc, o_cho)
+        return TraLoi(
+            phien_id=ma,
+            loai="giai_thich",
+            text=text,
+            o_nhu_cau=nc.model_dump(exclude_none=True, mode="json"),
+            thong_ke={"ms": int((time.perf_counter() - t0) * 1000), "cham_llm": 1},
+        )
 
     diem = [{"o": o, "diem": d} for o, d in bang_diem(ds, nc)]
     hoi = chon_cau_hoi(ds, nc)

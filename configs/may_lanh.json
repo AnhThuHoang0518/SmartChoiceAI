@@ -24,7 +24,8 @@
   "hau_kiem": {
     "_doc": "Chot chan chong bia. dung_sai = cho phep LLM lam tron (17.890.000 -> '17,9 trieu').",
     "dung_sai_tuong_doi": 0.005,
-    "so_lan_bat_viet_lai_toi_da": 2
+    "so_lan_bat_viet_lai_toi_da": 1,
+    "_doc_toc_do": "Tran 1 (truoc la 2): demo that do 10.4s khi bi chan 1 lan tren DeepSeek. Moi luot viet lai ton 3-5s -> tha roi ve ban du phong som con hon bat khach doi."
   },
   "cau_hoi": {
     "_doc": "Template CUNG. Khong sinh boi LLM -> khong the lan man, khong the bia.",
@@ -41,6 +42,18 @@
     "co_nang": "Dạ mình cho em biết phòng có nắng chiếu trực tiếp không ạ — trả lời 'có' hoặc 'không' là được ạ.",
     "loai_phong": "Dạ mình lắp cho phòng ngủ hay phòng khách ạ? Hai loại em tư vấn khác nhau đó ạ.",
     "khu_vuc": "Dạ mình ở tỉnh/thành nào ạ — ví dụ: 'Hà Nội'."
+  },
+  "giai_thich_cong_suat": {
+    "_doc": "Che do GIAI THICH - khach hoi kien thuc chu khong phai nho chon may. Template cung, khong LLM -> khong the bia. Bang m2->HP o day la kien thuc nganh pho thong dung lam HUONG DAN (khong phai khang dinh ve san pham cu the nen khong dung cham voi viec da bo bang tra khoi loc cung).",
+    "mau": "Dạ máy lạnh chọn công suất theo DIỆN TÍCH phòng chứ không theo số người ạ (số người ảnh hưởng rất ít so với kích thước phòng và nắng). Ước nhanh: dưới 15m² ~1HP · 15–20m² ~1.5HP · 20–30m² ~2HP · trên 30m² từ 2.5HP. Phòng bị nắng chiếu trực tiếp thì lên một bậc ạ. Phòng mình rộng khoảng bao nhiêu m² để em chọn đúng máy ạ?",
+    "mau_da_biet_dien_tich": "Dạ công suất chọn theo diện tích phòng ạ — phòng {dien_tich}m²{nang_chu} thì ước nhanh cần máy khoảng {hp}HP ạ. Mình cho em xin ngân sách để em lọc luôn máy phù hợp nhé ạ?",
+    "bang_uoc_hp": [
+      { "m2_max": 15, "hp": 1.0 },
+      { "m2_max": 20, "hp": 1.5 },
+      { "m2_max": 30, "hp": 2.0 },
+      { "m2_max": 45, "hp": 2.5 },
+      { "m2_max": 999, "hp": 3.0 }
+    ]
   },
   "ngoai_pham_vi": {
     "_doc": "Khach hoi nganh chua bat trong demo. Noi that pham vi + khoe kien truc da san sang 14 nganh (dung su that: file DMX co du 14 sheet, them nganh = them config).",

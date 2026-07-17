@@ -1,16 +1,34 @@
 # Smart Choice
 
-Tro ly AI so sanh va tu van san pham theo nhu cau thuc cua khach hang.
+Trợ lý AI so sánh và tư vấn sản phẩm theo nhu cầu thật của khách hàng.
+Vietnam Innovation Challenge 2026 — đề bài Điện Máy Xanh.
 
-## Muc tieu MVP
+**Demo:** https://demo.aibutler.vn
 
-- Hieu nhu cau mua sam bang tieng Viet va hoi lai khi thieu thong tin.
-- Truy xuat catalog, gia, khuyen mai, ton kho, review va chinh sach.
-- Xep hang va de xuat top 3 san pham phu hop.
-- Giai thich uu, nhuoc diem va trade-off bang ngon ngu de hieu.
-- Khong tu tao thong so; moi ket luan phai gan voi nguon du lieu.
+Nguyên tắc lõi: **LLM chỉ diễn đạt — mọi quyết định là code.** Hỏi ngược có điểm số
+giải trình, top 3 kèm trade-off, mọi con số truy được nguồn, chống bịa bằng cơ chế
+hậu kiểm chứ không phải lời nhắc.
 
-## Thu muc chinh
+## Tài liệu
 
-Xem [docs/project-structure.md](docs/project-structure.md) de biet vai tro cua tung thu muc.
+- [Kiến trúc](docs/architecture/kien-truc.md) — luồng xử lý, vì sao thiết kế vậy, số liệu đo
+- [Lộ trình pilot 3 tháng](docs/pilot/lo-trinh-pilot.md)
+- [Deploy](infra/DEPLOY.md)
 
+## Chạy local
+
+```bash
+pip install -r requirements.txt
+# Can 2 file khong co tren repo (du lieu doi tac + khoa API):
+#   data/processed/may_lanh.csv  (sinh tu: python scripts/nap_dmx.py voi file goc trong data/raw/)
+#   .env                         (xem .env.example)
+python -m uvicorn backend.app.main:app --port 8000
+# -> http://localhost:8000
+```
+
+## Đo chất lượng
+
+```bash
+python scripts/danh_gia.py
+# 22 tinh huong khach that: ty le hieu dung o nhu cau, so cau hoi TB, ket cuc, toc do
+```

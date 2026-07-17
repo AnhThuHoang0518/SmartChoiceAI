@@ -109,6 +109,10 @@ class FptLLM(LLM):
                         {"role": "user", "content": nguoi_dung},
                     ],
                     "temperature": 0.2,
+                    # max_tokens la tham so chuan OpenAI (API FPT tuong thich OpenAI
+                    # theo docs chinh thuc). Demo that do 10.4s - phan lon la LLM
+                    # viet trang giang. 500 token ~ 350 tu tieng Viet, du cho top 3.
+                    "max_tokens": 500,
                     "stream": False,
                 },
                 timeout=30,
