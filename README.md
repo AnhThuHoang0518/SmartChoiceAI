@@ -1,7 +1,7 @@
 # Smart Choice
 
 Trợ lý AI so sánh và tư vấn sản phẩm theo nhu cầu thật của khách hàng.
-**13 ngành hàng · 2.176 sản phẩm thật của ĐMX · 46 tình huống test tự động.**
+**13 ngành hàng · 2.176 sản phẩm thật của ĐMX · 50 tình huống test tự động.**
 Vietnam Innovation Challenge 2026 — đề bài Điện Máy Xanh.
 
 **Demo:** https://demo.aibutler.vn

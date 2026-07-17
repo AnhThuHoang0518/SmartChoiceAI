@@ -35,21 +35,25 @@ Khách nhắn (text / 🎤 giọng nói)
 
 **Không khóa nhà cung cấp model.** Adapter đổi LLM bằng 1 dòng env: FPT AI Marketplace (DeepSeek-V4-Flash — hạ tầng Việt Nam, API đọc từ tài liệu chính thức github.com/fpt-corp/ai-marketplace) ↔ Gemini ↔ chế độ thuần luật (mất LLM vẫn chạy đủ luồng hỏi-lọc-xếp hạng, chỉ kém phần diễn đạt — CI chạy không cần khóa API).
 
-## Số liệu đo được (bộ 22 tình huống, chạy lại bằng `python scripts/danh_gia.py`)
+## Số liệu đo được (bộ 50 tình huống, chạy lại bằng `python scripts/danh_gia.py`)
 
 | Chỉ số | Kết quả |
 |---|---|
-| Tình huống đạt | 22/22 |
-| Ô nhu cầu trích đúng | 100% (34/34) |
-| Số câu hỏi trung bình để ra tư vấn | 1,0 |
-| Xử lý ngoài LLM | <35ms |
+| Tình huống đạt | 50/50 (trên CẢ dữ liệu thật lẫn dữ liệu mẫu công khai) |
+| Ô nhu cầu trích đúng | 100% (57/57) |
+| Số câu hỏi trung bình để ra tư vấn | 0,7 |
+| Xử lý ngoài LLM | <100ms |
 | Hallucination lọt qua hậu kiểm | 0 |
 
-Bộ tình huống phủ: không dấu, viết tắt, 20tr/1 tỷ/9990k, số thập phân, trả lời cụt "khong", trả lời lạc đề, đổi ý giữa chừng ("nếu giảm còn 10 triệu?" → ghi đè thật), ngoài phạm vi (tủ lạnh/máy giặt → nói thẳng), ngân sách quá thấp (0 máy → báo giá thấp nhất đủ tải).
+Bộ tình huống phủ: không dấu, viết tắt, 20tr/1 tỷ/9990k, số thập phân, trả lời cụt "khong", trả lời lạc đề, đổi ý giữa chừng ("nếu giảm còn 10 triệu?" → ghi đè thật), so sánh trực tiếp 2 máy, đổi ngành giữa phiên (mang ngân sách theo), tầm giá mờ ("tầm trung" → tercile giá thật của ngành, không bịa ngưỡng), ngành chưa có dữ liệu (laptop/tivi → nói thẳng), ngân sách quá thấp (0 máy → báo giá thấp nhất đủ tải), hỏi tồn kho (thiếu Stock API → không đoán), tiêu chí chủ quan (đẹp/bền → không xếp hạng bừa).
 
-## Nhân rộng 14 ngành hàng
+## 13 ngành hàng đang chạy — 2.176 sản phẩm thật
 
-Toàn bộ tri thức ngành nằm trong `configs/may_lanh.json` (ô nhu cầu, hệ số tải nhiệt, trọng số, ngưỡng hỏi, template) — code không chứa gì riêng của máy lạnh. Dữ liệu ĐMX có sẵn 14 sheet (tủ lạnh 1.693 SKU, máy giặt 1.338, máy tính bảng 1.470...). **Thêm ngành = thêm 1 file config + 1 parser sheet**, không sửa lõi.
+Máy lạnh 269 · tủ lạnh 252 · máy giặt 175 · máy sấy 38 · máy rửa chén 54 · tủ đông/mát 126 · máy nước nóng 148 · máy tính bảng 301 · đồng hồ thông minh 582 · màn hình 68 · PC 77 · máy in 57 · micro 29 (2 sheet gộp 1). Đủ 14/14 sheet dữ liệu ĐMX.
+
+Tri thức ngành nằm hết trong config (`configs/may_lanh.json`, `configs/nganh/*.json`): ô nhu cầu + regex trích, luật lọc theo công bố hãng, trục chấm điểm, câu hỏi template. **Thêm ngành = thêm 1 file config + 1 mục parser sheet**, không sửa lõi — 11 ngành sau chạy chung một khung generic, và cả 13 ngành đi chung một phiên chat (đổi ngành giữa chừng giữ ngân sách đã chốt).
+
+Tính năng tư vấn ngoài luồng hỏi-lọc-xếp hạng, đều do code quyết: **so sánh trực tiếp 2 máy** (bảng đối chiếu từng thông số dựng từ dữ liệu có nguồn, 0 chạm LLM), khuyến mãi thật (giá gốc − giá KM trong catalog), giải thích công suất (template có căn cứ), chip gợi ý câu tiếp theo theo ngữ cảnh.
 
 ## Ánh xạ với flow thiết kế 14 bước
 
