@@ -91,7 +91,7 @@ NGANH_KHAC = [
     (r"\b(?:laptop|may tinh xach tay|macbook)\b", "laptop"),
     # khach hoi ten dong may cu the ('cos iphone 13 k?') cung phai nhan ra
     # nganh dien thoai - bug demo that 19/07: bot chao lai nhu chua nghe
-    (r"\b(?:dien thoai|iphone|smartphone|smart phone|dtdd)\b", "điện thoại"),
+    (r"\b(?:dien thoai|iphone|smartphone|smart phone|dtdd|dth)\b", "điện thoại"),
 ]
 
 

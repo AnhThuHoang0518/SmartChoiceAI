@@ -21,7 +21,7 @@ from backend.app.core.chuan_hoa_tv import bo_dau
 
 
 THU_MUC_MAC_DINH = Path("data/policies")
-SO_KY_TU_TOI_DA = 1400
+SO_KY_TU_TOI_DA = 900
 
 
 @dataclass(frozen=True)
@@ -181,6 +181,47 @@ def _rut_gon(text: str) -> str:
     return (cat or text[:SO_KY_TU_TOI_DA].strip()) + "\n…"
 
 
+def _y_chinh(text: str, cau: str, gioi_han: int = 5) -> list[str]:
+    """Rut cac y dang doc duoc tu doan policy, khong tom tat bang LLM.
+
+    Tai lieu policy thuong la dong ngan/heading/bullet. Lay cac dong co tu khoa
+    lien quan truoc, sau do bo sung dong dau tien de khach co ngu canh. Moi y
+    duoc cat ngan de UI chat khong thanh man hinh van ban dai.
+    """
+    tu_khoa = _tu_khoa_noi_dung(cau)
+    raw = [x.strip(" \t-+•") for x in text.replace("\r\n", "\n").split("\n")]
+    bo_qua = ["NHÓM SẢN PHẨM", "Khách hàng muốn đổi trả sản phẩm chọn"]
+    if "hydrus" not in cau and "phu kien" not in cau:
+        bo_qua.append("Hydrus")
+    dong = [x for x in raw if len(x) >= 8 and not any(b in x for b in bo_qua)]
+
+    def cat(x: str) -> str:
+        if len(x) <= 150:
+            return x
+        ngan = x[:150]
+        for dau in (".", ";", ")", "ạ"):
+            if dau in ngan[80:]:
+                return ngan[:ngan.rfind(dau) + 1].rstrip()
+        return ngan.rsplit(" ", 1)[0].rstrip() + "…"
+
+    def diem(x: str) -> int:
+        k = bo_dau(x).lower()
+        return sum(1 for t in tu_khoa if t in k) + (2 if re.match(r"^\d+[\).]", x) else 0)
+
+    chon: list[str] = []
+    for x in sorted(dong, key=diem, reverse=True):
+        if diem(x) <= 0 and chon:
+            continue
+        y = cat(x)
+        if y and y not in chon:
+            chon.append(y)
+        if len(chon) >= gioi_han:
+            break
+    if not chon and dong:
+        chon = [x[:180].rstrip() for x in dong[:gioi_han]]
+    return chon
+
+
 def tra_loi_chinh_sach(text: str) -> dict:
     """Tra dict de router dua thang ve TraLoi.
 
@@ -213,10 +254,10 @@ def tra_loi_chinh_sach(text: str) -> dict:
             "nguon": [],
         }
 
-    dong = ["Dạ em tra theo tài liệu chính sách đã nạp và thấy phần liên quan như sau ạ:"]
+    dong = ["Dạ em tra theo tài liệu chính sách đã nạp, phần quan trọng là:"]
     nguon = []
     da_them: set[tuple[str, str, str]] = set()
-    for d in chon:
+    for d in chon[:2]:
         khoa = (d.tep, d.tieu_de, d.text[:80])
         if khoa in da_them:
             continue
@@ -226,6 +267,7 @@ def tra_loi_chinh_sach(text: str) -> dict:
         if tieu_de == d.tep.replace(".md", "").replace("_", " "):
             tieu_de = _NHAN_TEP.get(d.tep, tieu_de)
         dong.append(f"\n**{tieu_de}**")
-        dong.append(_rut_gon(d.text))
-    dong.append("\nAnh chị cho em biết sản phẩm/đơn hàng cụ thể nếu cần em đối chiếu kỹ hơn theo đúng nhóm chính sách ạ.")
+        ys = _y_chinh(d.text, cau, gioi_han=3)
+        dong.extend(f"• {y}" for y in ys)
+    dong.append("\nAnh chị cho em biết sản phẩm/đơn hàng cụ thể nếu cần em đối chiếu đúng nhóm chính sách ạ.")
     return {"loai": "chinh_sach", "text": "\n".join(dong), "nguon": nguon}

@@ -517,6 +517,23 @@ def chat(t: TinNhan) -> TraLoi:
             },
         )
 
+    # Nganh KHONG co sheet (dien thoai/laptop/tivi) phai tu choi truoc cac
+    # intent phu nhu "co hang nao/Samsung khong". Neu khong, cau "đth co
+    # Samsung khong" se bi hoi_hang bat va muon nganh cu trong phien (vd may
+    # giat Samsung) -> sai nganh.
+    from backend.app.nganh.khung import cac_nganh
+    from backend.app.nganh.khung import tim_nganh as _tim
+    nganh = nganh_ngoai_pham_vi(t.tin_nhan)
+    if nganh and _tim(t.tin_nhan) is None:
+        danh_sach = ", ".join(["máy lạnh", "tủ lạnh"] + [n.cfg.get("ten_liet_ke", n.ten_hien_thi) for n in cac_nganh()])
+        return TraLoi(
+            phien_id=ma,
+            loai="ngoai_pham_vi",
+            text=cfg()["ngoai_pham_vi"]["mau"].format(nganh=nganh, danh_sach=danh_sach),
+            o_nhu_cau=p["nhu_cau"].model_dump(exclude_none=True, mode="json"),
+            thong_ke={"ms": int((time.perf_counter() - t0) * 1000), "cham_llm": 0},
+        )
+
     # SO SANH TRUC TIEP 2 may trong top 3 vua tu van - bang do code dung tu
     # du lieu da luu, khong LLM. Chi bat khi phien DA co bang ket qua.
     cap = yeu_cau_so_sanh(t.tin_nhan)
@@ -582,20 +599,8 @@ def chat(t: TinNhan) -> TraLoi:
 
     # Khach hoi nganh khac (tu lanh, may giat...) -> noi that pham vi, dung lai
     # cau hoi ngan sach nhu robot hong. Phat hien tu demo that.
-    from backend.app.nganh.khung import cac_nganh
-    from backend.app.nganh.khung import tim_nganh as _tim
-    nganh = nganh_ngoai_pham_vi(t.tin_nhan)
-    if nganh and _tim(t.tin_nhan) is None:
-        # Liet ke nganh tu REGISTRY chu khong hardcode - them nganh moi la cau
-        # tra loi tu cap nhat, khong bao gio noi "co san" thu khong co.
-        danh_sach = ", ".join(["máy lạnh", "tủ lạnh"] + [n.cfg.get("ten_liet_ke", n.ten_hien_thi) for n in cac_nganh()])
-        return TraLoi(
-            phien_id=ma,
-            loai="ngoai_pham_vi",
-            text=cfg()["ngoai_pham_vi"]["mau"].format(nganh=nganh, danh_sach=danh_sach),
-            o_nhu_cau=p["nhu_cau"].model_dump(exclude_none=True, mode="json"),
-            thong_ke={"ms": int((time.perf_counter() - t0) * 1000), "cham_llm": 0},
-        )
+    # Nganh ngoai pham vi da duoc xu ly som phia tren de khong bi intent phu
+    # (hoi hang/khuyen mai...) bat nham.
 
     ds = catalog()
     o_dang_cho = p["da_hoi"][-1] if p["da_hoi"] else None

@@ -120,7 +120,7 @@
 </style>
 </head>
 <body>
-<header><a href="/" style="text-decoration:none;color:var(--phu);font-size:13px;margin-right:2px" title="Về trang chủ">←</a><b>Smart Choice</b><span>· tư vấn theo nhu cầu thật · mọi con số đều có nguồn</span><button id="doc-tl" title="Bot đọc câu trả lời (bật/tắt)" style="margin-left:auto;background:none;border:1px solid var(--vien);border-radius:18px;padding:4px 12px;cursor:pointer;font-size:15px;color:var(--muc)">🔇</button><button id="doi-nen" title="Đổi giao diện sáng/tối" style="background:none;border:1px solid var(--vien);border-radius:18px;padding:4px 12px;cursor:pointer;font-size:15px;color:var(--muc)">🌙</button></header>
+<header><a href="/" style="text-decoration:none;color:var(--phu);font-size:13px;margin-right:2px" title="Về trang chủ">←</a><b>Smart Choice</b><span>· tư vấn theo nhu cầu thật · mọi con số đều có nguồn</span><button id="lam-moi" title="Làm mới đoạn chat" style="margin-left:auto;background:none;border:1px solid var(--vien);border-radius:18px;padding:4px 12px;cursor:pointer;font-size:15px;color:var(--muc)">↻</button><button id="doc-tl" title="Bot đọc câu trả lời (bật/tắt)" style="background:none;border:1px solid var(--vien);border-radius:18px;padding:4px 12px;cursor:pointer;font-size:15px;color:var(--muc)">🔇</button><button id="doi-nen" title="Đổi giao diện sáng/tối" style="background:none;border:1px solid var(--vien);border-radius:18px;padding:4px 12px;cursor:pointer;font-size:15px;color:var(--muc)">🌙</button></header>
 
 <main>
 <div id="ben-trai">
@@ -192,6 +192,11 @@
 // Giao dien sang/toi: uu tien lua chon da luu, chua co thi theo he dieu hanh.
 const goc = document.documentElement;
 const nutNen = document.getElementById('doi-nen');
+document.getElementById('lam-moi').onclick = () => {
+  if ('speechSynthesis' in window) speechSynthesis.cancel();
+  if (amThanh) { amThanh.pause(); amThanh = null; }
+  location.href = '/chat';
+};
 function apDungNen(t){ goc.dataset.theme = t; nutNen.textContent = t === 'dark' ? '☀️' : '🌙'; }
 apDungNen(localStorage.getItem('giao_dien') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
 nutNen.onclick = () => {
