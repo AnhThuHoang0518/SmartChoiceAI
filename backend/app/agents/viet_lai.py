@@ -147,6 +147,12 @@ def viet_lai(
 
         so_bia += 1
         da_chan += loi
+        # TRAN THOI GIAN: da ton >6s ma con phai viet lai -> ve ban du phong
+        # luon, dung bat khach doi them 5s nua (moc de bai <5s; do that co luot
+        # 12.5s vi 2 vong viet lai voi model suy luan cham).
+        if tong_ms > 6000:
+            da_chan.append("qua tran 6s - ve ban du phong thay vi viet lai")
+            break
         # Bao loi CU THE chu khong phai "sai roi viet lai" - noi ro so nao sai
         # thi lan sau no bo dung so do, khong thi no sua lung tung cho khac.
         nguoi_dung = (

@@ -154,9 +154,19 @@ class FptLLM(LLM):
         if not rc:
             return ""
         vi_tri = max(rc.rfind("\nDạ "), 0 if rc.startswith("Dạ ") else -1)
-        if vi_tri < 0:
-            return ""
-        ung = rc[vi_tri:].strip()
+        if vi_tri >= 0:
+            ung = rc[vi_tri:].strip()
+        else:
+            # Khong co 'Dạ' - vot doan CUOI trong giong tra loi khach: co 'ạ'
+            # (prompt ep ket cau bang 'ạ') va du dai. Van qua hau kiem sau.
+            ung = ""
+            for doan in reversed([d.strip() for d in rc.split("\n\n") if d.strip()]):
+                if "ạ" in doan and len(doan) >= 40 and "anh/chị" in doan.lower() or \
+                        ("ạ." in doan and len(doan) >= 60):
+                    ung = doan
+                    break
+            if not ung:
+                return ""
         # cat phan meta neu model con lam nham sau ban nhap
         ung = _re.split(r"\n(?:Wait|Let me|Hmm|Okay|OK,|Actually)\b", ung)[0].strip()
         # qua ngan (< 40 ky tu) thi kho la cau tu van that
