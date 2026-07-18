@@ -41,3 +41,6 @@ Thumbs.db
 
 # Ket qua chay tren du lieu that (ten may + gia DMX) - khong len repo public
 evaluations/results/ket_qua_150_tc.xlsx
+
+# Tai lieu BTC phat rieng cho doi thi - khong public
+evaluations/datasets/testcase_viac_150.xlsx

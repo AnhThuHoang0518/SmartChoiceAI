@@ -11,8 +11,9 @@ param([string]$m = "cap nhat")
 $ErrorActionPreference = "Stop"
 Set-Location $PSScriptRoot
 
-# Chan push nham file mat (phong khi ai do sua .gitignore)
-$nhay_cam = git status --porcelain | Select-String -Pattern "Spec_cate_gia|\.env$|may_lanh\.csv"
+# Chan push nham file mat (phong khi ai do sua .gitignore). Chi canh thu THAT
+# nhay cam: file goc DMX, .env, csv gia that trong data/processed, file BTC.
+$nhay_cam = git status --porcelain | Select-String -Pattern "Spec_cate_gia|\.env$|data/processed/.*\.csv|testcase_viac|ket_qua_150"
 if ($nhay_cam) {
     Write-Host "DUNG LAI: file nhay cam sap bi commit:" -ForegroundColor Red
     $nhay_cam
