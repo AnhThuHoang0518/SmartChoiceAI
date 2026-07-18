@@ -66,7 +66,7 @@ tin nhắn → chuẩn hóa TV (viết tắt/không dấu/20tr/triệu rưỡi/3
 | `frontend/chat/index.html` | Trang chat 1 file: dark mode, mic, TTS+mặt nhép miệng, panel ảnh, chip |
 | `frontend/src/` + `frontend/dist/` | Landing React (Vite). SỬA src xong PHẢI build lại, dist ĐƯỢC commit (VPS không có node) |
 | `scripts/nap_dmx*.py` | Parser 14 sheet → `data/processed/*.csv` (chạy lại khi đổi cột) |
-| `scripts/danh_gia.py` | 67 tình huống — PHẢI XANH trước mọi lần deploy |
+| `scripts/danh_gia.py` | 74 tình huống — PHẢI XANH trước mọi lần deploy |
 | `scripts/thu_cau_quai.py` | 23 câu ác ý: không 500, không rỗng |
 | `scripts/chay_150_tc.py` | Chạy bộ test BTC (mỗi case 1 phiên!) |
 | `scripts/lay_anh_dmx.py` | Ảnh chính chủ theo `productidweb` (chạy máy Wan) |
@@ -82,12 +82,14 @@ tin nhắn → chuẩn hóa TV (viết tắt/không dấu/20tr/triệu rưỡi/3
 - `.env` (cả máy Wan lẫn VPS): `LLM_NHA_CUNG_CAP=fpt`, `LLM_API_KEY=...`,
   `LLM_MODEL=Llama-3.3-70B-Instruct` (DeepSeek-V4-Flash là model suy luận,
   hay nuốt câu trả lời vào phần nghĩ — tránh), `TTS_GIONG=std_kimngan`.
-- CI GitHub Actions chạy pytest mỗi push.
+- CI GitHub Actions (`.github/workflows/ci.yml`) chạy pytest + `danh_gia.py` +
+  `thu_cau_quai.py` mỗi push/PR (cả 3 đều chạy `LLM_NHA_CUNG_CAP=luat`, không
+  cần mạng/API key).
 
 ## Kiểm tra bắt buộc sau MỌI thay đổi
 
 ```bash
-python scripts/danh_gia.py        # 67/67 (mock: tự bỏ các case cần data thật)
+python scripts/danh_gia.py        # 74/74 (mock: tự bỏ các case cần data thật)
 python scripts/thu_cau_quai.py    # không 500, không rỗng
 ```
 Bài học lặp 4 lần: kỳ vọng test phụ thuộc dữ liệu → catalog mẫu (hãng ẩn danh
@@ -97,7 +99,7 @@ Alpha/Bravo) có thể ra kết cục khác data thật; case như vậy đánh 
 ## Trạng thái (19/07/2026) & việc mở
 
 - Xong: 14 ngành (2 sheet micro gộp, phân biệt qua cột `nhom`) · 2.176 SKU ·
-  67 tình huống + 23 câu quái + 150 TC hỗ trợ · so sánh trực tiếp · giải trình
+  74 tình huống + 23 câu quái + 150 TC hỗ trợ · so sánh trực tiếp · giải trình
   xếp hạng · hãng/inverter/tầm giá/quà/bình lít/SIM/ATM/ELCB/CPU/loa/phủ màu/
   ngăn đá/trang-tháng · giọng 2 chiều (mic + TTS VITs, mặt nhép miệng) ·
   ảnh chính chủ theo productidweb · UI tông ĐMX xanh+vàng.

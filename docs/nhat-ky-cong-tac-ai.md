@@ -64,7 +64,7 @@ văn từ catalog; ảnh sản phẩm đối chiếu qua cột `productidweb` v�
 
 ## 4. Bằng chứng kiểm chứng được
 
-- **67 tình huống tự động** (`scripts/danh_gia.py`) — chạy lại 1 lệnh, xanh trên
+- **74 tình huống tự động** (`scripts/danh_gia.py`) — chạy lại 1 lệnh, xanh trên
   cả dữ liệu thật lẫn dữ liệu mẫu công khai.
 - **23 câu quái** (`scripts/thu_cau_quai.py`) — không 500, không rỗng.
 - **150 test case của BTC** (`scripts/chay_150_tc.py`) — 138 tư vấn, 12 từ chối đúng.

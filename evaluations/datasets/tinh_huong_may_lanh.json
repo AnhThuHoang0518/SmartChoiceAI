@@ -501,13 +501,17 @@
    "tiep_theo": [
     {
      "tin": "thế còn đồng hồ thông minh thì sao",
-     "ky_vong_loai": "tu_van",
+     "ky_vong_loai": "cau_hoi",
      "ky_vong_o": {
       "ngan_sach_max": 10000000
      }
+    },
+    {
+     "tin": "không biết",
+     "ky_vong_loai": "tu_van"
     }
    ],
-   "_ghi_chu": "doi nganh giua phien: mang ngan sach 10tr theo, khong bat khai lai"
+   "_ghi_chu": "doi nganh giua phien: mang ngan sach 10tr theo, khong bat khai lai. Nganh moi (dong ho) van duoc hoi dung 1 cau rieng (nghe_goi, bat_buoc:false, VOI duong) truoc khi tu van - dung thiet ke, khong phai loi."
   },
   {
    "ten": "tam_trung_theo_phan_bo_gia",

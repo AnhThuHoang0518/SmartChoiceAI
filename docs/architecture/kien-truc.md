@@ -35,12 +35,12 @@ Khách nhắn (text / 🎤 giọng nói)
 
 **Không khóa nhà cung cấp model.** Adapter đổi LLM bằng 1 dòng env: FPT AI Marketplace (DeepSeek-V4-Flash — hạ tầng Việt Nam, API đọc từ tài liệu chính thức github.com/fpt-corp/ai-marketplace) ↔ Gemini ↔ chế độ thuần luật (mất LLM vẫn chạy đủ luồng hỏi-lọc-xếp hạng, chỉ kém phần diễn đạt — CI chạy không cần khóa API).
 
-## Số liệu đo được (bộ 62 tình huống, chạy lại bằng `python scripts/danh_gia.py`)
+## Số liệu đo được (bộ 74 tình huống, chạy lại bằng `python scripts/danh_gia.py`)
 
 | Chỉ số | Kết quả |
 |---|---|
-| Tình huống đạt | 62/62 (trên CẢ dữ liệu thật lẫn dữ liệu mẫu công khai) |
-| Ô nhu cầu trích đúng | 100% (67/67) |
+| Tình huống đạt | 74/74 (trên CẢ dữ liệu thật lẫn dữ liệu mẫu công khai) |
+| Ô nhu cầu trích đúng | 100% (75/75) |
 | Số câu hỏi trung bình để ra tư vấn | 0,6 |
 | Xử lý ngoài LLM | <100ms |
 | Hallucination lọt qua hậu kiểm | 0 |
