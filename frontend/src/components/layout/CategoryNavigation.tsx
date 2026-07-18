@@ -1,4 +1,5 @@
 import { Menu, Tv, Refrigerator, AirVent, Laptop, Smartphone, Package, Sparkles } from "lucide-react"
+import { Link } from "react-router-dom"
 
 const CATEGORIES = [
   { icon: Tv, label: "Tivi" },
@@ -11,42 +12,66 @@ const CATEGORIES = [
 ]
 
 export function CategoryNavigation() {
+  const getSlug = (name: string) => {
+    return name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/đ/g, "d").replace(/\s+/g, '-')
+  }
+
   return (
-    <nav className="w-full bg-[#FFD400] text-[#002D62] text-sm font-semibold border-t-[3px] border-[#005BFF] shadow-sm hidden md:block relative z-40">
-      <div className="container mx-auto px-4 h-[44px] flex items-center justify-between">
+    <nav
+      className="w-full bg-[#FFD400] text-[#002D62] text-sm font-semibold border-t-[3px] border-[#005BFF] shadow-sm hidden md:block sticky top-[80px] z-40"
+    >
+      <div className="container mx-auto px-4 h-[44px] flex items-center justify-between relative">
 
         {/* Main Menu Button */}
-        <div className="flex items-center gap-2 cursor-pointer px-3 py-1.5 rounded-full text-[#002D62] nav-item-hover -ml-4 md:-ml-3">
-          <Menu className="w-5 h-5 transition-colors" />
-          <span className="font-bold tracking-wide text-[13px] transition-colors">DANH MỤC SẢN PHẨM</span>
+        <div className="group h-full flex items-center cursor-pointer relative -ml-1 md:-ml-3">
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full text-[#002D62] group-hover:bg-[#005BFF] group-hover:text-white transition-all duration-300">
+            <Menu className="w-5 h-5" />
+            <span className="font-bold tracking-wide text-[13px]">DANH MỤC SẢN PHẨM ▾</span>
+          </div>
+
+          {/* Dropdown Content with bridge */}
+          <div className="absolute top-[44px] left-0 pt-2 w-[280px] transition-all duration-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible z-50">
+            <div className="bg-white rounded-lg shadow-xl border border-gray-100 py-2">
+              {CATEGORIES.map((cat, i) => (
+                <Link
+                  to={cat.label === "Khuyến mãi" ? "/chat" : `/category/${getSlug(cat.label)}`}
+                  key={`drop-${i}`}
+                  className="flex items-center gap-3 px-4 py-2.5 hover:bg-[#F3F4F6] hover:text-[#005BFF] text-[#002D62] transition-colors group/item"
+                >
+                  <cat.icon className="w-5 h-5 text-gray-500 group-hover/item:text-[#005BFF] transition-colors" />
+                  <span className="text-[14px] font-medium">{cat.label}</span>
+                </Link>
+              ))}
+            </div>
+          </div>
         </div>
 
         {/* Categories */}
-        <div className="flex items-center overflow-x-auto no-scrollbar ml-2 flex-1">
+        <div className="flex items-center overflow-x-auto no-scrollbar ml-2 flex-1 h-full gap-1">
           {CATEGORIES.map((cat, i) => {
-            if (cat.label === "Khuyến mãi") return null; // Handle separately below
+            if (cat.label === "Khuyến mãi") return null;
             return (
-              <a
-                href="#"
+              <Link
+                to={`/category/${getSlug(cat.label)}`}
                 key={i}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[#002D62] nav-item-hover whitespace-nowrap"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[#002D62] hover:bg-[#005BFF] hover:text-white transition-all duration-300 whitespace-nowrap group"
               >
-                <cat.icon className="w-4 h-4 transition-colors" />
-                <span className="text-[13px] font-medium transition-colors">{cat.label}</span>
-              </a>
+                <cat.icon className="w-4 h-4" />
+                <span className="text-[13px] font-medium">{cat.label}</span>
+              </Link>
             )
           })}
         </div>
 
         {/* Right Links */}
-        <div className="flex items-center gap-2 ml-4 flex-shrink-0">
-          <a href="#" className="text-[13px] font-medium px-3 py-1.5 rounded-full text-[#002D62] nav-item-hover whitespace-nowrap">
-            <span className="transition-colors">Mua online giá rẻ</span>
-          </a>
-          <a href="#" className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[#002D62] nav-item-hover whitespace-nowrap">
-            <span className="text-[#E30A17] font-bold text-base leading-none mb-[2px] transition-colors">✿</span>
-            <span className="text-[13px] font-semibold transition-colors">Khuyến mãi</span>
-          </a>
+        <div className="flex items-center gap-2 ml-4 flex-shrink-0 h-full">
+          <Link to="/chat" className="text-[13px] font-medium px-3 py-1.5 rounded-full text-[#002D62] hover:bg-[#005BFF] hover:text-white transition-all duration-300 whitespace-nowrap">
+            Mua online giá rẻ
+          </Link>
+          <Link to="/chat" className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[#002D62] hover:bg-[#005BFF] hover:text-white transition-all duration-300 whitespace-nowrap group">
+            <span className="text-[#E30A17] group-hover:text-white font-bold text-base leading-none mb-[2px]">✿</span>
+            <span className="text-[13px] font-semibold">Khuyến mãi</span>
+          </Link>
         </div>
 
       </div>
