@@ -135,6 +135,12 @@ def tai_catalog(duong_dan: str | Path | None = None) -> list[SanPham]:
                            if (r.get("qua") or "").strip() else {}),
                         "do_on_db": _nguon("do_on_db", do_on, ma, "catalog:Độ ồn"),
                         "cspf": _nguon("cspf", cspf, ma, "catalog:Nhãn năng lượng"),
+                        "lam_lanh_nhanh": _nguon(
+                            "lam_lanh_nhanh",
+                            "Có" if r["lam_lanh_nhanh"] == "1" else "Không ghi nhận",
+                            ma,
+                            "catalog:Công nghệ làm lạnh",
+                        ),
                         "inverter": _nguon("inverter", r["inverter"], ma, "catalog:Loại Inverter"),
                         # 2 truong duoi phuc vu GIONG KY THUAT (khach ranh thong so
                         # duoc xem day du) - phai co nguon thi hau kiem moi cho noi.

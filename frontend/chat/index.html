@@ -575,10 +575,11 @@ async function gui(e){
       if (d.loai_noi_bat)
         html += '<div class="loai-noi-bat"><b>Vì sao em không đề xuất ' + d.loai_noi_bat.ten + ':</b> ' + d.loai_noi_bat.chi_tiet + '</div>';
       const t = d.thong_ke || {};
-      html += '<div class="giai-trinh"><span>lọc ' + t.truoc_loc + ' → ' + t.sau_loc + ' máy</span>'
-            + (t.bo_vi_thieu ? '<span title="Máy không có số liệu để đối chiếu ràng buộc của bạn — hệ không đoán">bỏ ' + t.bo_vi_thieu + ' máy thiếu dữ liệu</span>' : '')
-            + '<span>' + t.ms + 'ms</span><span>chạm LLM: ' + t.cham_llm + '</span>'
-            + (t.so_lan_chan_bia ? '<span>đã chặn bịa: ' + t.so_lan_chan_bia + ' lần</span>' : '') + '</div>';
+      // Khach chi can biet canh bao anh huong ket qua. So may da loc, thoi
+      // gian va so lan cham LLM la debug noi bo, khong hien trong hoi thoai.
+      if (t.bo_vi_thieu)
+        html += '<div class="giai-trinh">Có ' + t.bo_vi_thieu
+              + ' sản phẩm thiếu dữ liệu để kiểm tra tiêu chí này nên em không đưa vào kết quả.</div>';
     }
     // Chip goi y cau tiep theo tu backend - bam gui luon, khach khoi nghi cau.
     if (d.goi_y?.length)

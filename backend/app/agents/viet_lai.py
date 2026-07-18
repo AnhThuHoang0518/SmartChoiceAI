@@ -13,7 +13,7 @@ from __future__ import annotations
 from backend.app.guardrails.hau_kiem import ban_du_phong, hau_kiem
 from backend.app.ranking.xep_hang import cfg
 from backend.app.schemas.ket_qua import BangKetQua, dong_so_sanh
-from backend.app.schemas.nhu_cau import ONhuCauMayLanh
+from backend.app.schemas.nhu_cau import ONhuCauMayLanh, UuTien
 from backend.app.services.llm import LLM
 
 _LUAT_CHUNG = """Bạn là nhân viên tư vấn điện máy người Việt, xưng "em", gọi khách là "anh chị", kết câu bằng "ạ".
@@ -23,8 +23,9 @@ LUẬT TUYỆT ĐỐI:
 2. Không dùng từ quảng cáo: "tốt nhất thị trường", "siêu phẩm", "đỉnh cao", "cực kỳ".
 3. Không khen đều tất cả. Mỗi máy PHẢI nêu rõ được gì và MẤT gì.
 4. Nếu bảng có mục "Không đề xuất", phải chủ động nói vì sao không đề xuất máy đó.
-5. TỐI ĐA 150 từ. Dài hơn là bị cắt.
-6. Diễn đạt như người nói chuyện: "rẻ hơn", "đắt hơn nhưng được...", "êm hơn".
+5. Tiêu chí khách đang ưu tiên phải được trả lời trực tiếp; không tự đổi trọng tâm sang tiêu chí khác.
+6. TỐI ĐA 150 từ. Dài hơn là bị cắt.
+7. Diễn đạt như người nói chuyện: "rẻ hơn", "đắt hơn nhưng được...", "êm hơn".
    TUYỆT ĐỐI không viết các cụm "Hơn về", "Kém về", "đối thủ".
 
 Trả lời thẳng, không chào hỏi dài."""
@@ -80,21 +81,24 @@ def _bang_thanh_chu(
             ra.append(dong_so_sanh(k, la_hon=False))
         if not u.hon and not u.kem:
             ra.append("   (ngang bằng các máy còn lại trên mọi tiêu chí khách quan tâm)")
-        if giong == "ky_thuat":
-            th = {n.truong: n.gia_tri for n in u.nguon}
-            chi_tiet = []
-            if th.get("pham_vi"):
-                chi_tiet.append(f"dải {th['pham_vi']}")
-            if th.get("do_on_db") not in (None, "None"):
-                chi_tiet.append(f"độ ồn {th['do_on_db']} dB")
-            if th.get("cspf") not in (None, "None"):
-                chi_tiet.append(f"CSPF {th['cspf']}")
-            if th.get("sao") not in (None, "None"):
-                chi_tiet.append(f"{th['sao']} sao")
-            if th.get("gia_goc") and str(th["gia_goc"]) != str(u.gia):
-                chi_tiet.append(f"giá gốc {int(float(th['gia_goc'])):,d}đ".replace(",", "."))
-            if chi_tiet:
-                ra.append("   Thông số: " + " · ".join(chi_tiet))
+        th = {n.truong: n.gia_tri for n in u.nguon}
+        chi_tiet = []
+        if giong == "ky_thuat" and th.get("pham_vi"):
+            chi_tiet.append(f"dải {th['pham_vi']}")
+        if (giong == "ky_thuat" or UuTien.DO_ON in nhu_cau.uu_tien) \
+                and th.get("do_on_db") not in (None, "None"):
+            chi_tiet.append(f"độ ồn {th['do_on_db']} dB")
+        if (giong == "ky_thuat" or UuTien.TIET_KIEM_DIEN in nhu_cau.uu_tien) \
+                and th.get("cspf") not in (None, "None"):
+            chi_tiet.append(f"CSPF {th['cspf']}")
+        if UuTien.LAM_LANH_NHANH in nhu_cau.uu_tien and th.get("lam_lanh_nhanh"):
+            chi_tiet.append(f"làm lạnh nhanh: {th['lam_lanh_nhanh']}")
+        if giong == "ky_thuat" and th.get("sao") not in (None, "None"):
+            chi_tiet.append(f"{th['sao']} sao")
+        if giong == "ky_thuat" and th.get("gia_goc") and str(th["gia_goc"]) != str(u.gia):
+            chi_tiet.append(f"giá gốc {int(float(th['gia_goc'])):,d}đ".replace(",", "."))
+        if chi_tiet:
+            ra.append("   Thông tin đúng tiêu chí: " + " · ".join(chi_tiet))
 
     if bang.loai_noi_bat:
         ra += ["", f"KHÔNG ĐỀ XUẤT: {bang.loai_noi_bat.ten} — {bang.loai_noi_bat.chi_tiet}"]

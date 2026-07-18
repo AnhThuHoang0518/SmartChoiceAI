@@ -18,7 +18,7 @@ from fastapi import APIRouter
 from pydantic import BaseModel, Field
 
 from backend.app.agents.gia_tri_thong_tin import bang_diem, chon_cau_hoi
-from backend.app.agents.trich_o_nhu_cau import trich
+from backend.app.agents.trich_o_nhu_cau import trich, trich_bang_luat
 from backend.app.agents.viet_lai import viet_lai
 from backend.app.core import phien
 from backend.app.core.chuan_hoa_tv import (
@@ -144,6 +144,72 @@ def _gan_anh(top3: list[dict]) -> list[dict]:
         if url:
             u["anh_url"] = url
     return top3
+
+
+def _gia_tri_nguon(ung_vien, truong: str) -> str | None:
+    """Lay mot gia tri da co nguon tu bang ket qua; khong doc nguoc catalog."""
+    for n in ung_vien.nguon:
+        if n.truong == truong and n.gia_tri not in (None, "", "None"):
+            return str(n.gia_tri)
+    return None
+
+
+def _so_gon(v: str) -> str:
+    try:
+        return f"{float(v):g}"
+    except (TypeError, ValueError):
+        return str(v)
+
+
+def _nhan_manh_uu_tien_may_lanh(top1, uu_tien_luot: list[UuTien]) -> str:
+    """Cau code dam bao tra DUNG trong tam khach vua hoi, ke ca top chi co 1.
+
+    LLM van dien dat phan tong the, nhung khong duoc phep lam mat tieu chi
+    'chay em/lam lanh nhanh/tiet kiem dien' vi khong co doi thu de so sanh.
+    """
+    if not uu_tien_luot:
+        return ""
+    y = []
+    for u in dict.fromkeys(uu_tien_luot):
+        if u == UuTien.DO_ON:
+            v = _gia_tri_nguon(top1, "do_on_db")
+            y.append(
+                f"{top1.ten} có độ ồn hãng công bố {_so_gon(v)} dB"
+                if v else f"catalog chưa có số độ ồn của {top1.ten}, nên em chưa khẳng định máy chạy êm"
+            )
+        elif u == UuTien.LAM_LANH_NHANH:
+            v = _gia_tri_nguon(top1, "lam_lanh_nhanh")
+            y.append(
+                f"{top1.ten} có chế độ làm lạnh nhanh"
+                if v == "Có" else f"catalog chưa ghi nhận chế độ làm lạnh nhanh của {top1.ten}"
+            )
+        elif u == UuTien.TIET_KIEM_DIEN:
+            v = _gia_tri_nguon(top1, "cspf")
+            y.append(
+                f"{top1.ten} có CSPF {_so_gon(v)}"
+                if v else f"catalog chưa có CSPF của {top1.ten}, nên em chưa khẳng định mức tiết kiệm điện"
+            )
+        elif u == UuTien.GIA:
+            y.append(f"{top1.ten} có giá {tien_chu(top1.gia)}")
+    return "Dạ theo đúng tiêu chí anh chị vừa hỏi: " + "; ".join(y) + " ạ." if y else ""
+
+
+def _xac_nhan_kich_thuoc_tu_lanh(top1, nc) -> str:
+    """Noi ro vi sao tủ vuot qua bo loc cho dat, khong chi dua badge ky thuat."""
+    if nc.ngang_cm is None:
+        return ""
+    ngang = _gia_tri_nguon(top1, "ngang_cm")
+    if not ngang:  # loc cung da bo tủ thieu ngang; nhanh nay chi la chan an toan
+        return ""
+    kich_thuoc = [f"ngang {_so_gon(ngang)} cm"]
+    for truong, nhan in (("cao_cm", "cao"), ("sau_cm", "sâu")):
+        if v := _gia_tri_nguon(top1, truong):
+            kich_thuoc.append(f"{nhan} {_so_gon(v)} cm")
+    return (
+        f"Dạ em đã lọc theo bề ngang chỗ đặt tối đa {nc.ngang_cm:g} cm. "
+        f"{top1.ten} có kích thước " + ", ".join(kich_thuoc)
+        + f", nên phần thân tủ không vượt bề ngang {nc.ngang_cm:g} cm ạ."
+    )
 
 
 _HANG: set[str] | None = None
@@ -312,10 +378,13 @@ def _xu_ly_tu_lanh(t: TinNhan, ma: str, p: dict, t0: float, giong: str) -> TraLo
 
     mo_ta = bang_thanh_chu_tu_lanh(bang, nc, thieu_kt, giong)
     r = viet_lai(bang, nc, llm(), giong, mo_ta_nhu_cau=mo_ta)
+    text_cuoi = r["text"]
+    if xac_nhan := _xac_nhan_kich_thuoc_tu_lanh(bang.top3[0], nc):
+        text_cuoi = xac_nhan + "\n\n" + text_cuoi
     p["loai_truoc"] = "tu_van"
     p["top3_truoc"] = _gan_anh([u.model_dump(mode="json") for u in bang.top3])
     return TraLoi(
-        phien_id=ma, loai="tu_van", text=r["text"],
+        phien_id=ma, loai="tu_van", text=text_cuoi,
         o_nhu_cau=nc.model_dump(exclude_none=True, mode="json"),
         goi_y=_goi_y_tu_van(bang.top3, giong),
         top3=p["top3_truoc"],
@@ -604,6 +673,10 @@ def chat(t: TinNhan) -> TraLoi:
 
     ds = catalog()
     o_dang_cho = p["da_hoi"][-1] if p["da_hoi"] else None
+    # Trong tam CUA LUOT HIEN TAI tach rieng voi uu tien cong don ca phien.
+    # Dung de tra thang cau "con chay em/lam lanh nhanh thi sao?" thay vi nhai
+    # lai toan bo nhu cau cu va lam khach thay bot hieu nham.
+    uu_tien_luot = trich_bang_luat(t.tin_nhan).uu_tien
     nc = trich(t.tin_nhan, llm(), p["nhu_cau"], o_dang_cho)
 
     # Khach tuyen bo bo ngan sach ("khong quan tam tien nua") -> ghi nhan la
@@ -881,6 +954,8 @@ def chat(t: TinNhan) -> TraLoi:
     # Hoi ton kho KEM nhu cau -> van tu van binh thuong nhung phai ghi chu ro
     # phan ton kho thieu nguon (khong lam nhu cau hoi do chua ton tai).
     text_cuoi = r["text"]
+    if trong_tam := _nhan_manh_uu_tien_may_lanh(bang.top3[0], uu_tien_luot):
+        text_cuoi = trong_tam + "\n\n" + text_cuoi
     if hoi_ton_kho(t.tin_nhan):
         text_cuoi += ("\n\n(Về tồn kho: dữ liệu em đang có chưa gồm tồn kho theo "
                       "khu vực — cần nối Stock API — nên em chưa xác nhận được còn "

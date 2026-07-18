@@ -15,6 +15,7 @@ NHAN: dict[str, tuple[str, str]] = {
     "pham_vi": ("Phạm vi phòng", ""),
     "do_on_db": ("Độ ồn", " dB"),
     "cspf": ("Hiệu suất CSPF", ""),
+    "lam_lanh_nhanh": ("Làm lạnh nhanh", ""),
     "sao": ("Sao năng lượng", " sao"),
     # tu lanh / tu dong mat
     "nguoi_phu_hop": ("Số người dùng", ""),

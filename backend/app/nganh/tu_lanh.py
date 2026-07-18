@@ -354,6 +354,17 @@ def bang_thanh_chu_tu_lanh(bang: BangKetQua, nc: ONhuCauTuLanh,
             chi_tiet.append(f"cho {n.gia_tri}")
         if (n := th.get("ngan_da_lit")) and n.gia_tri not in (None, "None"):
             chi_tiet.append(f"ngăn đá {float(n.gia_tri):.0f} lít")
+        # Khach rang buoc cho dat thi kich thuoc la ly do chon CHINH, phai dua
+        # vao bang cho LLM va ban du phong thay; khong de no tu chuyen sang noi
+        # ve gia/dien nhu cau khach khong hoi.
+        if nc.ngang_cm is not None:
+            kich_thuoc = []
+            for truong, nhan in (("ngang_cm", "ngang"), ("cao_cm", "cao"), ("sau_cm", "sâu")):
+                n = th.get(truong)
+                if n and n.gia_tri not in (None, "None"):
+                    kich_thuoc.append(f"{nhan} {float(n.gia_tri):g} cm")
+            if kich_thuoc:
+                chi_tiet.append("kích thước " + " · ".join(kich_thuoc))
         if chi_tiet:
             ra.append("   " + " · ".join(chi_tiet))
         for h in u.hon:
