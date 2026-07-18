@@ -52,17 +52,20 @@ export function HeroSection() {
           transition={{ duration: 0.8 }}
           className="flex flex-col justify-center items-start w-[45%] xl:w-[40%] shrink-0 pr-4"
         >
-          {/* Label */}
-          <div className="w-full mb-4 text-center">
-            <span className="text-yellow-400 text-[11px] font-bold tracking-widest uppercase">AI PRODUCT ADVISOR</span>
-          </div>
+          {/* Header Block (Label + Title) */}
+          <div className="w-fit flex flex-col">
+            {/* Label */}
+            <div className="w-full mb-4 text-center">
+              <span className="text-yellow-400 text-[11px] font-bold tracking-widest uppercase">AI PRODUCT ADVISOR</span>
+            </div>
 
-          {/* Title */}
-          <h1 className="text-[28px] xl:text-[34px] font-extrabold leading-[1.2] mb-5 drop-shadow-md text-left whitespace-nowrap">
-            <span className="text-yellow-400">AI TƯ VẤN </span>
-            <span className="text-white">CHỌN SẢN PHẨM</span><br />
-            <span className="text-white">PHÙ HỢP NHẤT CHO BẠN</span>
-          </h1>
+            {/* Title */}
+            <h1 className="text-[28px] xl:text-[34px] font-extrabold leading-[1.2] mb-5 drop-shadow-md text-left whitespace-nowrap">
+              <span className="text-yellow-400">AI TƯ VẤN </span>
+              <span className="text-white">CHỌN SẢN PHẨM</span><br />
+              <span className="text-white">PHÙ HỢP NHẤT CHO BẠN</span>
+            </h1>
+          </div>
 
           {/* Bullet points */}
           <ul className="flex flex-col gap-3 mb-8 w-full">
