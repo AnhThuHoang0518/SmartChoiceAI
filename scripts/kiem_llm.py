@@ -19,8 +19,8 @@ load_dotenv()
 import os  # noqa: E402
 
 print("LLM_NHA_CUNG_CAP =", os.getenv("LLM_NHA_CUNG_CAP", "(chua dat - mac dinh)"))
-print("Co FPT_API_KEY   =", bool(os.getenv("FPT_API_KEY")))
-print("Co GEMINI_API_KEY=", bool(os.getenv("GEMINI_API_KEY")))
+print("Co LLM_API_KEY   =", bool(os.getenv("LLM_API_KEY")))
+print("LLM_MODEL        =", os.getenv("LLM_MODEL", "(mac dinh cua adapter)"))
 
 from backend.app.services.llm import tao_llm  # noqa: E402
 

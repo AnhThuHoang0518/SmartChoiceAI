@@ -110,15 +110,29 @@ class FptLLM(LLM):
                     ],
                     "temperature": 0.2,
                     # max_tokens la tham so chuan OpenAI (API FPT tuong thich OpenAI
-                    # theo docs chinh thuc). Demo that do 10.4s - phan lon la LLM
-                    # viet trang giang. 500 token ~ 350 tu tieng Viet, du cho top 3.
-                    "max_tokens": 500,
+                    # theo docs chinh thuc). DeepSeek la model SUY LUAN: no dot
+                    # token vao phan "nghi" truoc khi tra loi - dat 500 thi prompt
+                    # dai (bang top 3) bi dot sach, content ve RONG (do that tren
+                    # may 18/07: cau ngan song, cau tu van chet ca 6/6). 2000 du
+                    # cho nghi + 150 tu tra loi; do dai van bi ghim boi luat 150 tu.
+                    "max_tokens": 2000,
                     "stream": False,
                 },
                 timeout=30,
             )
             r.raise_for_status()
-            return (r.json()["choices"][0]["message"]["content"] or "").strip()
+            msg = r.json()["choices"][0]["message"]
+            text = (msg.get("content") or "").strip()
+            if not text:
+                # content rong nhung co reasoning -> het token o phan nghi.
+                # Bao RO thay vi lang le ve rong (truoc day bi hieu nham la chan bia).
+                ly_do = "co reasoning_content (het token o phan suy luan?)" \
+                    if msg.get("reasoning_content") else "khong ro ly do"
+                raise LoiLLM(f"FPT tra content RONG - {ly_do}; "
+                             f"finish={r.json()['choices'][0].get('finish_reason')}")
+            return text
+        except LoiLLM:
+            raise
         except Exception as e:
             raise LoiLLM(f"FPT Marketplace loi: {e}") from e
 
