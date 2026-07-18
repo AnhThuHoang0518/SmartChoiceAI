@@ -19,21 +19,17 @@
   header span{font-size:13px;color:var(--phu)}
   main{flex:1;display:flex;min-height:0;max-width:1080px;width:100%;margin:0 auto;gap:0}
   #khung{flex:1;overflow-y:auto;padding:20px;min-width:0}
-  /* ── Panel trai: mat bot (nhep mieng theo giong doc) + o anh san pham ── */
+  /* ── Panel trai: avatar tro ly (sang vien khi dang doc) + o anh san pham ── */
   #ben-trai{width:250px;flex-shrink:0;padding:20px 14px;display:flex;flex-direction:column;gap:14px;border-right:1px solid var(--vien)}
   @media (max-width:900px){#ben-trai{display:none}}
   .the-panel{background:var(--the);border:1px solid var(--vien);border-radius:14px;padding:14px;text-align:center}
-  .mat{width:96px;height:96px;border-radius:50%;background:linear-gradient(145deg,var(--chinh),#003db3);margin:4px auto 10px;position:relative}
-  .mat .mat-trai,.mat .mat-phai{position:absolute;top:34px;width:12px;height:16px;border-radius:50%;background:#fff}
-  .mat .mat-trai{left:24px}.mat .mat-phai{right:24px}
-  .mat .mieng{position:absolute;left:50%;transform:translateX(-50%);bottom:22px;width:30px;height:6px;border-radius:0 0 16px 16px;background:#fff;transition:height .12s}
-  .mat.dang-noi .mieng{animation:nhep .28s infinite alternate}
-  .mat.dang-noi .mat-trai,.mat.dang-noi .mat-phai{animation:chop 3s infinite}
-  @keyframes nhep{from{height:5px}to{height:16px;border-radius:10px}}
-  @keyframes chop{0%,92%,100%{transform:scaleY(1)}96%{transform:scaleY(.1)}}
+  /* Mat 3D (canvas tu render, khong can thu vien): trong suot tren nen the-panel */
+  .o-mat{position:relative;width:140px;height:140px;margin:0 auto 6px}
+  .o-mat canvas{display:block;width:140px;height:140px}
+  .o-mat.dang-noi{filter:drop-shadow(0 0 9px var(--chinh-nhat))}
   .ten-bot{font-weight:700;font-size:14.5px}
   .trang-thai{font-size:12px;color:var(--phu);margin-top:2px}
-  .mat.dang-noi ~ .trang-thai{color:var(--chinh)}
+  .o-mat.dang-noi ~ .trang-thai{color:var(--chinh)}
   #o-anh .khung-anh{height:120px;border:1.5px dashed var(--vien);border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:var(--phu);font-size:12px;margin-top:8px}
   #o-anh .khung-anh .bieu-tuong{font-size:34px}
   #o-anh .ten-sp{font-weight:700;font-size:13.5px;margin-top:8px;color:var(--muc)}
@@ -90,7 +86,7 @@
 <main>
 <div id="ben-trai">
   <div class="the-panel">
-    <div class="mat" id="mat-bot"><div class="mat-trai"></div><div class="mat-phai"></div><div class="mieng"></div></div>
+    <div class="o-mat" id="mat-bot"><canvas id="mat-3d"></canvas></div>
     <div class="ten-bot">Trợ lý Smart Choice</div>
     <div class="trang-thai" id="trang-thai">Sẵn sàng tư vấn</div>
   </div>
@@ -147,14 +143,148 @@ nutDoc.onclick = () => {
     // tat la phai IM ngay: dung ca giong trinh duyet LAN file TTS dang phat
     if ('speechSynthesis' in window) speechSynthesis.cancel();
     if (amThanh) { amThanh.pause(); amThanh = null; }
+    clearInterval(giuGiong); giuGiong = null;
     tatMieng();
   }
 };
-// ── Mat bot: nhep mieng dung luc dang phat tieng (ca TTS FPT lan trinh duyet)
+// ── Mat NGUOI THAT rig thanh mo hinh dong (kieu Live2D): warp anh co-gai.png
+// Ham duoi duoc keo xuong lien tuc (noi suy 60fps -> khong giat), khoang
+// mieng + rang ve dung theo duong moi cua anh; khau hinh bam nguyen am tung tu.
 const matBot = document.getElementById('mat-bot');
 const trangThai = document.getElementById('trang-thai');
-function batMieng(){ if (matBot) { matBot.classList.add('dang-noi'); trangThai.textContent = 'Đang nói...'; } }
-function tatMieng(){ if (matBot) { matBot.classList.remove('dang-noi'); trangThai.textContent = 'Sẵn sàng tư vấn'; } }
+let may3d = null, dangNoi = false, nhipTimer = null, coBoundary = false;
+
+(function khoiTaoMat(){
+  const cv = document.getElementById('mat-3d');
+  if (!cv) return;
+  cv.width = 280; cv.height = 280;                 // ve 2x roi CSS thu ve 140 -> net
+  const c = cv.getContext('2d');
+  may3d = {dichMo: 0, dichRong: 1, mo: 0, rong: 1, gat: 0, chop: 0, tNhay: 0};
+
+  const anh = new Image();
+  let anhOk = false;
+  anh.onload = () => { anhOk = true; };
+  anh.src = '/static/co-gai.png';
+
+  // duong khe moi do truc tiep tren anh goc 1254px, quy ve khung 280
+  const K = 280 / 1254;
+  const seamPts = [[525,758],[550,770],[574,781],[598,788],[622,796],
+                   [646,797],[670,796],[694,794],[725,786]].map(p => [p[0]*K, p[1]*K]);
+  const xc1 = seamPts[0][0], xc2 = seamPts[seamPts.length-1][0];
+  function seamY(x){
+    if (x <= xc1) return seamPts[0][1];
+    if (x >= xc2) return seamPts[seamPts.length-1][1];
+    for (let i = 1; i < seamPts.length; i++)
+      if (x <= seamPts[i][0]) {
+        const [x0,y0] = seamPts[i-1], [x1,y1] = seamPts[i];
+        return y0 + (y1-y0)*(x-x0)/(x1-x0);
+      }
+    return seamPts[seamPts.length-1][1];
+  }
+  const D = 13, jawH = 50;                          // do mo toi da / vung ham bi keo
+
+  function khung(t){
+    requestAnimationFrame(khung);
+    const s = t/1000, m = may3d;
+    m.dichMo += ((dangNoi ? .05 : 0) - m.dichMo) * .09;   // khep dan giua cac tu
+    m.mo += (m.dichMo - m.mo) * .35;                       // mo nhanh, van lerp muot
+    m.rong += (m.dichRong - m.rong) * .22;
+    m.gat *= .9;
+    if (s > m.tNhay) { m.tNhay = s + 2.4 + Math.random() * 2.6; m.chop = 1; }
+    if (m.chop > 0) m.chop -= .11;                 // 1 nhip chop ~150ms
+    const bien = dangNoi ? 1 : .35;
+    const sway = (Math.sin(s*.8)*.016 + Math.sin(s*1.9)*.011*bien);
+    const bob = Math.sin(s*1.25)*(dangNoi ? 1.6 : .9) + m.gat*5;
+
+    c.setTransform(1,0,0,1,0,0);
+    c.clearRect(0,0,280,280);
+    c.save();
+    c.beginPath(); c.arc(140,140,139,0,7); c.clip();       // khung tron
+    c.translate(140,140+bob); c.rotate(sway); c.scale(1.09,1.09); c.translate(-140,-140);
+    if (!anhOk) {                                          // anh chua tai xong
+      const g = c.createLinearGradient(0,0,0,280);
+      g.addColorStop(0,'#c9cffb'); g.addColorStop(1,'#8f9af0');
+      c.fillStyle = g; c.fillRect(0,0,280,280);
+      c.restore(); return;
+    }
+    c.drawImage(anh, 0, 0, 280, 280);
+    const mo = m.mo;
+    if (mo > .03) {
+      const cx = (xc1+xc2)/2, nua = (xc2-xc1)/2 * Math.min(m.rong, 1.15);
+      const a1 = cx-nua, a2 = cx+nua;
+      const dx = x => (x<=a1 || x>=a2) ? 0
+        : D * mo * Math.pow(Math.sin(Math.PI*(x-a1)/(a2-a1)), .9);
+      // khoang toi trong mieng: to theo dung duong khe moi
+      c.beginPath(); c.moveTo(a1, seamY(a1));
+      for (let x=a1; x<=a2; x+=3) c.lineTo(x, seamY(x));
+      for (let x=a2; x>=a1; x-=3) c.lineTo(x, seamY(x)+dx(x));
+      c.closePath();
+      const gMieng = c.createLinearGradient(0, seamY(cx), 0, seamY(cx) + D);
+      gMieng.addColorStop(0, '#8a4a48'); gMieng.addColorStop(.45, '#5c2028'); gMieng.addColorStop(1, '#38121a');
+      c.fillStyle = gMieng; c.fill();
+      c.save(); c.clip();                                  // rang tren lo dan theo do mo
+      const caoRang = mo > .32 ? Math.min(3.4, D * (mo - .32) * .8) : 0;
+      c.fillStyle = 'rgba(243,232,224,.92)';
+      if (caoRang > .4) {                                // chi lo o giua, thon 2 dau
+        const t1 = a1 + (a2-a1)*.18, t2 = a2 - (a2-a1)*.18;
+        c.beginPath(); c.moveTo(t1, seamY(t1));
+        for (let x = t1; x <= t2; x += 3) c.lineTo(x, seamY(x));
+        for (let x = t2; x >= t1; x -= 3)
+          c.lineTo(x, seamY(x) + caoRang * Math.sin(Math.PI * (x-t1) / (t2-t1)));
+        c.closePath(); c.fill();
+      }
+      c.restore();
+      // ham duoi: keo dai anh tu khe moi xuong, bi nen dan -> lien mach
+      for (let x = Math.floor(a1); x <= a2; x += 2) {
+        const d = dx(x); if (d < .25) continue;
+        const sy = seamY(x);
+        c.drawImage(anh, x/K, sy/K, 2/K, jawH/K, x, sy+d, 2, jawH-d);
+      }
+    }
+    // chop mat: mi da phu len mat roi mo ra (toa do mat do tren anh goc)
+    if (m.chop > 0) {
+      const phu = Math.sin(Math.PI * Math.min(m.chop, 1));
+      for (const [ex, ey] of [[120,123],[166,125]]) {
+        const g2 = c.createRadialGradient(ex, ey + 1, 2, ex, ey + 1, 14.5);
+        g2.addColorStop(0, 'rgba(228,184,168,' + phu + ')');
+        g2.addColorStop(.7, 'rgba(228,184,168,' + phu + ')');
+        g2.addColorStop(1, 'rgba(228,184,168,0)');
+        c.fillStyle = g2;
+        c.beginPath(); c.ellipse(ex, ey + 1, 14.5, 9, 0, 0, 7); c.fill();
+        if (phu > .55) {                           // duong long mi khi khep
+          c.strokeStyle = 'rgba(90,55,45,' + (phu * .7) + ')'; c.lineWidth = 1.6;
+          c.beginPath(); c.ellipse(ex, ey + 1.5, 12, 4.5, 0, .15 * Math.PI, .85 * Math.PI); c.stroke();
+        }
+      }
+    }
+    c.restore();
+  }
+  requestAnimationFrame(khung);
+})();
+
+function nhepTu(tu){                 // nguyen am chinh cua tieng -> khau hinh
+  const ng = ((tu || 'a').toLowerCase().match(/[aăâeêioôơuưy]/) || ['a'])[0];
+  if (!may3d) return;
+  if ('oôơuư'.includes(ng)) { may3d.dichMo = .7; may3d.dichRong = .5; }    // chum moi
+  else if ('eêiy'.includes(ng)) { may3d.dichMo = .55; may3d.dichRong = 1.2; } // banh mieng
+  else { may3d.dichMo = .95; may3d.dichRong = 1; }                         // a ha to
+  may3d.gat = .12 + Math.random() * .12;
+}
+function layTu(vb, i){ const m = vb.slice(i).match(/^\S+/); return m ? m[0] : 'a'; }
+
+let cacTieng = [], iTieng = 0;
+function batMieng(vanBan, buocMs){ if (matBot) { matBot.classList.add('dang-noi'); trangThai.textContent = 'Đang nói...';
+  dangNoi = true; coBoundary = false;
+  cacTieng = (vanBan || '').split(/\s+/).filter(Boolean); iTieng = 0;
+  clearInterval(nhipTimer);
+  // khong co word-boundary -> tu buoc qua TUNG TIENG cua text theo nhip doc
+  nhipTimer = setInterval(() => {
+    if (coBoundary) return;
+    if (iTieng < cacTieng.length) nhepTu(cacTieng[iTieng++]);
+  }, buocMs || 205); } }
+function tatMieng(){ if (matBot) { matBot.classList.remove('dang-noi'); trangThai.textContent = 'Sẵn sàng tư vấn';
+  dangNoi = false; coBoundary = false; clearInterval(nhipTimer); nhipTimer = null;
+  if (may3d) { may3d.dichMo = 0; may3d.dichRong = 1; } } }
 
 // ── O "san pham dang xem": bam card top 3 -> hien o panel trai.
 // Anh THAT chua co (du lieu DMX khong kem link anh) -> ghi ro cho Image API,
@@ -171,6 +301,15 @@ function chonSP(sp){
 }
 
 let amThanh = null;                           // audio dang phat - phat cai moi thi tat cai cu
+// Chrome hay "ket" engine doc neu F5 giua chung -> go ket ngay khi tai trang;
+// danh sach giong nap async sau reload -> cache lai khi san sang.
+let giongViet = null, giuGiong = null;
+if ('speechSynthesis' in window) {
+  speechSynthesis.cancel(); speechSynthesis.resume();
+  const chonGiong = () => { giongViet = speechSynthesis.getVoices()
+    .find(v => v.lang && v.lang.toLowerCase().startsWith('vi')) || null; };
+  chonGiong(); speechSynthesis.onvoiceschanged = chonGiong;
+}
 async function docTo(text){
   // Lam sach de DOC (khong dong den hien thi): bo markdown/bullet, dau '—' va
   // '·' thanh khoang trang (TTS ngat qua lau o dau cau), '/' doc 'trên'
@@ -196,7 +335,12 @@ async function docTo(text){
     });
     if (r.ok) {
       amThanh = new Audio(URL.createObjectURL(await r.blob()));
-      amThanh.onplay = batMieng;
+      amThanh.onplay = () => {
+        const soTieng = Math.max(sach.split(/\s+/).filter(Boolean).length, 1);
+        const buoc = amThanh.duration > 0
+          ? Math.min(Math.max(amThanh.duration * 1000 / soTieng, 130), 330) : 205;
+        batMieng(sach, buoc);                    // nhip = thoi luong audio / so tieng
+      };
       amThanh.onended = tatMieng;
       amThanh.onpause = tatMieng;
       amThanh.play();
@@ -204,13 +348,23 @@ async function docTo(text){
     }
   } catch (e) { /* roi ve trinh duyet */ }
   if (!('speechSynthesis' in window)) return;
+  speechSynthesis.cancel(); speechSynthesis.resume();     // chac chan het ket
   const u = new SpeechSynthesisUtterance(sach);
   u.lang = 'vi-VN';
-  const giong = speechSynthesis.getVoices().find(v => v.lang && v.lang.startsWith('vi'));
-  if (giong) u.voice = giong;
+  if (!giongViet) giongViet = speechSynthesis.getVoices()
+    .find(v => v.lang && v.lang.toLowerCase().startsWith('vi')) || null;
+  if (giongViet) u.voice = giongViet;
   u.rate = 1.05;
-  u.onstart = batMieng; u.onend = tatMieng; u.onerror = tatMieng;
+  u.onstart = () => { batMieng(sach);
+    clearInterval(giuGiong);                    // Chrome cat giong sau ~15s neu khong resume
+    giuGiong = setInterval(() => speechSynthesis.resume(), 8000); };
+  const xong = () => { clearInterval(giuGiong); giuGiong = null; tatMieng(); };
+  u.onend = xong; u.onerror = xong;
+  u.onboundary = (e) => { coBoundary = true;
+    iTieng = sach.slice(0, e.charIndex || 0).split(/\s+/).filter(Boolean).length + 1;
+    nhepTu(layTu(sach, e.charIndex || 0)); };    // giong ho tro -> khop tuyet doi
   speechSynthesis.speak(u);
+  speechSynthesis.resume();
 }
 
 let phienId = null;
@@ -371,5 +525,7 @@ window.addEventListener('load', () => {
   }
 });
 </script>
+
+
 </body>
 </html>
