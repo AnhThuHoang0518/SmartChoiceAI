@@ -28,7 +28,7 @@ export function CategoryNavigation() {
 
         {/* Main Menu Button */}
         <div className="group h-full flex items-center cursor-pointer relative -ml-1 md:-ml-3">
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full text-[#002D62] group-hover:bg-[#005BFF] group-hover:text-white transition-all duration-300">
+          <div className="h-full flex items-center gap-2 px-3 text-[#002D62] group-hover:bg-[#005BFF] group-hover:text-white transition-all duration-300">
             <Menu className="w-5 h-5" />
             <span className="font-bold tracking-wide text-[13px]">DANH MỤC SẢN PHẨM ▾</span>
           </div>
@@ -55,14 +55,14 @@ export function CategoryNavigation() {
         </div>
 
         {/* Categories */}
-        <div className="flex items-center overflow-x-auto no-scrollbar ml-2 flex-1 h-full gap-1">
+        <div className="flex items-stretch overflow-x-auto no-scrollbar ml-2 flex-1 h-full">
           {CATEGORIES.map((cat, i) => {
             if (cat.label === "Khuyến mãi") return null;
             return (
               <Link
                 to={`/category/${getSlug(cat.label)}`}
                 key={i}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[#002D62] hover:bg-[#005BFF] hover:text-white transition-all duration-300 whitespace-nowrap group"
+                className="h-full flex items-center gap-1.5 px-3 text-[#002D62] hover:bg-[#005BFF] hover:text-white transition-all duration-300 whitespace-nowrap group"
               >
                 <cat.icon className="w-4 h-4" />
                 <span className="text-[13px] font-medium">{cat.label}</span>
@@ -72,11 +72,11 @@ export function CategoryNavigation() {
         </div>
 
         {/* Right Links */}
-        <div className="flex items-center gap-2 ml-4 flex-shrink-0 h-full">
-          <a href="/chat" className="text-[13px] font-medium px-3 py-1.5 rounded-full text-[#002D62] hover:bg-[#005BFF] hover:text-white transition-all duration-300 whitespace-nowrap">
+        <div className="flex items-stretch ml-4 flex-shrink-0 h-full">
+          <a href="/chat" className="h-full flex items-center text-[13px] font-medium px-3 text-[#002D62] hover:bg-[#005BFF] hover:text-white transition-all duration-300 whitespace-nowrap">
             Mua online giá rẻ
           </a>
-          <a href="/chat" className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[#002D62] hover:bg-[#005BFF] hover:text-white transition-all duration-300 whitespace-nowrap group">
+          <a href="/chat" className="h-full flex items-center gap-1.5 px-3 text-[#002D62] hover:bg-[#005BFF] hover:text-white transition-all duration-300 whitespace-nowrap group">
             <span className="text-[#E30A17] group-hover:text-white font-bold text-base leading-none mb-[2px]">✿</span>
             <span className="text-[13px] font-semibold">Khuyến mãi</span>
           </a>

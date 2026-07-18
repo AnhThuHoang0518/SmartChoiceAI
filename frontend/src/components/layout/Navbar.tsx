@@ -4,7 +4,7 @@ import { Link } from "react-router-dom"
 
 export function Navbar() {
   return (
-    <header className="h-[80px] bg-white border-b border-border sticky top-0 z-50 flex items-center">
+    <header className="h-[80px] bg-white border-b border-border sticky top-0 z-50 flex items-center overflow-hidden">
       <div className="container mx-auto px-4 flex items-center justify-between gap-8">
         {/* Logo */}
         <Link to="/" className="flex-shrink-0 flex items-center -ml-2 md:-ml-8">
