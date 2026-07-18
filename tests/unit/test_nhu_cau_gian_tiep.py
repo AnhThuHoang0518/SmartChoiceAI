@@ -90,6 +90,25 @@ def test_router_toc_uot_tu_choi_that_khong_nham_may_say_quan_ao():
     assert r.top3 == []
 
 
+def test_cau_vua_giong_hoi_chung_vua_suy_duoc_thi_uu_tien_suy_luan():
+    # "tóc khô lâu THÌ NÊN CHỌN SẢN PHẨM NÀO" vua giong cau hoi chung (can_hoi
+    # lam ro nganh) vua suy duoc may say toc -> phai suy luan, KHONG hoi chung.
+    r = _chat_moi("tóc tôi khô lâu thì nên chọn sản phẩm nào")
+    assert r.loai == "ngoai_pham_vi"
+    assert "máy sấy tóc" in r.text.lower()
+
+    r2 = _chat_moi("đồ ăn hay hỏng nên chọn sản phẩm nào")
+    assert r2.loai == "xac_nhan_nganh"
+    assert phien.lay(r2.phien_id)["xac_nhan_nganh_gian_tiep"]["san_pham"] == "tủ lạnh"
+
+
+def test_cau_that_su_chung_chung_van_hoi_lai():
+    # khong suy duoc tinh huong -> van hoi lam ro (khong bia nganh)
+    r = _chat_moi("tôi muốn mua gì đó")
+    assert r.loai == "cau_hoi"
+    assert phien.lay(r.phien_id)["nganh"] is None
+
+
 def test_noi_ro_micro_thu_am_khong_bi_xem_la_suy_luan_gian_tiep():
     r = _chat_moi("micro thu âm: Tôi quay video 6 giờ, pin có đủ không?")
 

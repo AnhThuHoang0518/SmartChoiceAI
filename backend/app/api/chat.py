@@ -1137,8 +1137,14 @@ def chat(t: TinNhan) -> TraLoi:
     # 'May tiet kiem dien', 'may chay em', 'san pham duoi 10 trieu' dung cho
     # nhieu nganh. Khong co bang chung rieng may lanh thi hoi nganh TRUOC, khong
     # tu lay uu tien/gia roi ngam gan may_lanh.
+    # Neu suy DUOC nhu cau gian tiep tu tinh huong ("tóc khô lâu" -> máy sấy tóc)
+    # thi KHONG hoi chung chung o day; de handler suy luan phia duoi (dong ~1289)
+    # de xuat ung vien + cho khach xac nhan / tu choi that. Suy luan thang cau hoi
+    # chung, nhung van an toan vi khong tu chot, so lieu van tu DB.
+    from backend.app.core.nhu_cau_gian_tiep import nhu_cau_gian_tiep as _ncgt_som
     if p.get("nganh") is None and not co_nganh_ro \
             and can_hoi_lam_ro_nganh(t.tin_nhan) \
+            and _ncgt_som(t.tin_nhan) is None \
             and not hoi_gia_hang(t.tin_nhan) \
             and giai_thich_truong(t.tin_nhan) is None:
         p["da_hoi"].append("nganh")
