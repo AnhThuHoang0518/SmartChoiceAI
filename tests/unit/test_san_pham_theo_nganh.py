@@ -3,6 +3,7 @@
 KHONG mock. Nganh co data -> tra san pham + danh sach hang; nganh khong co data
 -> rong (UI hien 'dang cap nhat'). Loc hang/gia + sap xep chay tren data that."""
 from backend.app.api.chat import san_pham_theo_nganh as f
+from backend.app.api.chat import danh_muc_landing
 
 
 def test_nganh_co_data_tra_san_pham_that():
@@ -35,3 +36,18 @@ def test_loc_hang_va_gia_chay_that():
 def test_slug_khong_ton_tai_khong_no():
     r = f(nganh="khong-co-nganh-nay")
     assert r["san_pham"] == [] and r["tong"] == 0
+
+
+def test_danh_muc_landing_moi_muc_co_anh_that_khop_nganh():
+    from backend.app.api.chat import _catalog_theo_slug, _anh_sp
+    dm = danh_muc_landing()
+    assert len(dm) >= 8
+    anh = _anh_sp()
+    for d in dm:
+        # moi danh muc co san pham that + anh dai dien la anh THAT (khong lech nhan)
+        assert d["tong"] > 0, d["ten"]
+        assert d["anh_url"].startswith("http"), d["ten"]
+        # anh dai dien phai thuoc DUNG nganh do (map tu ma_sp cua san pham nganh)
+        _, ds = _catalog_theo_slug(d["slug"])
+        anh_nganh = {anh.get(str(s.ma_sp), "") for s in ds}
+        assert d["anh_url"] in anh_nganh, d["ten"]

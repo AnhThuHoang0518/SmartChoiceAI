@@ -736,6 +736,37 @@ def san_pham_theo_nganh(nganh: str = "", hang: str = "", gia_min: int = 0,
             "hang": hang_ds, "san_pham": sp}
 
 
+# Thu tu hien thi danh muc tren landing - CHI nganh co du lieu that.
+_DANH_MUC_LANDING = [
+    ("Máy lạnh", "may-lanh"), ("Tủ lạnh", "tu-lanh"), ("Máy giặt", "may-giat"),
+    ("Máy sấy", "may-say"), ("Tủ đông", "tu-dong"), ("Máy rửa chén", "may-rua-chen"),
+    ("Máy nước nóng", "may-nuoc-nong"), ("Màn hình", "man-hinh"),
+    ("Máy tính bảng", "may-tinh-bang"),
+]
+
+
+@router.get("/danh-muc")
+def danh_muc_landing() -> list[dict]:
+    """Danh sach danh muc CHO landing: moi danh muc kem anh dai dien la anh THAT
+    cua 1 san pham trong dung nganh do (khong dung anh mock/lech nhan). Nhan va
+    anh la 1 nguon su that - frontend khong hardcode anh nua."""
+    anh = _anh_sp()
+    out = []
+    for ten, slug in _DANH_MUC_LANDING:
+        kq = _catalog_theo_slug(slug)
+        if not kq:
+            continue
+        _, ds = kq
+        url = ""
+        for s in ds:                       # lay anh that dau tien co san
+            u = anh.get(str(s.ma_sp), "")
+            if u:
+                url = u
+                break
+        out.append({"ten": ten, "slug": slug, "tong": len(ds), "anh_url": url})
+    return out
+
+
 @router.get("/nhan-truong")
 def nhan_truong() -> dict:
     """Nhan tieng Viet cho UI (1 nguon su that, frontend khong hardcode):
