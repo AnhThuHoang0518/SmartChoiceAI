@@ -1,6 +1,7 @@
 import { useRef } from "react"
 import { motion } from "framer-motion"
 import { ChevronRight, ChevronLeft } from "lucide-react"
+import { useNavigate } from "react-router-dom"
 
 const categories = [
   { name: "Tivi", image: "/images/image.png" },
@@ -16,6 +17,7 @@ const categories = [
 
 export function CategorySection() {
   const scrollRef = useRef<HTMLDivElement>(null)
+  const navigate = useNavigate()
 
   const scroll = (direction: 'left' | 'right') => {
     if (scrollRef.current) {
@@ -25,6 +27,16 @@ export function CategorySection() {
         behavior: 'smooth' 
       })
     }
+  }
+
+  const handleCategoryClick = (name: string) => {
+    // Generate a simple URL slug from the category name
+    const slug = name.toLowerCase()
+                     .normalize("NFD")
+                     .replace(/[\u0300-\u036f]/g, "")
+                     .replace(/đ/g, "d")
+                     .replace(/\s+/g, '-')
+    navigate(`/category/${slug}`)
   }
 
   return (
@@ -45,6 +57,7 @@ export function CategorySection() {
             <motion.div
               key={i}
               whileHover={{ y: -4 }}
+              onClick={() => handleCategoryClick(cat.name)}
               className="w-[150px] min-w-[150px] h-[180px] bg-white rounded-2xl p-4 flex flex-col items-center justify-between shadow-sm hover:shadow-md transition-all duration-300 border border-white cursor-pointer flex-shrink-0"
             >
               <div className="w-full h-[110px] flex items-center justify-center mt-1">
