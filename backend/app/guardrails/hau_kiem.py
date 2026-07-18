@@ -110,7 +110,10 @@ def trich_so(text: str) -> list[tuple[str, str, float]]:
     for don_vi, maus in MAU_SO.items():
         for mau, he_so in maus:
             for m in re.finditer(mau, text, re.I):
-                v = _so(m.group(1))
+                # rstrip dau cau: 'CSPF 5.32,' tung bi bat oan thanh 532
+                # (dau phay cuoi lam _so hieu nham kieu thap phan) - chan oan
+                # la ton 1 luot viet lai 4-6s voi LLM that.
+                v = _so(m.group(1).rstrip(".,"))
                 if v is not None:
                     ra.append((m.group(0).strip(), don_vi, v * he_so))
     return ra

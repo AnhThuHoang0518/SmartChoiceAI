@@ -124,9 +124,13 @@ class FptLLM(LLM):
             msg = r.json()["choices"][0]["message"]
             text = (msg.get("content") or "").strip()
             if not text:
-                # content rong nhung co reasoning -> het token o phan nghi.
-                # Bao RO thay vi lang le ve rong (truoc day bi hieu nham la chan bia).
-                ly_do = "co reasoning_content (het token o phan suy luan?)" \
+                # DeepSeek hay viet NGUYEN VAN cau tra loi trong phan suy nghi
+                # roi dung (finish=stop, content rong - do that 18/07). Vot doan
+                # tra loi khach o cuoi phan nghi; moi con so trong do VAN di qua
+                # hau kiem nhu thuong nen khong mo cua cho bia.
+                text = self._vot_tu_suy_nghi(msg.get("reasoning_content") or "")
+            if not text:
+                ly_do = "co reasoning_content (khong vot duoc cau tra loi)" \
                     if msg.get("reasoning_content") else "khong ro ly do"
                 raise LoiLLM(f"FPT tra content RONG - {ly_do}; "
                              f"finish={r.json()['choices'][0].get('finish_reason')}")
@@ -135,6 +139,28 @@ class FptLLM(LLM):
             raise
         except Exception as e:
             raise LoiLLM(f"FPT Marketplace loi: {e}") from e
+
+    @staticmethod
+    def _vot_tu_suy_nghi(rc: str) -> str:
+        """Tim cau tra loi khach trong phan reasoning cua model suy luan.
+
+        Dau hieu: doan bat dau bang 'Dạ' (giong template minh ep) o vi tri
+        muon nhat - model thuong nhap ban cuoi cung ngay truoc khi dung.
+        Khong thay thi tra rong -> tang tren roi ve ban du phong.
+        """
+        import re as _re
+
+        rc = rc.strip()
+        if not rc:
+            return ""
+        vi_tri = max(rc.rfind("\nDạ "), 0 if rc.startswith("Dạ ") else -1)
+        if vi_tri < 0:
+            return ""
+        ung = rc[vi_tri:].strip()
+        # cat phan meta neu model con lam nham sau ban nhap
+        ung = _re.split(r"\n(?:Wait|Let me|Hmm|Okay|OK,|Actually)\b", ung)[0].strip()
+        # qua ngan (< 40 ky tu) thi kho la cau tu van that
+        return ung if len(ung) >= 40 else ""
 
 
 class LuatLLM(LLM):
