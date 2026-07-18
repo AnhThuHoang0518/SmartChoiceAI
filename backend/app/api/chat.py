@@ -553,6 +553,25 @@ def _xu_ly_nganh_khung(t: TinNhan, ma: str, p: dict, t0: float, giong: str,
                       thong_ke={"ms": int((time.perf_counter() - t0) * 1000),
                                 "cham_llm": 0, "giong": giong, "nganh": nganh.ten})
 
+    # He TU DO gia tri thong tin: CHI khi khach moi cho moi ngan sach (chua noi
+    # spec/uu tien/hang nao) -> hoi them 1 cau dang gia (thuong la loai/hieu
+    # suat). Neu khach da cho spec cu the thi TON TRONG, tra ket qua ngay (khong
+    # cat ngang bang cau hoi). O da hoi thi thoi.
+    da_cho_spec = (
+        any(nc.lay(o) is not None for o in nganh.cfg["o_nhu_cau"])
+        or nc.lay("hang") or nc.uu_tien
+    )
+    o_them = None if da_cho_spec else nganh.chon_o_hoi_them(ds, nc, p.get("da_hoi", []))
+    if o_them:
+        text = nganh.cau_hoi(o_them, lap_lai=o_them in p["da_hoi"])
+        p["da_hoi"].append(o_them)
+        return TraLoi(phien_id=ma, loai="cau_hoi", text=text,
+                      o_nhu_cau=nc.dump(),
+                      goi_y=GOI_Y_O.get(o_them, []),
+                      thong_ke={"ms": int((time.perf_counter() - t0) * 1000),
+                                "cham_llm": 0, "giong": giong, "nganh": nganh.ten,
+                                "hoi_them": True, "suy_luan": True})
+
     bang, thieu_kt = nganh.xep_hang(ds, nc)
     if not bang.top3:
         p["loai_truoc"] = "khong_co_may"

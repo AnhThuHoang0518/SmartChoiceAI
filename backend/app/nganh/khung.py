@@ -243,8 +243,47 @@ class Nganh:
         return nc
 
     def thieu_bat_buoc(self, nc: NhuCauChung) -> list[str]:
-        bb = [o for o, s in self.cfg["o_nhu_cau"].items() if s.get("bat_buoc")]
-        return [o for o in bb + ["ngan_sach_max"] if nc.lay(o) is None]
+        # CHI ngan sach la bat buoc: khach hau het noi GIA truoc, it ai tu nghi
+        # toi kg/so nguoi/loai. Cac o ky thuat trong config ha xuong TUY CHON ->
+        # he do gia tri thong tin (chon_o_hoi_them) roi hoi o dang gia nhat
+        # (thuong la loai/hieu suat), khong ep kg. So lieu van tu DB.
+        return [o for o in ["ngan_sach_max"] if nc.lay(o) is None]
+
+    def chon_o_hoi_them(self, ds, nc: NhuCauChung, da_hoi: list[str]) -> str | None:
+        """VOI nhe cho khung: sau ngan sach, do o TUY CHON nao dang gia nhat de
+        hoi. CHI xet o phan loai (kieu='chu', vd loai bom nhiet/thong hoi -
+        lien quan hieu suat) vi khach de tra loi; o SO (kg, so nguoi) khong tu
+        hoi. Tra ten o hoac None. AN TOAN: chi HOI, khong tu dien; so tu DB."""
+        from collections import Counter
+
+        from backend.app.agents.gia_tri_thong_tin import do_lech
+        from backend.app.ranking.xep_hang import cfg as _rcfg
+
+        con, _, _ = self.loc_cung(ds, nc)
+        if len(con) < 2:
+            return None
+        tot_o, tot_d = None, 0.0
+        for o, spec in self.cfg["o_nhu_cau"].items():
+            if spec.get("kieu") != "chu" or nc.lay(o) is not None or o in da_hoi:
+                continue
+            cot = spec.get("cot", o)
+            dem = Counter(s.chu.get(cot, "") for s in con if s.chu.get(cot))
+            vals = [v for v, _ in dem.most_common(4) if v]
+            if len(vals) < 2:
+                continue
+            tops = []
+            for v in vals:
+                nc2 = NhuCauChung(gia_tri={**nc.gia_tri, o: v},
+                                  uu_tien=list(nc.uu_tien))
+                bang, _ = self.xep_hang(con, nc2)
+                tops.append([u.ma_sp for u in bang.top3])
+            cap = [do_lech(tops[i], tops[j])
+                   for i in range(len(tops)) for j in range(i + 1, len(tops))]
+            d = sum(cap) / len(cap) if cap else 0.0
+            if d > tot_d:
+                tot_o, tot_d = o, d
+        nguong = _rcfg().get("gia_tri_thong_tin", {}).get("nguong_hoi", 0.15)
+        return tot_o if tot_d >= nguong else None
 
     def cau_hoi(self, o: str, lap_lai: bool) -> str:
         if o == "ngan_sach_max":
