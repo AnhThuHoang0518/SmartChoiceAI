@@ -105,7 +105,11 @@ function veNutDoc(){ nutDoc.textContent = tuDoc ? '🔊' : '🔇'; }
 veNutDoc();
 nutDoc.onclick = () => {
   tuDoc = !tuDoc; localStorage.setItem('tu_doc', tuDoc ? '1' : '0'); veNutDoc();
-  if (!tuDoc) speechSynthesis.cancel();
+  if (!tuDoc) {
+    // tat la phai IM ngay: dung ca giong trinh duyet LAN file TTS dang phat
+    if ('speechSynthesis' in window) speechSynthesis.cancel();
+    if (amThanh) { amThanh.pause(); amThanh = null; }
+  }
 };
 let amThanh = null;                           // audio dang phat - phat cai moi thi tat cai cu
 async function docTo(text){
