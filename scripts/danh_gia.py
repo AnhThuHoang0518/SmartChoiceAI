@@ -61,7 +61,7 @@ def chay_tinh_huong(c: TestClient, th: dict, mac_dinh: dict) -> dict:
     pid = r["phien_id"]
 
     for _ in range(8):                                   # tran cung chong lap vo tan
-        if r["loai"] != "cau_hoi":
+        if r["loai"] not in {"cau_hoi", "xac_nhan_nganh"}:
             break
         ket["so_cau_hoi"] += 1
 
@@ -72,7 +72,10 @@ def chay_tinh_huong(c: TestClient, th: dict, mac_dinh: dict) -> dict:
             dap = th["lac_de_truoc"]
         else:
             # Bot dang hoi o nao? Suy tu text (template cung nen so khop duoc).
-            o_dang_hoi = _doan_o(r["text"])
+            # xac_nhan_nganh la mot cau hoi an toan bat buoc truoc khi CODE
+            # chot nganh suy luan. Bo danh gia phai tra loi no nhu khach that,
+            # khong coi day la ket cuc tu van.
+            o_dang_hoi = "nganh" if r["loai"] == "xac_nhan_nganh" else _doan_o(r["text"])
             dap = tra_loi.get(o_dang_hoi, "khong biet")
 
         r = c.post("/api/chat", json={"tin_nhan": dap, "phien_id": pid}).json()

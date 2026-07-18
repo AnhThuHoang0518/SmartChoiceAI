@@ -107,6 +107,60 @@ def co_nganh_tu_lanh(text: str) -> bool:
                           bo_dau(text or "").lower()))
 
 
+# ── Suy luan UNG VIEN nganh - chua xac nhan thi KHONG ghi vao nhu cau ──────
+
+def goi_y_may_lanh_tu_nhu_cau_lam_mat(text: str) -> bool:
+    """Cau mo ho ve nong + y dinh mua -> CHI goi y may lanh de khach xac nhan.
+
+    Day khong phai router nganh va khong dien bat ky o nhu cau nao. Cac cum ve
+    san pham dang nong/hong, nuoc nong, tu lanh... bi loai de khong bien mot
+    cau bao loi thanh nhu cau mua may lanh.
+    """
+    kd = bo_dau(text or "").lower()
+
+    # Nganh/san pham co chu "nong/lanh" nhung khong phai nhu cau lam mat.
+    if re.search(r"\b(may nuoc nong|binh nong lanh|tu lanh|fridge|refrigerator)\b", kd):
+        return False
+    # Bao thiet bi bi nong hoac khong lam lanh = tinh trang/bao loi, khong phai
+    # loi moi mua do lam mat.
+    if re.search(r"\b(?:dien thoai|laptop|pc|may tinh|pin|sac|dong co|may|tu)\s+(?:bi\s+)?nong\b", kd):
+        return False
+    if re.search(r"\b(?:may lanh|tu lanh).{0,18}\b(?:khong lanh|khong mat|bi hong|hong)\b", kd):
+        return False
+    if re.search(r"\b(?:nuoc|do an|thuc an|bep|lo|binh)\s+nong\b", kd):
+        return False
+
+    co_nhu_cau_lam_mat = bool(re.search(
+        r"\b(nong qua|nong buc|oi buc|oi qua|nuc|nong|oi|giai nong|cho mat|lam mat)\b",
+        kd,
+    ))
+    co_y_dinh_mua = bool(re.search(
+        r"\b(mua|chon|tim|can|nen|tu van|goi y|ban|co loai gi|co gi)\b",
+        kd,
+    ))
+    return co_nhu_cau_lam_mat and co_y_dinh_mua
+
+
+def tra_loi_xac_nhan_goi_y(text: str) -> bool | None:
+    """True=dong y, False=tu choi, None=chua tra loi ro cau xac nhan."""
+    kd = bo_dau(text or "").lower().strip()
+    if re.search(r"\b(khong phai|khong|ko|k|sai|san pham khac|mon khac|cai khac)\b", kd):
+        return False
+    if re.search(r"\b(dung|dung roi|duoc|dc|ok|oki|uh|u|vang|yes|tim may lanh|mua may lanh)\b", kd):
+        return True
+    return None
+
+
+def chi_la_xac_nhan_dong_y(text: str) -> bool:
+    """Cau chi co y xac nhan; co them dien tich/tien thi router phai doc tiep."""
+    kd = bo_dau(text or "").lower().strip()
+    return bool(re.fullmatch(
+        r"(?:dung|dung roi|duoc|dc|ok|oki|uh|u|vang|yes|"
+        r"dung,? tim may lanh|tim may lanh|mua may lanh)",
+        kd,
+    ))
+
+
 # ── Nhan biet khach ranh ky thuat ───────────────────────────────────────────
 # Sale that doi giong theo khach: khach binh dan thi noi loi ich, khach ranh
 # ky thuat thi noi thang so. Nhan biet qua CHINH ngon ngu khach go - dung

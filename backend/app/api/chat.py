@@ -26,8 +26,10 @@ from backend.app.core.chuan_hoa_tv import (
     bo_hang,
     bo_ngan_sach,
     cau_hoi_cong_suat,
+    chi_la_xac_nhan_dong_y,
     co_nganh_may_lanh,
     co_nganh_tu_lanh,
+    goi_y_may_lanh_tu_nhu_cau_lam_mat,
     hoi_chu_quan,
     hoi_hang,
     hoi_vi_sao_xep,
@@ -36,6 +38,7 @@ from backend.app.core.chuan_hoa_tv import (
     muc_gia,
     nganh_ngoai_pham_vi,
     trich_hang,
+    tra_loi_xac_nhan_goi_y,
     tu_ky_thuat_trong,
     yeu_cau_so_sanh,
     yeu_cau_thong_so,
@@ -562,6 +565,7 @@ def chat(t: TinNhan) -> TraLoi:
     kd_chung = bo_dau(t.tin_nhan).lower().strip()
     if _re.fullmatch(r"(?:tu van|chon|mua|tim)(?: giup)? san pham(?: nao)?", kd_chung):
         p["nganh"] = None
+        p["xac_nhan_nganh"] = None
         p["da_hoi"].append("nganh")
         return TraLoi(
             phien_id=ma,
@@ -593,7 +597,9 @@ def chat(t: TinNhan) -> TraLoi:
     from backend.app.nganh.khung import cac_nganh
     from backend.app.nganh.khung import tim_nganh as _tim
     nganh = nganh_ngoai_pham_vi(t.tin_nhan)
-    if nganh and _tim(t.tin_nhan) is None:
+    nganh_ro = _tim(t.tin_nhan)
+    if nganh and nganh_ro is None:
+        p["xac_nhan_nganh"] = None
         danh_sach = ", ".join(["máy lạnh", "tủ lạnh"] + [n.cfg.get("ten_liet_ke", n.ten_hien_thi) for n in cac_nganh()])
         return TraLoi(
             phien_id=ma,
@@ -601,6 +607,93 @@ def chat(t: TinNhan) -> TraLoi:
             text=cfg()["ngoai_pham_vi"]["mau"].format(nganh=nganh, danh_sach=danh_sach),
             o_nhu_cau=p["nhu_cau"].model_dump(exclude_none=True, mode="json"),
             thong_ke={"ms": int((time.perf_counter() - t0) * 1000), "cham_llm": 0},
+        )
+
+    # ── SUY LUAN CO KIEM CHUNG: chi goi y nganh, chua duoc loc san pham ─────
+    # Nganh khach NOI RO luon thang moi suy luan. Trang thai xac_nhan_nganh
+    # khong phai o nhu cau va khong duoc dung de xep hang.
+    noi_ro_may_lanh = co_nganh_may_lanh(t.tin_nhan)
+    noi_ro_tu_lanh = co_nganh_tu_lanh(t.tin_nhan)
+    co_nganh_ro = bool(nganh_ro is not None or noi_ro_may_lanh or noi_ro_tu_lanh)
+    dang_cho_xac_nhan = p.get("xac_nhan_nganh")
+    # Neu dang cho va khach noi ro MAY LANH, day chinh la mot cach xac nhan.
+    # Nganh ro KHAC (tu lanh/may nuoc nong...) thi huy goi y va de router nganh
+    # do xu ly, khong ep khach tra loi cau cu.
+    nganh_ro_khac_goi_y = bool(nganh_ro is not None or noi_ro_tu_lanh)
+    if co_nganh_ro and not (dang_cho_xac_nhan and noi_ro_may_lanh and not nganh_ro_khac_goi_y):
+        p["xac_nhan_nganh"] = None
+
+    if dang_cho_xac_nhan and not nganh_ro_khac_goi_y:
+        xac_nhan = True if noi_ro_may_lanh else tra_loi_xac_nhan_goi_y(t.tin_nhan)
+        if xac_nhan is True:
+            p["xac_nhan_nganh"] = None
+            p["nganh"] = "may_lanh"
+            # "Đúng" trần không chứa thêm nhu cầu nào: hỏi diện tích ngay bằng
+            # template code, 0 LLM. Nếu khách nói "đúng, phòng 18m2" thì đi
+            # tiếp để bộ trích ô đọc luôn 18m2, không bắt họ nói lại.
+            if chi_la_xac_nhan_dong_y(t.tin_nhan):
+                phien.ghi(ma, p["nhu_cau"], "dien_tich_m2")
+                return TraLoi(
+                    phien_id=ma,
+                    loai="cau_hoi",
+                    text=cfg()["cau_hoi"]["dien_tich_m2"],
+                    o_nhu_cau=p["nhu_cau"].model_dump(
+                        exclude_none=True, exclude_defaults=True, mode="json"
+                    ),
+                    goi_y=GOI_Y_O["dien_tich_m2"],
+                    thong_ke={"ms": int((time.perf_counter() - t0) * 1000),
+                              "cham_llm": 0, "nganh": "may_lanh"},
+                )
+        elif xac_nhan is False:
+            p["xac_nhan_nganh"] = None
+            p["nganh"] = None
+            phien.ghi(ma, p["nhu_cau"], "nganh")
+            return TraLoi(
+                phien_id=ma,
+                loai="cau_hoi",
+                text=("Dạ anh chị muốn tìm sản phẩm gì ạ? Anh chị cứ nói tên sản phẩm "
+                      "hoặc nhu cầu sử dụng, em sẽ hỏi tiếp để tư vấn đúng ạ."),
+                o_nhu_cau=p["nhu_cau"].model_dump(
+                    exclude_none=True, exclude_defaults=True, mode="json"
+                ),
+                thong_ke={"ms": int((time.perf_counter() - t0) * 1000),
+                          "cham_llm": 0},
+            )
+        else:
+            phien.ghi(ma, p["nhu_cau"])
+            return TraLoi(
+                phien_id=ma,
+                loai="xac_nhan_nganh",
+                text=("Dạ em chưa dám tự chọn thay anh chị. Anh chị xác nhận giúp em: "
+                      "mình đang tìm máy lạnh để giảm nóng, hay cần sản phẩm khác ạ?"),
+                o_nhu_cau=p["nhu_cau"].model_dump(
+                    exclude_none=True, exclude_defaults=True, mode="json"
+                ),
+                goi_y=["Đúng, tìm máy lạnh", "Tôi cần sản phẩm khác"],
+                thong_ke={"ms": int((time.perf_counter() - t0) * 1000),
+                          "cham_llm": 0, "suy_luan": True,
+                          "bang_chung": dang_cho_xac_nhan.get("bang_chung")},
+            )
+
+    if p.get("nganh") is None and not co_nganh_ro \
+            and goi_y_may_lanh_tu_nhu_cau_lam_mat(t.tin_nhan):
+        p["xac_nhan_nganh"] = {
+            "nganh": "may_lanh",
+            "bang_chung": "khách nói nhu cầu giảm nóng/làm mát và có ý định mua",
+        }
+        phien.ghi(ma, p["nhu_cau"])
+        return TraLoi(
+            phien_id=ma,
+            loai="xac_nhan_nganh",
+            text=("Dạ, nghe câu anh chị nói thì có vẻ anh chị đang muốn tìm máy lạnh "
+                  "để giảm nóng. Em hiểu vậy có đúng không ạ?"),
+            o_nhu_cau=p["nhu_cau"].model_dump(
+                exclude_none=True, exclude_defaults=True, mode="json"
+            ),
+            goi_y=["Đúng, tìm máy lạnh", "Tôi cần sản phẩm khác"],
+            thong_ke={"ms": int((time.perf_counter() - t0) * 1000),
+                      "cham_llm": 0, "suy_luan": True,
+                      "bang_chung": "nhu_cau_lam_mat", "nganh_goi_y": "may_lanh"},
         )
 
     # SO SANH TRUC TIEP 2 may trong top 3 vua tu van - bang do code dung tu
