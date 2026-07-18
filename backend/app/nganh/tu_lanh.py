@@ -42,6 +42,7 @@ DU_PHONG_MAU = Path("data/mock/catalog/tu_lanh_mau.csv")
 class UuTienTL(str, Enum):
     TIET_KIEM_DIEN = "tiet_kiem_dien"
     DUNG_TICH = "dung_tich"
+    TRU_DONG = "tru_dong"                  # ngan da lon - cot 'Dung tich ngan da'
     GIA = "gia"
 
 
@@ -80,6 +81,7 @@ class TuLanh(BaseModel):
     inverter: bool = False
     gia: int
     gia_goc: int
+    ngan_da_lit: float | None = None
     qua: str = ""
     nguon: dict[str, Nguon] = Field(default_factory=dict)
 
@@ -103,8 +105,11 @@ def tai_catalog_tu_lanh() -> list[TuLanh]:
         return _DS
 
     def _f(x):
+        # x co the la None khi CSV (vd ban mau) thieu han cot moi
+        if x is None or not str(x).strip():
+            return None
         try:
-            return float(x) if str(x).strip() else None
+            return float(x)
         except ValueError:
             return None
 
@@ -123,6 +128,7 @@ def tai_catalog_tu_lanh() -> list[TuLanh]:
                 kieu_dang=r["kieu_dang"], so_cua=r["so_cua"],
                 inverter=r["inverter"] == "1",
                 gia=int(r["gia"]), gia_goc=int(r["gia_goc"]),
+                ngan_da_lit=_f(r.get("ngan_da_lit")),
                 qua=(r.get("qua") or "").strip(),
                 nguon={
                     "nguoi_phu_hop": _ng("nguoi_phu_hop",
@@ -141,6 +147,9 @@ def tai_catalog_tu_lanh() -> list[TuLanh]:
                     "ngang_cm": _ng("ngang_cm", _f(r["ngang_cm"]), ma, "catalog:Ngang"),
                     "cao_cm": _ng("cao_cm", _f(r["cao_cm"]), ma, "catalog:Cao"),
                     "sau_cm": _ng("sau_cm", _f(r["sau_cm"]), ma, "catalog:Sâu"),
+                    **({"ngan_da_lit": _ng("ngan_da_lit", _f(r.get("ngan_da_lit")), ma,
+                                           "catalog:Dung tích ngăn đá")}
+                       if _f(r.get("ngan_da_lit")) is not None else {}),
                 },
             ))
     _DS = ds
@@ -196,6 +205,9 @@ def trich_tu_lanh(text: str, cu: ONhuCauTuLanh | None = None,
     if re.search(r"dung tich lon|chua nhieu|rong rai|to\b", kd) \
             and UuTienTL.DUNG_TICH not in nc.uu_tien:
         nc.uu_tien.append(UuTienTL.DUNG_TICH)
+    if re.search(r"tru dong|ngan da (?:lon|rong|to)|dong nhieu|hay dong do", kd) \
+            and UuTienTL.TRU_DONG not in nc.uu_tien:
+        nc.uu_tien.append(UuTienTL.TRU_DONG)
     if re.search(r"\bre\b|gia re|khuyen mai|giam gia", kd) \
             and UuTienTL.GIA not in nc.uu_tien:
         nc.uu_tien.append(UuTienTL.GIA)
@@ -253,6 +265,8 @@ def xep_hang_tu_lanh(ds: list[TuLanh], nc: ONhuCauTuLanh) -> tuple[BangKetQua, i
                                   lambda v: f"{v:.0f} kWh/năm"),
         UuTienTL.DUNG_TICH: ("dung tích", lambda s: s.dung_tich_lit, False,
                              lambda v: f"{v:.0f} lít"),
+        UuTienTL.TRU_DONG: ("ngăn đá", lambda s: s.ngan_da_lit, False,
+                            lambda v: f"ngăn đá {v:.0f} lít"),
         UuTienTL.GIA: ("giá", lambda s: float(s.gia), True,
                        lambda v: f"{v/1e6:.2f}".rstrip("0").rstrip(".") + " tr"),
     }
@@ -334,6 +348,8 @@ def bang_thanh_chu_tu_lanh(bang: BangKetQua, nc: ONhuCauTuLanh,
             chi_tiet.append(f"điện {float(n.gia_tri):.0f} kWh/năm")
         if (n := th.get("nguoi_phu_hop")):
             chi_tiet.append(f"cho {n.gia_tri}")
+        if (n := th.get("ngan_da_lit")) and n.gia_tri not in (None, "None"):
+            chi_tiet.append(f"ngăn đá {float(n.gia_tri):.0f} lít")
         if chi_tiet:
             ra.append("   " + " · ".join(chi_tiet))
         for h in u.hon:

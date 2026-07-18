@@ -60,6 +60,7 @@ MAU_SO: dict[str, list[tuple[str, float]]] = {
     "nit": [(r"([\d.,]+)\s*(?:nit|cd/m)", 1.0)],
     "trang": [(r"([\d.,]+)\s*trang", 1.0)],
     "m": [(r"([\d.,]+)\s*m\b(?!s|Ah|²)", 1.0)],
+    "to": [(r"([\d.,]+)\s*tờ", 1.0)],
     "gio": [(r"([\d.,]+)\s*(?:giờ|tiếng)", 1.0)],
 }
 
@@ -76,6 +77,8 @@ _TRUONG_RO = {
     "bua_min": "bua", "bua_max": "bua", "bo_chau_au": "bo",
     "nuoc_lit": "lit", "dung_tich_min": "lit",
     "dien_kwh_ngay": "kwh", "cong_suat_w": "w", "binh_lit": "lit",
+    "ngan_da_lit": "lit", "phu_mau_pct": "phan_tram", "khay_to": "to",
+    "cong_suat_thang": "trang",
     "man_inch": "inch", "ram_gb": "gb", "luu_tru_gb": "gb", "ssd_gb": "gb",
     "pin_mah": "mah", "nang_g": "gam", "pin_ngay": "ngay",
     "dap_ung_ms": "ms", "do_sang_nit": "nit", "toc_do_trang": "trang",

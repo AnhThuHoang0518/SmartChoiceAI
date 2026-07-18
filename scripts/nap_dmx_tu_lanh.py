@@ -33,7 +33,7 @@ RA = Path("data/processed/tu_lanh.csv")
 COT = [
     "ma_sp", "ten", "hang", "nguoi_min", "nguoi_max", "dung_tich_lit",
     "dung_tich_la_tong", "dien_kwh_nam", "ngang_cm", "cao_cm", "sau_cm",
-    "kieu_dang", "so_cua", "inverter", "gia", "gia_goc", "qua",
+    "kieu_dang", "so_cua", "inverter", "gia", "gia_goc", "qua", "ngan_da_lit",
 ]
 
 
@@ -146,6 +146,7 @@ def main() -> None:
             "gia": gia,
             "gia_goc": gia_goc or gia,
             "qua": parse_qua(g(r, "khuyến mãi quà")),
+            "ngan_da_lit": ("" if (nd := parse_lit(g(r, "Dung tích ngăn đá"))) is None else nd),
         })
 
     RA.parent.mkdir(parents=True, exist_ok=True)

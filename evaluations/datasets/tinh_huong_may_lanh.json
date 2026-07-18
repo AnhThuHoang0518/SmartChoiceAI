@@ -616,6 +616,43 @@
    "ky_vong_loai": "khong_co_may",
    "toi_da_cau_hoi": 1,
    "_ghi_chu": "sheet PC chi 3 may ghi ro i5, khong con nao RAM>=16 -> tu choi that"
+  },
+  {
+   "ten": "tu_lanh_tru_dong",
+   "can_du_lieu_that": true,
+   "tin_dau": "tủ lạnh nhà 4 người hay trữ đông nhiều tầm 15tr",
+   "ky_vong_loai": "tu_van",
+   "toi_da_cau_hoi": 1,
+   "ky_vong_o": {
+    "uu_tien_chua": [
+     "tru_dong"
+    ]
+   },
+   "_ghi_chu": "GD C: cot 'Dung tich ngan da' 90% -> truc cham tru dong"
+  },
+  {
+   "ten": "man_hinh_do_hoa",
+   "can_du_lieu_that": true,
+   "tin_dau": "màn hình 27 inch làm đồ họa chỉnh sửa ảnh tầm 7tr",
+   "ky_vong_loai": "tu_van",
+   "toi_da_cau_hoi": 1,
+   "ky_vong_o": {
+    "uu_tien_chua": [
+     "do_hoa"
+    ]
+   }
+  },
+  {
+   "ten": "may_in_van_phong_in_nhieu",
+   "can_du_lieu_that": true,
+   "tin_dau": "máy in laser văn phòng in nhiều tầm 5tr",
+   "ky_vong_loai": "bat_ky_khong_loi",
+   "toi_da_cau_hoi": 1,
+   "ky_vong_o": {
+    "uu_tien_chua": [
+     "in_nhieu"
+    ]
+   }
   }
  ]
 }

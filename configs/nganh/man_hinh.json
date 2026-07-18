@@ -22,6 +22,10 @@
   "loa_co": {
    "nguon": "catalog:Loa",
    "ro": ""
+  },
+  "phu_mau_pct": {
+   "nguon": "catalog:Độ phủ màu",
+   "ro": "phan_tram"
   }
  },
  "cot_chu": {
@@ -107,6 +111,21 @@
   }
  ],
  "truc_cham": [
+  {
+   "uu_tien": "do_hoa",
+   "ten": "độ phủ màu",
+   "cot": "phu_mau_pct",
+   "thap_tot": false,
+   "fmt": "phủ màu {:.0f}%",
+   "trich_uu_tien": [
+    "do hoa",
+    "chinh sua anh",
+    "photoshop",
+    "thiet ke",
+    "edit (?:anh|video)",
+    "lam video"
+   ]
+  },
   {
    "uu_tien": "muot",
    "ten": "thời gian đáp ứng",

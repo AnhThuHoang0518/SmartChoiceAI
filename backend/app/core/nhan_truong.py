@@ -65,6 +65,10 @@ NHAN: dict[str, tuple[str, str]] = {
     "toc_do_trang": ("Tốc độ in", " trang/phút"),
     "ket_noi": ("Kết nối", ""),
     "binh_lit": ("Bình chứa", " lít"),
+    "ngan_da_lit": ("Ngăn đá", " lít"),
+    "phu_mau_pct": ("Độ phủ màu", "%"),
+    "khay_to": ("Khay nạp giấy", " tờ"),
+    "cong_suat_thang": ("Công suất in", " trang/tháng"),
     "loa_co": ("Loa tích hợp", ""),
     "cong_nghe_cpu": ("CPU", ""),
     # micro

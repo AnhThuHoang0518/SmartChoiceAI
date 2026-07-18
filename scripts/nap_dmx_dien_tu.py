@@ -58,6 +58,14 @@ def p_ngay(s):
     return max(float(x) for x in so) if so else None
 
 
+def p_max_so(s):
+    """'250-2000 trang/thang' -> 2000 | '99% sRGB | 72% NTSC' -> 99 (max)."""
+    if la_rong(s):
+        return None
+    so = re.findall(r"[\d.]+", str(s).replace(",", "."))
+    return max(float(x) for x in so) if so else None
+
+
 def p_phan_giai(s):
     """Chuan hoa do phan giai ve nhan gon: 4K/2K/Full HD/HD."""
     if la_rong(s):
@@ -101,6 +109,7 @@ SPEC = {
             "dap_ung_ms": ("Thời gian đáp ứng", _num),
             "do_sang_nit": ("Độ sáng", _num),
             "loa_co": ("Loa", lambda v: 1.0 if str(v or "").strip().lower() == "có" else None),
+            "phu_mau_pct": ("Độ phủ màu", p_max_so),
         },
         "chu": {"phan_giai": ("Độ phân giải", p_phan_giai), "tam_nen": "Tấm nền"},
         "bat_buoc": ["man_inch"],
@@ -118,6 +127,8 @@ SPEC = {
         "sheet": "Máy in",
         "cot": {
             "toc_do_trang": ("Tốc độ in", _num),
+            "khay_to": ("Khay nạp giấy", _num),
+            "cong_suat_thang": ("Công suất theo nghiệp vụ", p_max_so),
         },
         "chu": {"loai": "Loại sản phẩm", "ket_noi": "Kết nối"},
         "bat_buoc": [],
