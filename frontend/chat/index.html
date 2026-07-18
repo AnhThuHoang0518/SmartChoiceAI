@@ -71,6 +71,8 @@
   .goi-y{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 10px}
   .goi-y button{background:var(--the);border:1px solid var(--vien);border-radius:18px;padding:6px 14px;font-size:13.5px;cursor:pointer;color:var(--muc)}
   .goi-y button:hover{border-color:var(--chinh);color:var(--chinh)}
+  .goi-y .nut-km{background:var(--vang);color:var(--vang-chu);border:none;font-weight:700}
+  .goi-y .nut-km:hover{filter:brightness(1.05);color:var(--vang-chu)}
   .chip-bot{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
   .chip-bot button{background:var(--chinh-nhat);border:1px solid transparent;border-radius:16px;padding:5px 12px;font-size:13px;cursor:pointer;color:var(--chinh)}
   .chip-bot button:hover{border-color:var(--chinh)}
@@ -103,7 +105,7 @@
 <div id="khung">
   <div class="dong bot"><div class="bong">Em chào anh chị ạ! Em tư vấn đủ 14 ngành hàng: máy lạnh, tủ lạnh, máy giặt, máy sấy, máy rửa chén, tủ đông, máy nước nóng, tablet, đồng hồ, màn hình, PC, máy in, micro karaoke, micro thu âm. Cứ nói tự nhiên — viết tắt hay không dấu đều được ạ.</div></div>
   <div class="goi-y" id="goiy">
-    <button onclick="dienMau(this)">🔥 Máy lạnh nào đang giảm giá?</button>
+    <button onclick="dienMau(this)" class="nut-km">☀️ Khuyến mãi hè — máy lạnh nào giảm sâu nhất?</button>
     <button onclick="dienMau(this)">Máy lạnh 15tr cho phòng ngủ 18m2</button>
     <button onclick="dienMau(this)">Nhà 4 người cần tủ lạnh tiết kiệm điện</button>
     <button onclick="dienMau(this)">Máy giặt cửa trước tầm 10 triệu</button>
@@ -159,13 +161,16 @@ function tatMieng(){ if (matBot) { matBot.classList.remove('dang-noi'); trangTha
 // ── O "san pham dang xem": bam card top 3 -> hien o panel trai.
 // Anh THAT chua co (du lieu DMX khong kem link anh) -> ghi ro cho Image API,
 // khong do anh gia - dung luat "khong bia" ke ca bang hinh.
+const ICON_NGANH = {may_lanh:'❄️', tu_lanh:'🧊', may_giat:'🧺', may_say:'🌀', may_rua_chen:'🍽️',
+  tu_dong_mat:'🧊', may_nuoc_nong:'🚿', may_tinh_bang:'📱', dong_ho:'⌚', man_hinh:'🖥️',
+  may_tinh_ban:'🖥️', may_in:'🖨️', micro:'🎤'};
 function chonSP(sp){
   const o = document.getElementById('o-anh');
   if (!o) return;
   const giam = sp.gg && sp.gg > sp.gia
     ? ' <span class="giam">-' + Math.round((1 - sp.gia / sp.gg) * 100) + '%</span>' : '';
   o.innerHTML = '<div style="font-size:12.5px;color:var(--phu);text-align:left">SẢN PHẨM ĐANG XEM</div>'
-    + '<div class="khung-anh"><span class="bieu-tuong">🖼️</span><span>Ảnh thật: chờ nối<br>Image API của ĐMX</span></div>'
+    + '<div class="khung-anh"><span class="bieu-tuong">' + (ICON_NGANH[sp.nganh] || '📦') + '</span><span>Ảnh thật: chờ nối<br>Image API của ĐMX (productidweb)</span></div>'
     + '<div class="ten-sp">' + sp.ten + '</div>'
     + '<div class="gia-sp">' + sp.gia.toLocaleString('vi-VN') + 'đ' + giam + '</div>';
 }
@@ -213,7 +218,7 @@ async function docTo(text){
   speechSynthesis.speak(u);
 }
 
-let phienId = null;
+let phienId = null, nganhHienTai = 'may_lanh';
 const khung = document.getElementById('khung');
 const oNhap = document.getElementById('o-nhap');
 const nut = document.getElementById('nut');
@@ -276,7 +281,7 @@ function veSanPham(u, i){
   } else {
     giaHtml += u.gia.toLocaleString('vi-VN') + 'đ</span>';
   }
-  const spNho = JSON.stringify({ten: u.ten, gia: u.gia, gg: gg}).replace(/'/g, "&#39;");
+  const spNho = JSON.stringify({ten: u.ten, gia: u.gia, gg: gg, nganh: nganhHienTai}).replace(/'/g, "&#39;");
   let s = '<div class="the-sp" style="cursor:pointer" onclick=\'chonSP(' + spNho + ')\' title="Bấm để xem ở panel trái"><div class="hang-to"><b>' + (i+1) + '. ' + u.ten + '</b>' + giaHtml + '</div>';
   (u.hon||[]).forEach(h => s += '<div class="to hon">✓ ' + nhanTruc(h.truc, true) + ': ' + h.cua_minh + ' (so với ' + h.doi_thu + ')</div>');
   (u.kem||[]).forEach(k => s += '<div class="to kem">△ ' + nhanTruc(k.truc, false) + ': ' + k.cua_minh + ' (so với ' + k.doi_thu + ')</div>');
@@ -329,6 +334,7 @@ async function gui(e){
     });
     const d = await r.json();
     phienId = d.phien_id;
+    nganhHienTai = (d.thong_ke || {}).nganh || nganhHienTai;
     let html = md(d.text);
 
     if (d.loai === 'cau_hoi' && d.vi_sao_hoi?.length){
