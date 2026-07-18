@@ -364,11 +364,28 @@ if ('speechSynthesis' in window) {
     .find(v => v.lang && v.lang.toLowerCase().startsWith('vi')) || null; };
   chonGiong(); speechSynthesis.onvoiceschanged = chonGiong;
 }
-async function docTo(text){
+
+// Chi bo ma/model KHI DOC, khong doi chu tren man hinh. Thay dung TEN DAY DU
+// trong top3 nen gia, dung tich, kWh... o cho khac van duoc doc binh thuong.
+function boMaTrongTenSanPhamKhiDoc(text, sanPham){
+  let ra = text || '';
+  (sanPham || []).forEach(u => {
+    const ten = String(u.ten || '').trim();
+    if (!ten) return;
+    // Parser dat ten theo "hang + model_code". Bo cac token co chu so (ke ca
+    // V13WIN1/AQR-D100), giu lai ten hang/chu de giong doc tu nhien hon.
+    const tenDoc = ten.split(/\s+/).filter(t => !/\d/.test(t)).join(' ').trim()
+      || 'sản phẩm';
+    ra = ra.split(ten).join(tenDoc);
+  });
+  return ra;
+}
+
+async function docTo(text, sanPham){
   // Lam sach de DOC (khong dong den hien thi): bo markdown/bullet, dau '—' va
   // '·' thanh khoang trang (TTS ngat qua lau o dau cau), '/' doc 'trên'
   // (kWh/năm), gia '7.960.000đ' doc thanh chu '7 triệu 960 nghìn đồng'.
-  const sach = text
+  const sach = boMaTrongTenSanPhamKhiDoc(text, sanPham)
     .replace(/\*\*/g, '')
     .replace(/^[•✓△→-]\s*/gm, '')
     .replace(/(\d+)\.(\d{3})\.(\d{3})\s*đ/g, (m, a, b) =>
@@ -423,7 +440,7 @@ async function docTo(text){
   speechSynthesis.resume();
 }
 
-let phienId = null, nganhHienTai = 'may_lanh';
+let phienId = null, nganhHienTai = 'may_lanh', sanPhamDoc = [];
 const khung = document.getElementById('khung');
 const oNhap = document.getElementById('o-nhap');
 const nut = document.getElementById('nut');
@@ -563,6 +580,11 @@ async function gui(e){
     const d = await r.json();
     phienId = d.phien_id;
     nganhHienTai = (d.thong_ke || {}).nganh || nganhHienTai;
+    // Giu danh sach ten qua cac cau tiep noi (vd "vi sao chon may 1?") de
+    // TTS van bo ma model du response tiep noi khong gui lai card.
+    if (d.top3?.length) sanPhamDoc = [...d.top3];
+    if (d.loai_noi_bat?.ten && !sanPhamDoc.some(x => x.ten === d.loai_noi_bat.ten))
+      sanPhamDoc.push(d.loai_noi_bat);
     let html = md(d.text);
 
     if (d.loai === 'cau_hoi' && d.vi_sao_hoi?.length){
@@ -587,7 +609,7 @@ async function gui(e){
         '<button onclick="guiVB(this.textContent)">' + g.replace(/</g,'&lt;') + '</button>').join('') + '</div>';
     cho.querySelector('.bong').innerHTML = html;
     // doc to khi: khach dang bat tu doc, HOAC khach vua noi bang mic
-    if ((tuDoc || vuaDungMic) && d.text) docTo(d.text);
+    if ((tuDoc || vuaDungMic) && d.text) docTo(d.text, sanPhamDoc);
     vuaDungMic = false;
   } catch(err){
     cho.querySelector('.bong').innerHTML = 'Lỗi kết nối server — kiểm tra backend đang chạy chưa.';

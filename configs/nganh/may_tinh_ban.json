@@ -27,6 +27,19 @@
    "nguon": "catalog:Công nghệ CPU"
   }
  },
+ "yeu_cau_khong_co_du_lieu": [
+  {
+   "truong": "gpu_roi",
+   "mau": [
+    "card\\s*(?:do hoa\\s*)?roi",
+    "do hoa\\s*roi",
+    "\\bgpu\\b",
+    "\\bvga\\b",
+    "\\b(?:rtx|gtx)\\s*\\d*"
+   ],
+   "text": "Dạ dữ liệu máy tính để bàn hiện có CPU, RAM và ổ cứng nhưng chưa có trường card đồ họa/GPU. Vì vậy em chưa thể xác nhận máy nào có card rời hoặc phù hợp nhu cầu chơi game/đồ họa anh chị nêu; em không đề xuất bừa ạ. Cần bổ sung thông số GPU từ nguồn sản phẩm chính thức trước khi lọc."
+  }
+ ],
  "o_nhu_cau": {
   "ram_min": {
    "kieu": "so",

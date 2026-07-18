@@ -84,6 +84,18 @@ class Nganh:
         kd = bo_dau(text or "").lower()
         return any(re.search(rf"\b{t}\b", kd) for t in self.cfg["tu_khoa_nganh"])
 
+    def yeu_cau_khong_co_du_lieu(self, text: str) -> dict | None:
+        """Yeu cau bat buoc ma config xac nhan catalog CHUA co field.
+
+        Day la cua chan truoc xep hang: gap field nay thi tra thieu du lieu,
+        tuyet doi khong lay RAM/SSD de suy ra GPU hay mot thuoc tinh khac.
+        """
+        kd = bo_dau(text or "").lower()
+        for spec in self.cfg.get("yeu_cau_khong_co_du_lieu", []):
+            if any(re.search(mau, kd) for mau in spec.get("mau", [])):
+                return spec
+        return None
+
     # ── catalog ─────────────────────────────────────────────────────────────
     def catalog(self) -> list[SanPhamChung]:
         if self._ds is not None:

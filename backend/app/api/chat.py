@@ -21,6 +21,12 @@ from backend.app.agents.gia_tri_thong_tin import bang_diem, chon_cau_hoi
 from backend.app.agents.trich_o_nhu_cau import trich, trich_bang_luat
 from backend.app.agents.viet_lai import viet_lai
 from backend.app.core import phien
+from backend.app.core.hoi_tiep_noi import (
+    canh_bao_may_lanh_chua_co_nguon,
+    giai_thich_truong,
+    tieu_chi_may_lanh_chua_co_nguon,
+    tra_loi_tiet_kiem_dien,
+)
 from backend.app.core.chuan_hoa_tv import (
     bo_dau,
     bo_hang,
@@ -609,11 +615,65 @@ def chat(t: TinNhan) -> TraLoi:
             thong_ke={"ms": int((time.perf_counter() - t0) * 1000), "cham_llm": 0},
         )
 
+    # Tieu chi bat buoc nhung catalog nganh KHONG CO field: dung truoc moi
+    # buoc trich LLM/xep hang. Vi du PC can card roi ma file chi co CPU/RAM/SSD
+    # thi khong duoc suy RAM cao => choi game tot.
+    from backend.app.nganh.khung import nganh_theo_ten as _nganh_theo_ten_som
+    nganh_kiem_thieu = nganh_ro or (
+        _nganh_theo_ten_som(p["nganh"]) if p.get("nganh") else None
+    )
+    if nganh_kiem_thieu is not None:
+        yc_thieu = nganh_kiem_thieu.yeu_cau_khong_co_du_lieu(t.tin_nhan)
+        if yc_thieu:
+            p["nganh"] = nganh_kiem_thieu.ten
+            khoa = f"nhu_cau_{nganh_kiem_thieu.ten}"
+            o_cho = p["da_hoi"][-1] if p["da_hoi"] else None
+            nc_thieu = nganh_kiem_thieu.trich(t.tin_nhan, p.get(khoa), o_cho)
+            if bo_ngan_sach(t.tin_nhan):
+                nc_thieu.gia_tri["ngan_sach_max"] = float(KHONG_GIOI_HAN)
+            if nc_thieu.lay("ngan_sach_max"):
+                p["ngan_sach_chung"] = nc_thieu.lay("ngan_sach_max")
+            p[khoa] = nc_thieu
+            p["luc"] = time.time()
+            return TraLoi(
+                phien_id=ma,
+                loai="thieu_du_lieu",
+                text=yc_thieu["text"],
+                o_nhu_cau=nc_thieu.dump(),
+                thong_ke={"ms": int((time.perf_counter() - t0) * 1000),
+                          "cham_llm": 0, "nganh": nganh_kiem_thieu.ten,
+                          "truong_thieu": yc_thieu["truong"]},
+            )
+
     # ── SUY LUAN CO KIEM CHUNG: chi goi y nganh, chua duoc loc san pham ─────
     # Nganh khach NOI RO luon thang moi suy luan. Trang thai xac_nhan_nganh
     # khong phai o nhu cau va khong duoc dung de xep hang.
     noi_ro_may_lanh = co_nganh_may_lanh(t.tin_nhan)
     noi_ro_tu_lanh = co_nganh_tu_lanh(t.tin_nhan)
+
+    # Tre nho/nhiet do la tieu chi co y nghia nhung catalog may lanh hien
+    # chua co field de kiem chung. Nho rieng de canh bao, KHONG dua vao slot
+    # va KHONG cho LLM bien thanh ly do "phu hop".
+    if noi_ro_may_lanh or p.get("nganh") == "may_lanh":
+        moi = tieu_chi_may_lanh_chua_co_nguon(t.tin_nhan)
+        if moi:
+            da_co = set(p.get("canh_bao_nguon_may_lanh", []))
+            p["canh_bao_nguon_may_lanh"] = sorted(da_co | moi)
+            kd_thieu = bo_dau(t.tin_nhan).lower()
+            la_cau_hoi_rieng = "?" in t.tin_nhan or bool(_re.search(
+                r"\b(?:co khong|bao nhieu|the nao|la gi|duoc khong)\b", kd_thieu
+            ))
+            if p.get("top3_truoc") and la_cau_hoi_rieng:
+                p["canh_bao_nguon_may_lanh"] = []
+                return TraLoi(
+                    phien_id=ma,
+                    loai="thieu_du_lieu",
+                    text=canh_bao_may_lanh_chua_co_nguon(moi),
+                    top3=p["top3_truoc"],
+                    thong_ke={"ms": int((time.perf_counter() - t0) * 1000),
+                              "cham_llm": 0, "nganh": "may_lanh",
+                              "truong_thieu": sorted(moi)},
+                )
     co_nganh_ro = bool(nganh_ro is not None or noi_ro_may_lanh or noi_ro_tu_lanh)
     dang_cho_xac_nhan = p.get("xac_nhan_nganh")
     # Neu dang cho va khach noi ro MAY LANH, day chinh la mot cach xac nhan.
@@ -730,6 +790,28 @@ def chat(t: TinNhan) -> TraLoi:
             goi_y=["So sánh máy 1 và máy 2"] if len(top) >= 2 else [],
             thong_ke={"ms": int((time.perf_counter() - t0) * 1000), "cham_llm": 0,
                       "nganh": p.get("nganh")},
+        )
+
+    # Hoi tiep noi ve field/card vua hien: tra thang bang code tu top da luu.
+    # Day sua loi "tu nao it ton dien?" va "sau la gi?" bi xep hang lai roi
+    # copy nguyen cau tu van cu.
+    if dien := tra_loi_tiet_kiem_dien(
+        t.tin_nhan, p.get("top3_truoc") or [], p.get("nganh")
+    ):
+        text_dien, truong_dien = dien
+        return TraLoi(
+            phien_id=ma, loai="tra_loi_truong", text=text_dien,
+            top3=p.get("top3_truoc") or [],
+            thong_ke={"ms": int((time.perf_counter() - t0) * 1000),
+                      "cham_llm": 0, "nganh": p.get("nganh"),
+                      "truong_doi_chieu": truong_dien},
+        )
+    if text_giai_thich := giai_thich_truong(t.tin_nhan):
+        return TraLoi(
+            phien_id=ma, loai="giai_thich_truong", text=text_giai_thich,
+            top3=p.get("top3_truoc") or [],
+            thong_ke={"ms": int((time.perf_counter() - t0) * 1000),
+                      "cham_llm": 0, "nganh": p.get("nganh")},
         )
 
     # "Co nhung hang nao?" -> liet ke hang THAT trong catalog nganh (kem so
@@ -1049,6 +1131,11 @@ def chat(t: TinNhan) -> TraLoi:
     text_cuoi = r["text"]
     if trong_tam := _nhan_manh_uu_tien_may_lanh(bang.top3[0], uu_tien_luot):
         text_cuoi = trong_tam + "\n\n" + text_cuoi
+    if canh_bao := canh_bao_may_lanh_chua_co_nguon(
+        p.get("canh_bao_nguon_may_lanh", [])
+    ):
+        text_cuoi = canh_bao + "\n\n" + text_cuoi
+        p["canh_bao_nguon_may_lanh"] = []
     if hoi_ton_kho(t.tin_nhan):
         text_cuoi += ("\n\n(Về tồn kho: dữ liệu em đang có chưa gồm tồn kho theo "
                       "khu vực — cần nối Stock API — nên em chưa xác nhận được còn "
