@@ -966,6 +966,58 @@ def chat(t: TinNhan) -> TraLoi:
                       thong_ke={"ms": int((time.perf_counter() - t0) * 1000),
                                 "cham_llm": 0, "che_do": "kien_thuc"})
 
+    from backend.app.core.chuan_hoa_tv import (
+        hoi_dich_vu,
+        hoi_gia_hang,
+        mau_thuan_tam_gia,
+    )
+    # P2a - HOI DICH VU (tra gop/lap dat/giao hang/doi tra): du lieu KHONG co
+    # -> noi that can noi he thong cua hang, khong bia chinh sach; keo ve nhu cau.
+    dv = hoi_dich_vu(t.tin_nhan)
+    if dv:
+        return TraLoi(phien_id=ma, loai="thieu_du_lieu",
+                      text=(f"Dạ phần {dv} là chính sách của cửa hàng, em cần nối với "
+                            f"hệ thống bán hàng để báo chính xác (chưa có trong dữ liệu "
+                            f"em đang giữ) — em không đoán ạ. Còn chọn máy đúng nhu cầu "
+                            f"thì em tư vấn ngay: anh chị đang cần sản phẩm gì ạ?"),
+                      thong_ke={"ms": int((time.perf_counter() - t0) * 1000),
+                                "cham_llm": 0, "che_do": "dich_vu"})
+
+    # P2b - NHU CAU MAU THUAN ("cao cap nhat nhung re nhat"): hoi khach uu tien.
+    if mau_thuan_tam_gia(t.tin_nhan):
+        return TraLoi(phien_id=ma, loai="cau_hoi",
+                      text=("Dạ hai yêu cầu 'cao cấp nhất' và 'rẻ nhất' hơi ngược nhau ạ — "
+                            "máy cao cấp thường đắt hơn. Anh chị ưu tiên bên nào để em "
+                            "cân đối giúp ạ?"),
+                      goi_y=["Ưu tiên cao cấp", "Ưu tiên giá rẻ", "Cân bằng tầm trung"],
+                      thong_ke={"ms": int((time.perf_counter() - t0) * 1000), "cham_llm": 0})
+
+    # P2c - HOI GIA 1 HANG cu the ("Casper gia bao nhieu"): dap bang DAI GIA that
+    # cua hang do trong nganh dang xet, khong hoi lai ngan sach.
+    if hoi_gia_hang(t.tin_nhan):
+        from backend.app.core.chuan_hoa_tv import bo_dau as _bd
+        from backend.app.nganh.khung import tim_nganh as _tim_ng
+        hg = trich_hang(t.tin_nhan, _cac_hang_toan_he())
+        ds_ng = catalog()
+        ten_ng = "máy lạnh"
+        ng_kh = _tim_ng(t.tin_nhan)
+        if ng_kh:
+            ds_ng, ten_ng = ng_kh.catalog(), ng_kh.ten_hien_thi
+        elif co_nganh_tu_lanh(t.tin_nhan):
+            from backend.app.nganh.tu_lanh import tai_catalog_tu_lanh
+            ds_ng, ten_ng = tai_catalog_tu_lanh(), "tủ lạnh"
+        if hg:
+            gia = [s.gia for s in ds_ng if _bd(s.hang).lower() == _bd(hg).lower()]
+            if gia:
+                return TraLoi(phien_id=ma, loai="giai_thich",
+                              text=(f"Dạ {ten_ng} hãng {hg} bên em có {len(gia)} mẫu, giá từ "
+                                    f"{tien_chu(min(gia))} đến {tien_chu(max(gia))} ạ. Giá tùy "
+                                    f"công suất/dung tích — anh chị cho em biết nhu cầu (phòng "
+                                    f"bao nhiêu m² / nhà mấy người) để em lọc đúng máy nhé ạ?"),
+                              goi_y=[f"Xem {hg} tầm trung", f"{hg} rẻ nhất"],
+                              thong_ke={"ms": int((time.perf_counter() - t0) * 1000),
+                                        "cham_llm": 0, "che_do": "gia_hang"})
+
     # TINH AGENT - HANG DOI DA Y: khach noi >1 nganh trong 1 cau ("may lanh...
     # va tu lanh..."). Xu nganh DAU, nho nganh sau vao p["nganh_cho"], xong flug
     # nganh dau se tu de xuat xem tiep. Chi lam khi CHUA co nganh dang do.

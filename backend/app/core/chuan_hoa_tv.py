@@ -473,6 +473,44 @@ def muc_gia(text: str) -> str | None:
     return None
 
 
+def hoi_dich_vu(text: str) -> str | None:
+    """Khach hoi DICH VU cua hang (tra gop, lap dat, giao hang, doi tra) - du
+    lieu catalog KHONG co (khac bao hanh - bao hanh co trong so nganh). Phai noi
+    THAT la can noi he thong cua hang, khong bia chinh sach.
+    Tra ten dich vu de dien vao cau tra loi, None neu khong dinh."""
+    kd = bo_dau(text or "").lower()
+    for mau, ten in [
+        (r"\btra gop\b|\bgop\b|\btra dan\b|\btra cham\b", "trả góp"),
+        (r"\blap dat\b|\blap may\b|\bcong lap\b|\bthi cong\b", "lắp đặt"),
+        (r"\bgiao hang\b|\bship\b|\bvan chuyen\b|\bgiao (?:ve|den|toi)\b", "giao hàng"),
+        (r"\bdoi tra\b|\btra hang\b|\bhoan tien\b|\b1 doi 1\b", "đổi trả"),
+    ]:
+        if re.search(mau, kd):
+            return ten
+    return None
+
+
+def hoi_gia_hang(text: str) -> bool:
+    """Khach hoi GIA cua 1 hang/dong may cu the ('Casper gia bao nhieu', 'LG
+    bao nhieu tien') - dap bang DAI GIA that cua hang do, khong hoi lai ngan
+    sach. Chi bat khi co tu hoi gia (chua co con so ngan sach di kem)."""
+    kd = bo_dau(text or "").lower()
+    if not re.search(r"\bgia (?:bao nhieu|nhu the nao|the nao|sao|tam nao)\b"
+                     r"|\bbao nhieu (?:tien|xien)\b|\bgia ca\b", kd):
+        return False
+    # neu da co con so tien roi thi khong phai hoi gia (la neu ngan sach)
+    return not re.search(r"\b\d{6,}\b", kd)
+
+
+def mau_thuan_tam_gia(text: str) -> bool:
+    """Nhu cau MAU THUAN: 'cao cap nhat nhung re nhat', 'tot nhat gia re nhat'.
+    Khong the vua re nhat vua cao cap - phai hoi khach uu tien cai nao."""
+    kd = bo_dau(text or "").lower()
+    co_cao = bool(re.search(r"\b(cao cap|xin nhat|tot nhat|xin nhat|dat nhat|flagship)\b", kd))
+    co_re = bool(re.search(r"\b(re nhat|gia re|re thoi|it tien nhat|tiet kiem nhat)\b", kd))
+    return co_cao and co_re
+
+
 def nganh_ngoai_pham_vi(text: str) -> str | None:
     """Khach dang hoi nganh khac (khong nhac may lanh) -> tra ten nganh do.
 

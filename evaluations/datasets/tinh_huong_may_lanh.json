@@ -746,6 +746,28 @@
     }
    ],
    "_ghi_chu": "Tinh agent: hang doi da y - xu may lanh xong de xuat + chuyen tu lanh"
+  },
+  {
+   "ten": "hoi_gia_hang_cu_the",
+   "can_du_lieu_that": true,
+   "tin_dau": "máy lạnh Casper giá bao nhiêu?",
+   "ky_vong_loai": "giai_thich",
+   "toi_da_cau_hoi": 0,
+   "_ghi_chu": "P2: hoi gia 1 hang -> dap dai gia that, khong hoi lai ngan sach"
+  },
+  {
+   "ten": "hoi_dich_vu_tra_gop",
+   "tin_dau": "máy lạnh có trả góp không?",
+   "ky_vong_loai": "thieu_du_lieu",
+   "toi_da_cau_hoi": 0,
+   "_ghi_chu": "P2: dich vu khong co trong data -> noi that can noi he thong, khong bia"
+  },
+  {
+   "ten": "nhu_cau_mau_thuan",
+   "tin_dau": "máy lạnh cao cấp nhất nhưng rẻ nhất phòng 18m2",
+   "ky_vong_loai": "bat_ky_khong_loi",
+   "toi_da_cau_hoi": 6,
+   "_ghi_chu": "P2: mau thuan cao cap vs re -> hoi uu tien, khong xep bua"
   }
  ]
 }
