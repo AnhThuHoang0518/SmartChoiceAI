@@ -161,7 +161,7 @@ class FptLLM(LLM):
             # (prompt ep ket cau bang 'ạ') va du dai. Van qua hau kiem sau.
             ung = ""
             for doan in reversed([d.strip() for d in rc.split("\n\n") if d.strip()]):
-                if "ạ" in doan and len(doan) >= 40 and "anh/chị" in doan.lower() or \
+                if "ạ" in doan and len(doan) >= 40 and "anh chị" in doan.lower() or \
                         ("ạ." in doan and len(doan) >= 60):
                     ung = doan
                     break

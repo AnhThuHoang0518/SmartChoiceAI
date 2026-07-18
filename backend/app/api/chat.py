@@ -166,7 +166,7 @@ def _so_sanh_2_may(t: TinNhan, ma: str, p: dict, t0: float,
     i, j = cap
     if i >= len(top) or j >= len(top):
         return TraLoi(phien_id=ma, loai="so_sanh",
-                      text=f"Dạ bảng gần nhất em chỉ có {len(top)} máy ạ — anh/chị chọn "
+                      text=f"Dạ bảng gần nhất em chỉ có {len(top)} máy ạ — anh chị chọn "
                            f"trong số đó giúp em nhé (ví dụ: 'so sánh máy 1 và máy 2').",
                       thong_ke={"ms": int((time.perf_counter() - t0) * 1000), "cham_llm": 0})
     a, b = top[i], top[j]
@@ -237,7 +237,7 @@ def _xu_ly_tu_lanh(t: TinNhan, ma: str, p: dict, t0: float, giong: str) -> TraLo
         # Chua co du lieu nganh nay tren may dang chay -> noi that.
         return TraLoi(phien_id=ma, loai="ngoai_pham_vi",
                       text="Dạ dữ liệu tủ lạnh chưa được nạp trên hệ thống này ạ — "
-                           "anh/chị cần máy lạnh thì em tư vấn được ngay ạ!",
+                           "anh chị cần máy lạnh thì em tư vấn được ngay ạ!",
                       thong_ke={"ms": int((time.perf_counter() - t0) * 1000), "cham_llm": 0})
 
     p["nganh"] = "tu_lanh"
@@ -317,7 +317,7 @@ def _xu_ly_nganh_khung(t: TinNhan, ma: str, p: dict, t0: float, giong: str,
     if not ds:
         return TraLoi(phien_id=ma, loai="ngoai_pham_vi",
                       text=f"Dạ dữ liệu {nganh.ten_hien_thi} chưa được nạp trên hệ "
-                           "thống này ạ — anh/chị cần máy lạnh/tủ lạnh thì em tư vấn ngay ạ!",
+                           "thống này ạ — anh chị cần máy lạnh/tủ lạnh thì em tư vấn ngay ạ!",
                       thong_ke={"ms": int((time.perf_counter() - t0) * 1000), "cham_llm": 0})
 
     p["nganh"] = nganh.ten
@@ -477,7 +477,7 @@ def chat(t: TinNhan) -> TraLoi:
         u = top[vs]
         dong = [f"Dạ **{u['ten']}** đứng vị trí {vs + 1} vì tổng điểm cao "
                 f"{'nhất' if vs == 0 else 'thứ ' + str(vs + 1)} trên các tiêu chí "
-                f"anh/chị nêu ạ ({u['diem']:.2f}/1):"]
+                f"anh chị nêu ạ ({u['diem']:.2f}/1):"]
         from backend.app.schemas.ket_qua import nhan_truc
         for h in u.get("hon", []):
             dong.append(f"✓ {nhan_truc(h['truc'], True)}: {h['cua_minh']} (so với {h['doi_thu']})")
@@ -487,7 +487,7 @@ def chat(t: TinNhan) -> TraLoi:
         dong.append("Điểm cả bảng: " + " · ".join(
             f"{i + 1}. {x['ten']} ({x['diem']:.2f})" for i, x in enumerate(top)))
         dong.append("Cách tính: mỗi tiêu chí chuẩn hóa 0-1 giữa các máy đã qua lọc, "
-                    "nhân trọng số sinh từ chính ưu tiên anh/chị nói, cộng lại — "
+                    "nhân trọng số sinh từ chính ưu tiên anh chị nói, cộng lại — "
                     "không có cảm tính, không nhờ AI chấm ạ.")
         return TraLoi(
             phien_id=ma, loai="giai_trinh_xep_hang", text="\n".join(dong),
@@ -531,7 +531,7 @@ def chat(t: TinNhan) -> TraLoi:
     if nganh and _tim(t.tin_nhan) is None:
         # Liet ke nganh tu REGISTRY chu khong hardcode - them nganh moi la cau
         # tra loi tu cap nhat, khong bao gio noi "co san" thu khong co.
-        danh_sach = ", ".join(["máy lạnh", "tủ lạnh"] + [n.ten_hien_thi for n in cac_nganh()])
+        danh_sach = ", ".join(["máy lạnh", "tủ lạnh"] + [n.cfg.get("ten_liet_ke", n.ten_hien_thi) for n in cac_nganh()])
         return TraLoi(
             phien_id=ma,
             loai="ngoai_pham_vi",
@@ -695,10 +695,10 @@ def chat(t: TinNhan) -> TraLoi:
                     dong.append(f"   🎁 {s.qua[:120]}")
             text = (
                 "Dạ đang có mấy máy giảm sâu nhất nè ạ:\n" + "\n".join(dong)
-                + "\nMáy phù hợp hay không còn tùy phòng anh/chị ạ — phòng anh/chị rộng khoảng bao nhiêu m² để em xem máy nào đang giảm mà VỪA phòng anh/chị ạ?"
+                + "\nMáy phù hợp hay không còn tùy phòng anh chị ạ — phòng anh chị rộng khoảng bao nhiêu m² để em xem máy nào đang giảm mà VỪA phòng anh chị ạ?"
             )
         else:
-            text = "Dạ hiện tại em chưa thấy máy nào đang có giá khuyến mãi trong dữ liệu ạ. Anh/chị cho em xin diện tích phòng và ngân sách, em lọc máy giá tốt nhất cho anh/chị nhé ạ?"
+            text = "Dạ hiện tại em chưa thấy máy nào đang có giá khuyến mãi trong dữ liệu ạ. Anh/chị cho em xin diện tích phòng và ngân sách, em lọc máy giá tốt nhất cho anh chị nhé ạ?"
         phien.ghi(ma, nc, "dien_tich_m2")
         return TraLoi(
             phien_id=ma,

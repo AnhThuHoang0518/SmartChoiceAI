@@ -43,7 +43,7 @@
    "trich": [
     "(?:tu|it nhat)?\\s*([\\d.]{2,4})\\s*inch"
    ],
-   "cau_hoi": "Dạ anh/chị muốn màn từ bao nhiêu inch ạ?",
+   "cau_hoi": "Dạ anh chị muốn màn từ bao nhiêu inch ạ?",
    "nhan": "từ {:.0f} inch"
   },
   "phan_giai": {
@@ -52,7 +52,7 @@
    "trich": [
     "(4k|2k|full hd|fhd|qhd|uhd)"
    ],
-   "cau_hoi": "Dạ anh/chị cần độ phân giải nào ạ — Full HD, 2K hay 4K?",
+   "cau_hoi": "Dạ anh chị cần độ phân giải nào ạ — Full HD, 2K hay 4K?",
    "nhan": "độ phân giải {}"
   },
   "tam_nen": {
@@ -61,7 +61,7 @@
    "trich": [
     "\\b(ips|va|tn|oled)\\b"
    ],
-   "cau_hoi": "Dạ anh/chị có yêu cầu tấm nền không ạ (IPS/VA)?",
+   "cau_hoi": "Dạ anh chị có yêu cầu tấm nền không ạ (IPS/VA)?",
    "nhan": "tấm nền {}"
   },
   "loa_min": {
@@ -76,8 +76,8 @@
   }
  },
  "cau_hoi_ngan_sach": {
-  "cau_hoi": "Dạ anh/chị dự tính khoảng bao nhiêu cho màn hình ạ?",
-  "cau_hoi_lap": "Dạ anh/chị cho em xin ngân sách ạ — ví dụ: 'khoảng 5 triệu'."
+  "cau_hoi": "Dạ anh chị dự tính khoảng bao nhiêu cho màn hình ạ?",
+  "cau_hoi_lap": "Dạ anh chị cho em xin ngân sách ạ — ví dụ: 'khoảng 5 triệu'."
  },
  "loc_cung": [
   {

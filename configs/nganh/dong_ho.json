@@ -37,7 +37,7 @@
    "trich": [
     "pin\\s*(?:tu|it nhat|khoang)?\\s*(\\d{1,2})\\s*ngay"
    ],
-   "cau_hoi": "Dạ anh/chị cần pin dùng được từ mấy ngày ạ?",
+   "cau_hoi": "Dạ anh chị cần pin dùng được từ mấy ngày ạ?",
    "nhan": "pin từ {:.0f} ngày"
   },
   "nghe_goi": {
@@ -46,7 +46,7 @@
    "trich": [
     "(nghe goi)"
    ],
-   "cau_hoi": "Dạ anh/chị có cần nghe gọi ngay trên đồng hồ không ạ?",
+   "cau_hoi": "Dạ anh chị có cần nghe gọi ngay trên đồng hồ không ạ?",
    "nhan": "cần {}"
   },
   "nghe_goi_can": {
@@ -76,8 +76,8 @@
   }
  },
  "cau_hoi_ngan_sach": {
-  "cau_hoi": "Dạ anh/chị dự tính khoảng bao nhiêu cho đồng hồ ạ?",
-  "cau_hoi_lap": "Dạ anh/chị cho em xin ngân sách ạ — ví dụ: 'khoảng 3 triệu'."
+  "cau_hoi": "Dạ anh chị dự tính khoảng bao nhiêu cho đồng hồ ạ?",
+  "cau_hoi_lap": "Dạ anh chị cho em xin ngân sách ạ — ví dụ: 'khoảng 3 triệu'."
  },
  "loc_cung": [
   {

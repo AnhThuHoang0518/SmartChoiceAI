@@ -19,14 +19,14 @@
     "so_bua": {
       "kieu": "so", "bat_buoc": true,
       "trich": ["(\\d{1,2})\\s*bua"],
-      "cau_hoi": "Dạ nhà anh/chị mỗi ngày rửa khoảng mấy bữa cơm ạ? (hãng công bố sức chứa theo bữa ăn Việt nên em hỏi để chọn đúng cỡ ạ)",
-      "cau_hoi_lap": "Dạ anh/chị cho em biết mỗi ngày mấy bữa ạ — ví dụ: '3 bữa'.",
+      "cau_hoi": "Dạ nhà anh chị mỗi ngày rửa khoảng mấy bữa cơm ạ? (hãng công bố sức chứa theo bữa ăn Việt nên em hỏi để chọn đúng cỡ ạ)",
+      "cau_hoi_lap": "Dạ anh chị cho em biết mỗi ngày mấy bữa ạ — ví dụ: '3 bữa'.",
       "nhan": "khoảng {:.0f} bữa/ngày"
     },
     "do_on_max": {
       "kieu": "so", "bat_buoc": false,
       "trich": ["(?:em |duoi |on duoi )\\s*(\\d{2})\\s*db"],
-      "cau_hoi": "Dạ anh/chị cần máy êm dưới bao nhiêu dB ạ?",
+      "cau_hoi": "Dạ anh chị cần máy êm dưới bao nhiêu dB ạ?",
       "nhan": "độ ồn dưới {:.0f} dB"
     },
     "ngang_cm": {
@@ -37,8 +37,8 @@
     }
   },
   "cau_hoi_ngan_sach": {
-    "cau_hoi": "Dạ anh/chị dự tính khoảng bao nhiêu cho máy rửa chén ạ?",
-    "cau_hoi_lap": "Dạ anh/chị cho em xin ngân sách ạ — ví dụ: 'khoảng 15 triệu'."
+    "cau_hoi": "Dạ anh chị dự tính khoảng bao nhiêu cho máy rửa chén ạ?",
+    "cau_hoi_lap": "Dạ anh chị cho em xin ngân sách ạ — ví dụ: 'khoảng 15 triệu'."
   },
   "loc_cung": [
     {"kieu": "khoang_hang_cong_bo", "o": "so_bua", "cot_min": "bua_min", "cot_max": "bua_max", "don_vi": "bữa", "ly_do": "so_bua"},

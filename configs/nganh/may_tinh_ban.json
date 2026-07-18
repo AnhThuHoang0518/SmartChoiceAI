@@ -34,7 +34,7 @@
    "trich": [
     "ram\\s*(?:tu|it nhat)?\\s*(\\d{1,2})\\s*(?:gb)?"
    ],
-   "cau_hoi": "Dạ anh/chị cần RAM từ bao nhiêu GB ạ?",
+   "cau_hoi": "Dạ anh chị cần RAM từ bao nhiêu GB ạ?",
    "nhan": "RAM từ {:.0f} GB"
   },
   "cpu_can": {
@@ -47,8 +47,8 @@
   }
  },
  "cau_hoi_ngan_sach": {
-  "cau_hoi": "Dạ anh/chị dự tính khoảng bao nhiêu cho máy tính ạ?",
-  "cau_hoi_lap": "Dạ anh/chị cho em xin ngân sách ạ — ví dụ: 'khoảng 15 triệu'."
+  "cau_hoi": "Dạ anh chị dự tính khoảng bao nhiêu cho máy tính ạ?",
+  "cau_hoi_lap": "Dạ anh chị cho em xin ngân sách ạ — ví dụ: 'khoảng 15 triệu'."
  },
  "loc_cung": [
   {

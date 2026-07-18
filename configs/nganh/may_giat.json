@@ -19,14 +19,14 @@
     "so_nguoi": {
       "kieu": "so", "bat_buoc": true,
       "trich": ["(?:nha|gia dinh|cho)?\\s*(\\d{1,2})\\s*(?:nguoi|thanh vien)"],
-      "cau_hoi": "Dạ nhà anh/chị mấy người ạ? Hãng công bố tải giặt theo số người nên em hỏi để chọn đúng cỡ ạ.",
-      "cau_hoi_lap": "Dạ em vẫn cần biết nhà anh/chị mấy người ạ — ví dụ: '4 người'.",
+      "cau_hoi": "Dạ nhà anh chị mấy người ạ? Hãng công bố tải giặt theo số người nên em hỏi để chọn đúng cỡ ạ.",
+      "cau_hoi_lap": "Dạ em vẫn cần biết nhà anh chị mấy người ạ — ví dụ: '4 người'.",
       "nhan": "nhà {:.0f} người"
     },
     "tai_kg": {
       "kieu": "so", "bat_buoc": false,
       "trich": ["(\\d{1,2})\\s*kg"],
-      "cau_hoi": "Dạ anh/chị muốn máy giặt khoảng bao nhiêu kg ạ?",
+      "cau_hoi": "Dạ anh chị muốn máy giặt khoảng bao nhiêu kg ạ?",
       "nhan": "tải {:.0f} kg"
     },
     "ngang_cm": {
@@ -44,13 +44,13 @@
     "loai": {
       "kieu": "chu", "bat_buoc": false,
       "trich": ["(cua truoc|cua tren|long ngang|long dung)"],
-      "cau_hoi": "Dạ anh/chị thích cửa trước hay cửa trên ạ?",
+      "cau_hoi": "Dạ anh chị thích cửa trước hay cửa trên ạ?",
       "nhan": "kiểu {}"
     }
   },
   "cau_hoi_ngan_sach": {
-    "cau_hoi": "Dạ anh/chị dự tính khoảng bao nhiêu cho máy giặt ạ?",
-    "cau_hoi_lap": "Dạ anh/chị cho em xin ngân sách ạ — ví dụ: 'khoảng 10 triệu'."
+    "cau_hoi": "Dạ anh chị dự tính khoảng bao nhiêu cho máy giặt ạ?",
+    "cau_hoi_lap": "Dạ anh chị cho em xin ngân sách ạ — ví dụ: 'khoảng 10 triệu'."
   },
   "loc_cung": [
     {"kieu": "khoang_hang_cong_bo", "o": "so_nguoi", "cot_min": "nguoi_min", "cot_max": "nguoi_max", "don_vi": "người", "ly_do": "so_nguoi"},

@@ -33,7 +33,7 @@
    "trich": [
     "(truc tiep|gian tiep)"
    ],
-   "cau_hoi": "Dạ anh/chị muốn máy nóng TRỰC TIẾP (nóng ngay, gọn) hay GIÁN TIẾP (bình chứa, nhiều người tắm liên tục) ạ?",
+   "cau_hoi": "Dạ anh chị muốn máy nóng TRỰC TIẾP (nóng ngay, gọn) hay GIÁN TIẾP (bình chứa, nhiều người tắm liên tục) ạ?",
    "nhan": "loại làm nóng {}"
   },
   "an_toan_can": {
@@ -56,8 +56,8 @@
   }
  },
  "cau_hoi_ngan_sach": {
-  "cau_hoi": "Dạ anh/chị dự tính khoảng bao nhiêu cho máy nước nóng ạ?",
-  "cau_hoi_lap": "Dạ anh/chị cho em xin ngân sách ạ — ví dụ: 'khoảng 4 triệu'."
+  "cau_hoi": "Dạ anh chị dự tính khoảng bao nhiêu cho máy nước nóng ạ?",
+  "cau_hoi_lap": "Dạ anh chị cho em xin ngân sách ạ — ví dụ: 'khoảng 4 triệu'."
  },
  "loc_cung": [
   {

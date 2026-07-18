@@ -64,12 +64,13 @@
 <header><a href="/" style="text-decoration:none;color:var(--phu);font-size:13px;margin-right:2px" title="Về trang chủ">←</a><b>Smart Choice</b><span>· tư vấn theo nhu cầu thật · mọi con số đều có nguồn</span><button id="doc-tl" title="Bot đọc câu trả lời (bật/tắt)" style="margin-left:auto;background:none;border:1px solid var(--vien);border-radius:18px;padding:4px 12px;cursor:pointer;font-size:15px;color:var(--muc)">🔇</button><button id="doi-nen" title="Đổi giao diện sáng/tối" style="margin-left:auto;background:none;border:1px solid var(--vien);border-radius:18px;padding:4px 12px;cursor:pointer;font-size:15px;color:var(--muc)">🌙</button></header>
 
 <div id="khung">
-  <div class="dong bot"><div class="bong">Em chào anh/chị ạ! Em tư vấn được 13 ngành hàng: máy lạnh, tủ lạnh, máy giặt, máy sấy, máy rửa chén, tủ đông, máy nước nóng, tablet, đồng hồ, màn hình, PC, máy in, micro. Cứ nói tự nhiên — viết tắt hay không dấu đều được ạ.</div></div>
+  <div class="dong bot"><div class="bong">Em chào anh chị ạ! Em tư vấn đủ 14 ngành hàng: máy lạnh, tủ lạnh, máy giặt, máy sấy, máy rửa chén, tủ đông, máy nước nóng, tablet, đồng hồ, màn hình, PC, máy in, micro karaoke, micro thu âm. Cứ nói tự nhiên — viết tắt hay không dấu đều được ạ.</div></div>
   <div class="goi-y" id="goiy">
     <button onclick="dienMau(this)">🔥 Máy lạnh nào đang giảm giá?</button>
+    <button onclick="dienMau(this)">Máy lạnh 15tr cho phòng ngủ 18m2</button>
     <button onclick="dienMau(this)">Nhà 4 người cần tủ lạnh tiết kiệm điện</button>
-    <button onclick="dienMau(this)">máy sấy vừa hốc 60x65x86 cm</button>
-    <button onclick="dienMau(this)">tablet màn 11 inch pin trâu tầm 10tr</button>
+    <button onclick="dienMau(this)">Máy giặt cửa trước tầm 10 triệu</button>
+    <button onclick="dienMau(this)">Tablet màn 11 inch pin trâu tầm 10tr</button>
   </div>
 </div>
 
@@ -108,8 +109,19 @@ nutDoc.onclick = () => {
 };
 let amThanh = null;                           // audio dang phat - phat cai moi thi tat cai cu
 async function docTo(text){
-  // bo markdown + bullet cho de nghe; cat 400 ky tu de khong doc ca bang
-  const sach = text.replace(/\*\*/g, '').replace(/^[•✓△→-]\s*/gm, '').slice(0, 400);
+  // Lam sach de DOC (khong dong den hien thi): bo markdown/bullet, dau '—' va
+  // '·' thanh khoang trang (TTS ngat qua lau o dau cau), '/' doc 'trên'
+  // (kWh/năm), gia '7.960.000đ' doc thanh chu '7 triệu 960 nghìn đồng'.
+  const sach = text
+    .replace(/\*\*/g, '')
+    .replace(/^[•✓△→-]\s*/gm, '')
+    .replace(/(\d+)\.(\d{3})\.(\d{3})\s*đ/g, (m, a, b) =>
+      a + ' triệu ' + (b !== '000' ? parseInt(b) + ' nghìn ' : '') + 'đồng')
+    .replace(/anh\/chị/gi, 'anh chị')
+    .replace(/[—–·]/g, ' ')
+    .replace(/\//g, ' trên ')
+    .replace(/\s{2,}/g, ' ')
+    .slice(0, 400);
   if (amThanh) { amThanh.pause(); amThanh = null; }
   if ('speechSynthesis' in window) speechSynthesis.cancel();
   // Uu tien TTS FPT.AI-VITs (9 giong dien vien long tieng, server /api/doc);
