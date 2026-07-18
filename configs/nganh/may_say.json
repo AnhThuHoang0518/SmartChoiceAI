@@ -78,6 +78,14 @@
     "lap\\s*dat.{0,20}thong\\s*hoi"
    ],
    "text": "Dạ catalog hiện chưa có chiều dài và yêu cầu lắp ống thoát khí, nên em chưa thể xác nhận phương án lắp máy sấy thông hơi này ạ. Cần kiểm tra tài liệu lắp đặt chính thức của đúng model."
+  },
+  {
+   "truong": "dien_nang_moi_me",
+   "mau": [
+    "\\d+(?:[.,]\\d+)?\\s*w.{0,30}(?:ton dien|dien nang|tiet kiem dien)",
+    "dien nang.{0,30}\\d+(?:[.,]\\d+)?\\s*w"
+   ],
+   "text": "Dạ công suất W không đủ để kết luận điện năng mỗi mẻ hoặc máy nào tiết kiệm hơn ạ. Cần thời gian chu trình và cùng mức tải/chương trình; thiếu các trường đó em không tự quy đổi hay xếp hạng."
   }
  ],
  "o_nhu_cau": {
@@ -85,10 +93,9 @@
    "kieu": "so",
    "bat_buoc": true,
    "trich": [
-    "(\\d{1,2})\\s*(?:-\\s*\\d{1,2}\\s*)?kg",
-    "(?:nha|gia dinh)\\s*(\\d{1,2})\\s*nguoi"
+    "(\\d{1,2})\\s*(?:-\\s*\\d{1,2}\\s*)?kg"
    ],
-   "cau_hoi": "Dạ anh chị cần máy sấy khoảng bao nhiêu kg ạ? (nhà 3-5 người thường dùng 8-9 kg ạ)",
+   "cau_hoi": "Dạ anh chị cần máy sấy khoảng bao nhiêu kg ạ? Em chưa tự quy đổi số người sang tải sấy khi chưa có ngưỡng nghiệp vụ được duyệt.",
    "cau_hoi_lap": "Dạ anh chị cho em xin tải sấy ạ — ví dụ: '9 kg'.",
    "nhan": "tải {:.0f} kg"
   },
@@ -126,7 +133,7 @@
    "trich": [
     "(bom nhiet|thong hoi|nguung tu|ngung tu)"
    ],
-   "cau_hoi": "Dạ anh chị muốn sấy bơm nhiệt (tiết kiệm điện) hay thông hơi (rẻ hơn) ạ?",
+   "cau_hoi": "Dạ anh chị muốn máy sấy bơm nhiệt hay thông hơi ạ? Em sẽ so giá và điện năng từ đúng thông số từng mẫu.",
    "nhan": "loại {}"
   }
  },
@@ -135,6 +142,13 @@
   "cau_hoi_lap": "Dạ anh chị cho em xin ngân sách ạ — ví dụ: 'khoảng 8 triệu'."
  },
  "loc_cung": [
+  {
+   "kieu": "toi_thieu",
+   "o": "tai_kg",
+   "cot": "tai_kg",
+   "don_vi": "kg",
+   "ly_do": "tai_say"
+  },
   {
    "kieu": "toi_da",
    "o": "ngang_cm",

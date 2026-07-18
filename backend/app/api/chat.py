@@ -522,10 +522,32 @@ def _xu_ly_nganh_khung(t: TinNhan, ma: str, p: dict, t0: float, giong: str,
     # hau_kiem doc thuoc tinh tu nhu_cau qua getattr -> boc dict thanh namespace
     nc_shim = SimpleNamespace(**{k: v for k, v in nc.gia_tri.items() if v is not None})
     r = viet_lai(bang, nc_shim, llm(), giong, mo_ta_nhu_cau=mo_ta)
+    text_cuoi = r["text"]
+    # Kich thuoc trong catalog la kich thuoc than may. Neu khach loc theo hoc/
+    # cho dat, phai noi ro chua bao gom khoang ho, ong/cua mo va yeu cau lap dat;
+    # khong duoc bien phep loc than may thanh cam ket "dat vua".
+    cac_o_kich_thuoc = {"ngang_cm", "sau_cm", "cao_cm"}
+    if nganh.ten in {"may_giat", "may_say", "may_rua_chen"} \
+            and any(nc.lay(o) is not None for o in cac_o_kich_thuoc):
+        text_cuoi = (
+            "Dạ em đã lọc theo kích thước thân máy có trong catalog. Kết quả "
+            "chưa phải cam kết lắp vừa vì nguồn chưa có khoảng hở, đường ống và "
+            "không gian mở cửa; anh chị cần đối chiếu hướng dẫn lắp đặt của đúng "
+            "model trước khi mua ạ.\n\n" + text_cuoi
+        )
+    if nganh.ten == "man_hinh" and re.search(
+        r"\b(?:gaming|choi game)\b", bo_dau(t.tin_nhan).lower()
+    ):
+        text_cuoi = (
+            "Dạ kết quả này chỉ xếp theo thời gian đáp ứng, tấm nền và các "
+            "trường đang có. Catalog chưa có tần số quét (Hz), nên em chưa dùng "
+            "tiêu chí đó và anh chị cần kiểm tra Hz của đúng model trước khi "
+            "chọn màn hình gaming ạ.\n\n" + text_cuoi
+        )
     p["loai_truoc"] = "tu_van"
     p["top3_truoc"] = _gan_anh([u.model_dump(mode="json") for u in bang.top3])
     return TraLoi(
-        phien_id=ma, loai="tu_van", text=r["text"],
+        phien_id=ma, loai="tu_van", text=text_cuoi,
         o_nhu_cau=nc.dump(),
         goi_y=_goi_y_tu_van(bang.top3, giong, p),
         top3=p["top3_truoc"],
@@ -1068,6 +1090,27 @@ def chat(t: TinNhan) -> TraLoi:
         cac_ng = _cac_nganh_trong_cau(t.tin_nhan)
         if len(cac_ng) >= 2:
             p["nganh_cho"] = cac_ng[1:]     # hang doi cac nganh con lai
+
+    # NHU CAU GIAN TIEP: khach noi TINH HUONG ("tóc bị ướt cần mua gì", "nhà
+    # nóng quá") thay vi ten san pham. Anh xa -> loai san pham. Chi lam khi chua
+    # ro nganh (khong pha flow dang tu van).
+    if not p.get("nganh"):
+        from backend.app.core.nhu_cau_gian_tiep import nhu_cau_gian_tiep
+        gt2 = nhu_cau_gian_tiep(t.tin_nhan)
+        if gt2 and not _cac_nganh_trong_cau(t.tin_nhan):   # chua goi ten san pham
+            loai_gt, sp = gt2
+            if loai_gt == "ngoai":
+                return TraLoi(
+                    phien_id=ma, loai="ngoai_pham_vi",
+                    text=(f"Dạ nghe qua thì anh chị đang cần {sp} — mặt hàng này em CHƯA có "
+                          f"dữ liệu nên em không tư vấn bừa được ạ. Em đang tư vấn được 14 "
+                          f"ngành: máy lạnh, tủ lạnh, máy giặt, máy sấy quần áo, máy rửa chén, "
+                          f"tủ đông, máy nước nóng, tablet, đồng hồ, màn hình, PC, máy in, "
+                          f"micro. Anh chị cần món nào trong số này em giúp ngay ạ!"),
+                    thong_ke={"ms": int((time.perf_counter() - t0) * 1000),
+                              "cham_llm": 0, "che_do": "gian_tiep_ngoai"})
+            # co du lieu -> dan sang nganh do bang chinh ten san pham (chay flow)
+            t = TinNhan(tin_nhan=f"{sp} {t.tin_nhan}", phien_id=t.phien_id)
 
     # Khach bam "Tu van tiep X" -> lay nganh dau hang doi ra, reset o nhu cau de
     # tu van nganh moi (ngan sach chung van giu). Tinh agent: hoan thanh ke hoach.

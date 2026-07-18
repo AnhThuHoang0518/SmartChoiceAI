@@ -30,6 +30,21 @@
       "truong": "bang_dieu_khien",
       "mau": ["bang\\s*dieu\\s*khien", "tieng\\s*viet"],
       "text": "Dạ catalog máy giặt hiện chưa có trường bảng điều khiển/ngôn ngữ hiển thị, nên em chưa thể xác nhận máy nào có tiếng Việt ạ."
+    },
+    {
+      "truong": "hieu_qua_giat_sach",
+      "mau": ["giat\\s*sach\\s*(?:nhat|hon|tot)", "sach\\s*nhat"],
+      "text": "Dạ catalog máy giặt hiện chưa có kết quả thử nghiệm độ sạch theo cùng tải/chương trình, nên em không thể gọi máy nào giặt sạch nhất ạ. Tên công nghệ, giá hoặc tốc độ vắt không được dùng thay cho kết quả làm sạch."
+    },
+    {
+      "truong": "do_phu_thong_so",
+      "mau": ["chi\\s*co\\s*(?:ma|model).{0,25}(?:brand|hang)", "thieu\\s*thong\\s*so.{0,20}top\\s*3"],
+      "text": "Dạ nếu các dòng chỉ có mã và hãng mà thiếu tải giặt, điện năng và các thông số so sánh thì em không xếp top 3 hiệu năng ạ. Em cũng không dùng thương hiệu làm tiêu chí thay thế cho dữ liệu còn thiếu."
+    },
+    {
+      "truong": "dien_nang_khac_don_vi",
+      "mau": ["dien\\s*nang.{0,25}khac\\s*don\\s*vi", "khac\\s*(?:don\\s*vi|chu\\s*ky).{0,25}dien\\s*nang"],
+      "text": "Dạ em chỉ so điện năng khi cùng đơn vị và cùng chu kỳ/tải ạ. Nếu nguồn không đủ để quy đổi về cùng cơ sở thì em không xếp hạng, và không lấy công suất hay một con số khác thay thế."
     }
   ],
   "o_nhu_cau": {

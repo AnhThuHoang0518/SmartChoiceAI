@@ -67,6 +67,7 @@
    "mau": [
     "nhiet\\s*do",
     "\\d{2,3}\\s*do\\s*c",
+    "\\d{2,3}\\s*°\\s*c",
     "gioi\\s*han\\s*nhiet"
    ],
    "text": "Dạ catalog hiện chưa có nhiệt độ tối đa và dải tùy chỉnh theo từng model; chỉ tên tính năng an toàn chưa đủ để kết luận mức nhiệt nào an toàn cho trẻ ạ."

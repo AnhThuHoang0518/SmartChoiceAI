@@ -28,7 +28,12 @@
     },
     {
       "truong": "hieu_qua_lam_sach",
-      "mau": ["cong\\s*suat.{0,30}rua\\s*sach", "rua\\s*sach.{0,20}cong\\s*suat"],
+      "mau": [
+        "cong\\s*suat.{0,30}rua\\s*sach",
+        "rua\\s*sach.{0,20}cong\\s*suat",
+        "\\d+(?:[.,]\\d+)?\\s*w.{0,30}rua\\s*sach",
+        "rua\\s*sach.{0,30}\\d+(?:[.,]\\d+)?\\s*w"
+      ],
       "text": "Dạ công suất điện W không chứng minh máy rửa sạch hơn ạ. Catalog hiện chưa có kết quả làm sạch theo cùng chương trình/tiêu chuẩn để so sánh, nên em không suy hiệu quả rửa từ công suất."
     }
   ],

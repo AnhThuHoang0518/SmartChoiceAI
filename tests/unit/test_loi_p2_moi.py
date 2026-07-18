@@ -7,6 +7,7 @@ from backend.app.core.chuan_hoa_tv import mau_thuan_tam_gia
 from backend.app.core.giai_thich_kien_thuc import giai_thich_kien_thuc
 from backend.app.nganh.khung import nganh_theo_ten
 from backend.app.services.llm import LuatLLM
+from scripts.nap_dmx_dien_tu import p_gio_nho_nhat
 
 
 @pytest.fixture(autouse=True)
@@ -133,3 +134,79 @@ def test_chup_anh_dep_nhat_de_guard_camera_xu_ly_khong_phai_gu_tham_my():
     assert r.loai == "thieu_du_lieu"
     assert r.thong_ke["truong_thieu"] == "camera_dinh_luong"
     assert r.thong_ke["cham_llm"] == 0
+
+
+@pytest.mark.parametrize(
+    ("query", "nganh", "truong"),
+    [
+        ("Máy giặt nào giặt sạch nhất?", "may_giat", "hieu_qua_giat_sach"),
+        ("Máy giặt có điện năng khác đơn vị và chu kỳ thì so sao?",
+         "may_giat", "dien_nang_khac_don_vi"),
+        ("Máy sấy 800W có tốn điện hơn máy 650W không?",
+         "may_say", "dien_nang_moi_me"),
+        ("Máy rửa chén 2400W có rửa sạch hơn máy 1800W không?",
+         "may_rua_chen", "hieu_qua_lam_sach"),
+        ("Máy nước nóng tối đa 75°C có an toàn cho trẻ không?",
+         "may_nuoc_nong", "nhiet_do_toi_da"),
+    ],
+)
+def test_quy_tac_an_toan_gia_dung_khong_suy_tu_don_vi_khac(query, nganh, truong):
+    r = _chat(query)
+
+    assert r.loai == "thieu_du_lieu"
+    assert r.thong_ke["nganh"] == nganh
+    assert r.thong_ke["truong_thieu"] == truong
+    assert r.thong_ke["cham_llm"] == 0
+
+
+def test_may_say_khong_bien_so_nguoi_thanh_tai_kg():
+    nganh = nganh_theo_ten("may_say")
+
+    nc = nganh.trich("Máy sấy cho nhà 5 người")
+
+    assert nc.lay("tai_kg") is None
+
+
+def test_may_say_tai_kg_la_hard_filter():
+    r = _chat("Máy sấy 9 kg dưới 20 triệu")
+
+    assert r.loai == "tu_van"
+    assert r.top3
+    assert all(
+        any(
+            n.get("truong") == "tai_kg" and float(n.get("gia_tri")) >= 9
+            for n in u.get("nguon", [])
+        )
+        for u in r.top3
+    )
+
+
+def test_loc_kich_thuoc_phai_canh_bao_khoang_ho_lap_dat():
+    r = _chat("Máy giặt nhà 4 người, chỗ đặt rộng 62 cm sâu 60 cm, dưới 15 triệu")
+
+    assert r.loai == "tu_van"
+    assert "chưa phải cam kết lắp vừa" in r.text.lower()
+    assert "khoảng hở" in r.text.lower()
+
+
+def test_giai_thich_db_khong_so_muc_thap_voi_muc_cao():
+    text = giai_thich_kien_thuc(
+        "Độ ồn 45/34/29 dB nghĩa là gì, khác dải 21-39 dB thế nào?"
+    )
+
+    assert text is not None
+    assert "cùng chế độ" in text.lower()
+    assert "mức thấp nhất" in text.lower()
+
+
+def test_pin_micro_lay_mat_xich_ngan_nhat():
+    assert p_gio_nho_nhat("8 - 10 tiếng", None, "6 giờ") == 6
+    assert p_gio_nho_nhat("8 - 10 tiếng", None, None) == 8
+
+
+def test_man_hinh_gaming_phai_noi_thieu_hz_du_khong_hoi_so_hz_cu_the():
+    r = _chat("Màn hình gaming phản hồi nhanh dưới 10 triệu")
+
+    assert r.loai == "tu_van"
+    assert "catalog chưa có tần số quét" in r.text.lower()
+    assert "chưa dùng tiêu chí đó" in r.text.lower()

@@ -195,6 +195,17 @@ def p_gio(s):
     return min(float(x) for x in so) if so else None
 
 
+def p_gio_nho_nhat(*cac_gia_tri):
+    """Thoi luong he micro = mat xich ngan nhat co nguon.
+
+    Khong cong bo phat + bo thu, cung khong lay dong 'thoi gian su dung' dai
+    hon de che mat bo thu ngan hon.
+    """
+    da_parse = [p_gio(v) for v in cac_gia_tri]
+    co_so = [v for v in da_parse if v is not None]
+    return min(co_so) if co_so else None
+
+
 def nap_micro(wb) -> None:
     """GOP 2 sheet micro thanh 1 nganh: 'Micro karaoke' chi co 5 SKU co gia -
     tach 2 nganh rieng la vo nghia voi khach."""
@@ -215,13 +226,18 @@ def nap_micro(wb) -> None:
             gia, gia_goc = parse_gia(g(r, "giá gốc"), g(r, "giá khuyến mãi"))
             if not gia:
                 continue
+            pin_gio = p_gio_nho_nhat(
+                g(r, "Thời gian sử dụng"),
+                g(r, "Thời gian hoạt động bộ phát"),
+                g(r, "Thời gian hoạt động bộ thu"),
+            )
             ra.append({
                 "ma_sp": str(g(r, "sku") or g(r, "model_code") or "").strip(),
                 "ten": f"{str(g(r, 'brand') or '').strip()} {g(r, 'model_code')}".strip(),
                 "hang": str(g(r, "brand") or "").strip(),
                 "gia": gia, "gia_goc": gia_goc or gia,
                 "khoang_cach_m": _num(g(r, "Khoảng cách truyền")) or "",
-                "pin_gio": p_gio(g(r, "Thời gian sử dụng")) or "",
+                "pin_gio": pin_gio or "",
                 "nhom": nhom,
                 "loai": str(g(r, "Loại sản phẩm") or "").strip(),
                 "ket_noi": str(g(r, "Kết nối") or "").strip(),

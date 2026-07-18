@@ -17,6 +17,13 @@ from backend.app.core.chuan_hoa_tv import bo_dau
 
 # tu khoa (khong dau) -> (giai thich, cau keo ve nhu cau)
 _KIEN_THUC = [
+    (r"\bdb\b|do on",
+     "Các số dB dạng 45/34/29 thường là mức ồn hãng công bố ở nhiều cấp vận "
+     "hành; dạng 21–39 dB là một khoảng. Không nên lấy mức thấp nhất của máy "
+     "này so với mức cao nhất của máy kia. Muốn kết luận máy nào êm hơn cần "
+     "đối chiếu cùng dàn lạnh/dàn nóng, cùng chế độ và cùng điều kiện đo; nếu "
+     "nguồn không ghi rõ thì chỉ có thể nêu giới hạn đó.",
+     "Anh chị đang so đúng hai model nào để em kiểm tra các mức dB có nguồn ạ?"),
     (r"inverter",
      "Inverter là công nghệ điều chỉnh công suất thay vì chỉ bật/tắt theo một "
      "mức cố định. Chỉ nhãn Inverter chưa đủ để kết luận máy nào ít tốn điện "
