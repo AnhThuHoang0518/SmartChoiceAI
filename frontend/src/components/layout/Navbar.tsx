@@ -1,14 +1,15 @@
 import { Search, MapPin, PhoneCall, ShoppingCart, User } from "lucide-react"
 import { Button } from "../ui/button"
+import { Link } from "react-router-dom"
 
 export function Navbar() {
   return (
     <header className="h-[80px] bg-white border-b border-border sticky top-0 z-50 flex items-center">
       <div className="container mx-auto px-4 flex items-center justify-between gap-8">
         {/* Logo */}
-        <div className="flex-shrink-0 flex items-center -ml-4 md:-ml-11">
+        <Link to="/" className="flex-shrink-0 flex items-center -ml-4 md:-ml-11">
           <img src="/images/Logo.png" alt="smartchoiceAI logo" className="h-[50px] md:h-[170px] w-auto object-contain" />
-        </div>
+        </Link>
 
         {/* Search */}
         <div className="flex-1 max-w-2xl relative hidden md:block">
