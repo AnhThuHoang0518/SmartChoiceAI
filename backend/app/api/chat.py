@@ -172,14 +172,27 @@ def _so_sanh_2_may(t: TinNhan, ma: str, p: dict, t0: float,
     thb = {n["truong"]: n["gia_tri"] for n in b["nguon"]}
 
     dong = [f"Dạ em so nhanh **{a['ten']}** (máy {i + 1}) và **{b['ten']}** (máy {j + 1}) nhé ạ:"]
-    for truong in tha:
+    rong = (None, "None", "")
+    for truong in {**tha, **thb}:          # hop 2 phia - truong chi 1 may co van hien
         va, vb = tha.get(truong), thb.get(truong)
-        if truong not in thb or va in (None, "None", "") or vb in (None, "None", ""):
+        if va in rong and vb in rong:
             continue
         if truong == "gia_goc" and tha.get("gia") == va and thb.get("gia") == vb:
             continue                       # khong khuyen mai -> gia goc trung gia ban, bo qua
+        # Mot may thieu du lieu -> NOI RO "hang khong cong bo", khong lang le
+        # giau truong do (giau di la lam bang so sanh dep hon su that).
+        if va in rong or vb in rong:
+            nhan, x = dinh_dang(truong, vb if va in rong else va)
+            trai = "(hãng không công bố)" if va in rong else x
+            phai = x if va in rong else "(hãng không công bố)"
+            dong.append(f"• {nhan}: {trai}  —  {phai}")
+            continue
         nhan, xa = dinh_dang(truong, va)
         _, xb = dinh_dang(truong, vb)
+        # Gia tri chu qua dai (vd danh sach dong CPU) lam vo bang - cat gon,
+        # chi tiet day du van xem duoc o badge nguon tren card.
+        xa = xa if len(xa) <= 60 else xa[:57] + "…"
+        xb = xb if len(xb) <= 60 else xb[:57] + "…"
         if xa == xb:
             dong.append(f"• {nhan}: {xa} (bằng nhau)")
         else:
@@ -282,6 +295,7 @@ def _xu_ly_tu_lanh(t: TinNhan, ma: str, p: dict, t0: float, giong: str) -> TraLo
         loai_noi_bat=bang.loai_noi_bat.model_dump(mode="json") if bang.loai_noi_bat else None,
         thong_ke={"ms": int((time.perf_counter() - t0) * 1000), "cham_llm": 2,
                   "truoc_loc": bang.tong_truoc_loc, "sau_loc": bang.con_lai_sau_loc,
+                  "bo_vi_thieu": thieu_kt,
                   "nguon_llm": r["nguon_llm"], "so_lan_chan_bia": r["so_lan_bi_chan"],
                   "loi_da_chan": r["loi_da_chan"], "giong": giong, "nganh": "tu_lanh"},
     )
@@ -367,6 +381,7 @@ def _xu_ly_nganh_khung(t: TinNhan, ma: str, p: dict, t0: float, giong: str,
         loai_noi_bat=bang.loai_noi_bat.model_dump(mode="json") if bang.loai_noi_bat else None,
         thong_ke={"ms": int((time.perf_counter() - t0) * 1000), "cham_llm": 2,
                   "truoc_loc": bang.tong_truoc_loc, "sau_loc": bang.con_lai_sau_loc,
+                  "bo_vi_thieu": thieu_kt,
                   "nguon_llm": r["nguon_llm"], "so_lan_chan_bia": r["so_lan_bi_chan"],
                   "loi_da_chan": r["loi_da_chan"], "giong": giong, "nganh": nganh.ten},
     )

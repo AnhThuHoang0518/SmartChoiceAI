@@ -219,6 +219,7 @@ async function gui(e){
         html += '<div class="loai-noi-bat"><b>Vì sao em không đề xuất ' + d.loai_noi_bat.ten + ':</b> ' + d.loai_noi_bat.chi_tiet + '</div>';
       const t = d.thong_ke || {};
       html += '<div class="giai-trinh"><span>lọc ' + t.truoc_loc + ' → ' + t.sau_loc + ' máy</span>'
+            + (t.bo_vi_thieu ? '<span title="Máy không có số liệu để đối chiếu ràng buộc của bạn — hệ không đoán">bỏ ' + t.bo_vi_thieu + ' máy thiếu dữ liệu</span>' : '')
             + '<span>' + t.ms + 'ms</span><span>chạm LLM: ' + t.cham_llm + '</span>'
             + (t.so_lan_chan_bia ? '<span>đã chặn bịa: ' + t.so_lan_chan_bia + ' lần</span>' : '') + '</div>';
     }

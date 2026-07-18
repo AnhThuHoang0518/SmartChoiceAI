@@ -70,7 +70,7 @@ NHAN: dict[str, tuple[str, str]] = {
     "khay_to": ("Khay nạp giấy", " tờ"),
     "cong_suat_thang": ("Công suất in", " trang/tháng"),
     "loa_co": ("Loa tích hợp", ""),
-    "cong_nghe_cpu": ("CPU", ""),
+    "cong_nghe_cpu": ("Dòng CPU", ""),
     # micro
     "khoang_cach_m": ("Khoảng cách truyền", " m"),
     "nhom": ("Nhóm", ""),
