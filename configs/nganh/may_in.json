@@ -15,19 +15,19 @@
     "loai": {
       "kieu": "chu", "bat_buoc": false,
       "trich": ["(laser|phun|in mau|den trang)"],
-      "cau_hoi": "Dạ mình cần máy in laser (văn bản, rẻ/trang) hay in phun (in màu ảnh) ạ?",
+      "cau_hoi": "Dạ anh/chị cần máy in laser (văn bản, rẻ/trang) hay in phun (in màu ảnh) ạ?",
       "nhan": "loại {}"
     },
     "wifi": {
       "kieu": "chu", "bat_buoc": false,
       "trich": ["(wifi|khong day)"],
-      "cau_hoi": "Dạ mình cần in qua WiFi không ạ?",
+      "cau_hoi": "Dạ anh/chị cần in qua WiFi không ạ?",
       "nhan": "cần {}"
     }
   },
   "cau_hoi_ngan_sach": {
-    "cau_hoi": "Dạ mình dự tính khoảng bao nhiêu cho máy in ạ?",
-    "cau_hoi_lap": "Dạ mình cho em xin ngân sách ạ — ví dụ: 'khoảng 4 triệu'."
+    "cau_hoi": "Dạ anh/chị dự tính khoảng bao nhiêu cho máy in ạ?",
+    "cau_hoi_lap": "Dạ anh/chị cho em xin ngân sách ạ — ví dụ: 'khoảng 4 triệu'."
   },
   "loc_cung": [
     {"kieu": "khop_ten", "o": "loai", "cot": "loai", "ly_do": "loai"},

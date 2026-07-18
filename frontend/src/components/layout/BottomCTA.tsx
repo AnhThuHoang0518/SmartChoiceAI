@@ -29,7 +29,8 @@ export function BottomCTA() {
             </div>
 
             <div className="flex-shrink-0 w-full md:w-auto mt-2 md:mt-0">
-              <Button 
+              <Button
+                onClick={() => { window.location.href = "/chat" }}
                 className="w-full md:w-auto bg-[#FFDE00] text-[#001D6E] font-bold text-[15px] md:text-[16px] hover:bg-[#F2D300] h-12 px-8 rounded-full shadow-md hover:shadow-lg transition-all"
               >
                 Bắt đầu ngay

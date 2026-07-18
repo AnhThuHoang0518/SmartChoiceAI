@@ -17,13 +17,13 @@
     "nhom": {
       "kieu": "chu", "bat_buoc": false,
       "trich": ["(karaoke|thu am)"],
-      "cau_hoi": "Dạ mình cần micro hát KARAOKE hay micro THU ÂM (quay video, làm nội dung) ạ?",
+      "cau_hoi": "Dạ anh/chị cần micro hát KARAOKE hay micro THU ÂM (quay video, làm nội dung) ạ?",
       "nhan": "nhóm {}"
     }
   },
   "cau_hoi_ngan_sach": {
-    "cau_hoi": "Dạ mình dự tính khoảng bao nhiêu cho micro ạ?",
-    "cau_hoi_lap": "Dạ mình cho em xin ngân sách ạ — ví dụ: 'khoảng 1 triệu'."
+    "cau_hoi": "Dạ anh/chị dự tính khoảng bao nhiêu cho micro ạ?",
+    "cau_hoi_lap": "Dạ anh/chị cho em xin ngân sách ạ — ví dụ: 'khoảng 1 triệu'."
   },
   "loc_cung": [
     {"kieu": "khop_ten", "o": "nhom", "cot": "nhom", "ly_do": "nhom"},

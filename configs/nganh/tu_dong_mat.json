@@ -16,14 +16,14 @@
     "loai": {
       "kieu": "chu", "bat_buoc": true,
       "trich": ["(tu dong|tu mat)"],
-      "cau_hoi": "Dạ mình cần tủ ĐÔNG (trữ đông thịt cá) hay tủ MÁT (nước ngọt, rau củ) ạ?",
-      "cau_hoi_lap": "Dạ mình chọn giúp em 'tủ đông' hoặc 'tủ mát' ạ.",
+      "cau_hoi": "Dạ anh/chị cần tủ ĐÔNG (trữ đông thịt cá) hay tủ MÁT (nước ngọt, rau củ) ạ?",
+      "cau_hoi_lap": "Dạ anh/chị chọn giúp em 'tủ đông' hoặc 'tủ mát' ạ.",
       "nhan": "loại {}"
     },
     "dung_tich_min": {
       "kieu": "so", "bat_buoc": false,
       "trich": ["(?:tu|it nhat|toi thieu)?\\s*(\\d{2,4})\\s*(?:lit|l)\\b"],
-      "cau_hoi": "Dạ mình cần dung tích khoảng bao nhiêu lít ạ?",
+      "cau_hoi": "Dạ anh/chị cần dung tích khoảng bao nhiêu lít ạ?",
       "nhan": "từ {:.0f} lít"
     },
     "ngang_cm": {
@@ -34,8 +34,8 @@
     }
   },
   "cau_hoi_ngan_sach": {
-    "cau_hoi": "Dạ mình dự tính khoảng bao nhiêu ạ?",
-    "cau_hoi_lap": "Dạ mình cho em xin ngân sách ạ — ví dụ: 'khoảng 8 triệu'."
+    "cau_hoi": "Dạ anh/chị dự tính khoảng bao nhiêu ạ?",
+    "cau_hoi_lap": "Dạ anh/chị cho em xin ngân sách ạ — ví dụ: 'khoảng 8 triệu'."
   },
   "loc_cung": [
     {"kieu": "khop_ten", "o": "loai", "cot": "loai", "ly_do": "loai"},

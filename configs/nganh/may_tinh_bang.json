@@ -16,25 +16,25 @@
     "man_inch_min": {
       "kieu": "so", "bat_buoc": false,
       "trich": ["(?:man\\s*(?:hinh)?\\s*)?(?:tu|it nhat|toi thieu)?\\s*([\\d.]{1,4})\\s*inch"],
-      "cau_hoi": "Dạ mình muốn màn hình từ bao nhiêu inch ạ?",
+      "cau_hoi": "Dạ anh/chị muốn màn hình từ bao nhiêu inch ạ?",
       "nhan": "màn từ {:.1f} inch"
     },
     "ram_min": {
       "kieu": "so", "bat_buoc": false,
       "trich": ["ram\\s*(?:tu|it nhat)?\\s*(\\d{1,2})\\s*(?:gb)?"],
-      "cau_hoi": "Dạ mình cần RAM từ bao nhiêu GB ạ?",
+      "cau_hoi": "Dạ anh/chị cần RAM từ bao nhiêu GB ạ?",
       "nhan": "RAM từ {:.0f} GB"
     },
     "luu_tru_min": {
       "kieu": "so", "bat_buoc": false,
       "trich": ["(?:bo nho|luu tru)\\s*(?:tu)?\\s*(\\d{2,4})\\s*(?:gb)?"],
-      "cau_hoi": "Dạ mình cần bộ nhớ từ bao nhiêu GB ạ?",
+      "cau_hoi": "Dạ anh/chị cần bộ nhớ từ bao nhiêu GB ạ?",
       "nhan": "bộ nhớ từ {:.0f} GB"
     }
   },
   "cau_hoi_ngan_sach": {
-    "cau_hoi": "Dạ mình dự tính khoảng bao nhiêu cho máy tính bảng ạ?",
-    "cau_hoi_lap": "Dạ mình cho em xin ngân sách ạ — ví dụ: 'khoảng 8 triệu'."
+    "cau_hoi": "Dạ anh/chị dự tính khoảng bao nhiêu cho máy tính bảng ạ?",
+    "cau_hoi_lap": "Dạ anh/chị cho em xin ngân sách ạ — ví dụ: 'khoảng 8 triệu'."
   },
   "loc_cung": [
     {"kieu": "toi_thieu", "o": "man_inch_min", "cot": "man_inch", "don_vi": "inch", "ly_do": "man_hinh"},

@@ -29,29 +29,29 @@
   },
   "chao_hoi": {
     "_doc": "Mo man nhu sale that: khach chao trong ('hi', 'tu van cho minh') thi hoi quan tam san pham gi TRUOC, khong nhay vao hoi ngan sach. Khach da neu nganh/da cho thong tin phong-tien thi KHONG bat chao lai.",
-    "mau": "Em chào mình ạ! Mình đang quan tâm sản phẩm nào ạ — máy lạnh, tủ lạnh, máy giặt, máy sấy, máy rửa chén, tủ đông, máy nước nóng, máy tính bảng, đồng hồ thông minh, màn hình, máy tính để bàn, máy in hay micro? Mình cứ nói tự nhiên, em tư vấn theo đúng nhu cầu ạ.",
-    "mau_lap_lai": "Dạ mình cho em biết đang cần tìm sản phẩm nào ạ — ví dụ: 'máy lạnh cho phòng ngủ' — để em tư vấn đúng ạ."
+    "mau": "Em chào anh/chị ạ! Anh/chị đang quan tâm sản phẩm nào ạ — máy lạnh, tủ lạnh, máy giặt, máy sấy, máy rửa chén, tủ đông, máy nước nóng, máy tính bảng, đồng hồ thông minh, màn hình, máy tính để bàn, máy in hay micro? Anh/chị cứ nói tự nhiên, em tư vấn theo đúng nhu cầu ạ.",
+    "mau_lap_lai": "Dạ anh/chị cho em biết đang cần tìm sản phẩm nào ạ — ví dụ: 'máy lạnh cho phòng ngủ' — để em tư vấn đúng ạ."
   },
   "cau_hoi": {
     "_doc": "Template CUNG. Khong sinh boi LLM -> khong the lan man, khong the bia.",
-    "ngan_sach_max": "Dạ mình dự tính khoảng bao nhiêu ạ?",
-    "dien_tich_m2": "Dạ phòng mình rộng khoảng bao nhiêu m² ạ?",
-    "co_nang": "Dạ phòng mình có bị nắng chiếu trực tiếp buổi chiều không ạ?",
-    "loai_phong": "Dạ mình lắp cho phòng ngủ hay phòng khách ạ?",
-    "khu_vuc": "Dạ mình ở khu vực nào để em kiểm tra hàng và lắp đặt ạ?"
+    "ngan_sach_max": "Dạ anh/chị dự tính khoảng bao nhiêu ạ?",
+    "dien_tich_m2": "Dạ phòng anh/chị rộng khoảng bao nhiêu m² ạ?",
+    "co_nang": "Dạ phòng anh/chị có bị nắng chiếu trực tiếp buổi chiều không ạ?",
+    "loai_phong": "Dạ anh/chị lắp cho phòng ngủ hay phòng khách ạ?",
+    "khu_vuc": "Dạ anh/chị ở khu vực nào để em kiểm tra hàng và lắp đặt ạ?"
   },
   "cau_hoi_lap_lai": {
     "_doc": "Dung khi cung mot o da hoi roi ma khach tra loi lac de - lap nguyen van cau cu nghe nhu robot hong (bai hoc tu demo that). Kem vi du de khach biet tra loi kieu gi.",
-    "ngan_sach_max": "Dạ để tư vấn đúng em vẫn cần biết ngân sách của mình ạ — ví dụ: 'khoảng 15 triệu'.",
+    "ngan_sach_max": "Dạ để tư vấn đúng em vẫn cần biết ngân sách của anh/chị ạ — ví dụ: 'khoảng 15 triệu'.",
     "dien_tich_m2": "Dạ em vẫn cần diện tích phòng để chọn công suất đúng ạ — ví dụ: 'phòng 18m2'.",
-    "co_nang": "Dạ mình cho em biết phòng có nắng chiếu trực tiếp không ạ — trả lời 'có' hoặc 'không' là được ạ.",
-    "loai_phong": "Dạ mình lắp cho phòng ngủ hay phòng khách ạ? Hai loại em tư vấn khác nhau đó ạ.",
-    "khu_vuc": "Dạ mình ở tỉnh/thành nào ạ — ví dụ: 'Hà Nội'."
+    "co_nang": "Dạ anh/chị cho em biết phòng có nắng chiếu trực tiếp không ạ — trả lời 'có' hoặc 'không' là được ạ.",
+    "loai_phong": "Dạ anh/chị lắp cho phòng ngủ hay phòng khách ạ? Hai loại em tư vấn khác nhau đó ạ.",
+    "khu_vuc": "Dạ anh/chị ở tỉnh/thành nào ạ — ví dụ: 'Hà Nội'."
   },
   "giai_thich_cong_suat": {
     "_doc": "Che do GIAI THICH - khach hoi kien thuc chu khong phai nho chon may. Template cung, khong LLM -> khong the bia. Bang m2->HP o day la kien thuc nganh pho thong dung lam HUONG DAN (khong phai khang dinh ve san pham cu the nen khong dung cham voi viec da bo bang tra khoi loc cung).",
-    "mau": "Dạ máy lạnh chọn công suất theo DIỆN TÍCH phòng chứ không theo số người ạ (số người ảnh hưởng rất ít so với kích thước phòng và nắng). Ước nhanh: dưới 15m² ~1HP · 15–20m² ~1.5HP · 20–30m² ~2HP · trên 30m² từ 2.5HP. Phòng bị nắng chiếu trực tiếp thì lên một bậc ạ. Phòng mình rộng khoảng bao nhiêu m² để em chọn đúng máy ạ?",
-    "mau_da_biet_dien_tich": "Dạ công suất chọn theo diện tích phòng ạ — phòng {dien_tich}m²{nang_chu} thì ước nhanh cần máy khoảng {hp}HP ạ. Mình cho em xin ngân sách để em lọc luôn máy phù hợp nhé ạ?",
+    "mau": "Dạ máy lạnh chọn công suất theo DIỆN TÍCH phòng chứ không theo số người ạ (số người ảnh hưởng rất ít so với kích thước phòng và nắng). Ước nhanh: dưới 15m² ~1HP · 15–20m² ~1.5HP · 20–30m² ~2HP · trên 30m² từ 2.5HP. Phòng bị nắng chiếu trực tiếp thì lên một bậc ạ. Phòng anh/chị rộng khoảng bao nhiêu m² để em chọn đúng máy ạ?",
+    "mau_da_biet_dien_tich": "Dạ công suất chọn theo diện tích phòng ạ — phòng {dien_tich}m²{nang_chu} thì ước nhanh cần máy khoảng {hp}HP ạ. Anh/chị cho em xin ngân sách để em lọc luôn máy phù hợp nhé ạ?",
     "bang_uoc_hp": [
       {
         "m2_max": 15,
@@ -77,23 +77,23 @@
   },
   "ngoai_pham_vi": {
     "_doc": "Khach hoi nganh chua bat trong demo. Noi that pham vi + khoe kien truc da san sang 14 nganh (dung su that: file DMX co du 14 sheet, them nganh = them config).",
-    "mau": "Dạ hiện tại em đang tư vấn chuyên về máy lạnh ạ. Mặt hàng {nganh} đã có sẵn trong dữ liệu hệ thống (14 ngành hàng) — chỉ cần bật thêm cấu hình ngành là em tư vấn được ngay ạ. Còn nếu mình đang cần tìm máy lạnh thì em giúp luôn ạ!"
+    "mau": "Dạ hiện tại em đang tư vấn chuyên về máy lạnh ạ. Mặt hàng {nganh} đã có sẵn trong dữ liệu hệ thống (14 ngành hàng) — chỉ cần bật thêm cấu hình ngành là em tư vấn được ngay ạ. Còn nếu anh/chị đang cần tìm máy lạnh thì em giúp luôn ạ!"
   },
   "khong_co_may": {
     "_doc": "Loc xong 0 may (ngan sach qua thap / phong qua lon). Phai noi that + goi huong, khong duoc tra chuoi rong hay bia may.",
-    "mau": "Dạ trong tầm {ngan_sach} em chưa tìm được máy nào phù hợp cho phòng {dien_tich}m² ạ. Máy đủ tải cho phòng mình đang từ khoảng {gia_thap_nhat} ạ — mình cân nhắc nới ngân sách một chút không ạ?",
-    "mau_lap_lai": "Dạ em vẫn chưa tìm được máy vừa các tiêu chí hiện tại ạ. Mình có thể nói cụ thể giúp em: 'nới lên 35 triệu', 'không giới hạn ngân sách', hoặc 'đổi sang phòng 20m2' — em lọc lại ngay ạ."
+    "mau": "Dạ trong tầm {ngan_sach} em chưa tìm được máy nào phù hợp cho phòng {dien_tich}m² ạ. Máy đủ tải cho phòng anh/chị đang từ khoảng {gia_thap_nhat} ạ — anh/chị cân nhắc nới ngân sách một chút không ạ?",
+    "mau_lap_lai": "Dạ em vẫn chưa tìm được máy vừa các tiêu chí hiện tại ạ. Anh/chị có thể nói cụ thể giúp em: 'nới lên 35 triệu', 'không giới hạn ngân sách', hoặc 'đổi sang phòng 20m2' — em lọc lại ngay ạ."
   },
   "thieu_ton_kho": {
     "_doc": "TC-008/TC-017: hoi con hang/ton kho -> du lieu hien KHONG co truong ton kho theo khu vuc. Phai noi thang thieu nguon + can Stock API, tuyet doi khong suy doan 'chac la con'.",
-    "mau": "Dạ dữ liệu em đang có chưa bao gồm tồn kho theo khu vực ạ (cần kết nối Stock API của hệ thống — phần này đã chừa sẵn chỗ tích hợp). Nên em chưa xác nhận được máy nào còn hàng ở đâu — em KHÔNG đoán bừa ạ. Còn chọn máy phù hợp phòng mình thì em tư vấn được ngay: phòng mình bao nhiêu m² ạ?"
+    "mau": "Dạ dữ liệu em đang có chưa bao gồm tồn kho theo khu vực ạ (cần kết nối Stock API của hệ thống — phần này đã chừa sẵn chỗ tích hợp). Nên em chưa xác nhận được máy nào còn hàng ở đâu — em KHÔNG đoán bừa ạ. Còn chọn máy phù hợp phòng anh/chị thì em tư vấn được ngay: phòng anh/chị bao nhiêu m² ạ?"
   },
   "chu_quan": {
     "_doc": "TC-009/TC-025: tieu chi chu quan (dep/sang) hoac khong co truong do (do ben) -> noi that, khong xep hang bua.",
-    "mau": "Dạ '{tieu_chi}' thì dữ liệu của em không đo được ạ — cái này tùy gu và trải nghiệm từng người, em xếp hạng bừa là nói dối mình ạ. Những gì em SO ĐƯỢC bằng số: giá, độ ồn, tiết kiệm điện, công suất phù hợp phòng. Mình cho em diện tích phòng + ngân sách, em lọc theo mấy tiêu chí đo được đó nhé ạ?"
+    "mau": "Dạ '{tieu_chi}' thì dữ liệu của em không đo được ạ — cái này tùy gu và trải nghiệm từng người, em xếp hạng bừa là nói dối anh/chị ạ. Những gì em SO ĐƯỢC bằng số: giá, độ ồn, tiết kiệm điện, công suất phù hợp phòng. Anh/chị cho em diện tích phòng + ngân sách, em lọc theo mấy tiêu chí đo được đó nhé ạ?"
   },
   "ban_du_phong": {
     "_doc": "Dung khi hau kiem chan qua so lan cho phep. Kho nhung khong bia.",
-    "mau": "Dạ với phòng tải nhiệt tương đương {dien_tich_m2}m², em lọc được các máy phù hợp trong tầm giá của mình: {danh_sach}. Anh/chị cần em nói rõ thêm điểm nào không ạ?"
+    "mau": "Dạ với phòng tải nhiệt tương đương {dien_tich_m2}m², em lọc được các máy phù hợp trong tầm giá của anh/chị: {danh_sach}. Anh/chị cần em nói rõ thêm điểm nào không ạ?"
   }
 }

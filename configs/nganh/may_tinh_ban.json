@@ -13,13 +13,13 @@
     "ram_min": {
       "kieu": "so", "bat_buoc": false,
       "trich": ["ram\\s*(?:tu|it nhat)?\\s*(\\d{1,2})\\s*(?:gb)?"],
-      "cau_hoi": "Dạ mình cần RAM từ bao nhiêu GB ạ?",
+      "cau_hoi": "Dạ anh/chị cần RAM từ bao nhiêu GB ạ?",
       "nhan": "RAM từ {:.0f} GB"
     }
   },
   "cau_hoi_ngan_sach": {
-    "cau_hoi": "Dạ mình dự tính khoảng bao nhiêu cho máy tính ạ?",
-    "cau_hoi_lap": "Dạ mình cho em xin ngân sách ạ — ví dụ: 'khoảng 15 triệu'."
+    "cau_hoi": "Dạ anh/chị dự tính khoảng bao nhiêu cho máy tính ạ?",
+    "cau_hoi_lap": "Dạ anh/chị cho em xin ngân sách ạ — ví dụ: 'khoảng 15 triệu'."
   },
   "loc_cung": [
     {"kieu": "toi_thieu", "o": "ram_min", "cot": "ram_gb", "don_vi": "GB", "ly_do": "ram"},

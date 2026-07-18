@@ -61,10 +61,10 @@
 </style>
 </head>
 <body>
-<header><b>Smart Choice</b><span>· tư vấn theo nhu cầu thật · mọi con số đều có nguồn</span><button id="doi-nen" title="Đổi giao diện sáng/tối" style="margin-left:auto;background:none;border:1px solid var(--vien);border-radius:18px;padding:4px 12px;cursor:pointer;font-size:15px;color:var(--muc)">🌙</button></header>
+<header><a href="/" style="text-decoration:none;color:var(--phu);font-size:13px;margin-right:2px" title="Về trang chủ">←</a><b>Smart Choice</b><span>· tư vấn theo nhu cầu thật · mọi con số đều có nguồn</span><button id="doi-nen" title="Đổi giao diện sáng/tối" style="margin-left:auto;background:none;border:1px solid var(--vien);border-radius:18px;padding:4px 12px;cursor:pointer;font-size:15px;color:var(--muc)">🌙</button></header>
 
 <div id="khung">
-  <div class="dong bot"><div class="bong">Em chào mình ạ! Em tư vấn được 13 ngành hàng: máy lạnh, tủ lạnh, máy giặt, máy sấy, máy rửa chén, tủ đông, máy nước nóng, tablet, đồng hồ, màn hình, PC, máy in, micro. Cứ nói tự nhiên — viết tắt hay không dấu đều được ạ.</div></div>
+  <div class="dong bot"><div class="bong">Em chào anh/chị ạ! Em tư vấn được 13 ngành hàng: máy lạnh, tủ lạnh, máy giặt, máy sấy, máy rửa chén, tủ đông, máy nước nóng, tablet, đồng hồ, màn hình, PC, máy in, micro. Cứ nói tự nhiên — viết tắt hay không dấu đều được ạ.</div></div>
   <div class="goi-y" id="goiy">
     <button onclick="dienMau(this)">🔥 Máy lạnh nào đang giảm giá?</button>
     <button onclick="dienMau(this)">Nhà 4 người cần tủ lạnh tiết kiệm điện</button>
@@ -233,7 +233,16 @@ async function gui(e){
   nut.disabled = false; oNhap.focus();
   khung.scrollTop = khung.scrollHeight;
 }
-window.addEventListener('load', () => oNhap.focus());
+window.addEventListener('load', () => {
+  oNhap.focus();
+  // Den tu landing (/chat?hoi=...) -> dien cau va gui luon, khach khoi go lai.
+  const q = new URLSearchParams(location.search).get('hoi');
+  if (q) {
+    history.replaceState(null, '', '/chat');   // xoa query de F5 khong gui lai
+    oNhap.value = q;
+    document.querySelector('form').requestSubmit();
+  }
+});
 </script>
 </body>
 </html>

@@ -1,25 +1,41 @@
+import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
-import { Mic, SendHorizontal, Star, BadgeCheck, Brain, Scale, Lightbulb, RefreshCcw, Wind, Laptop, Headphones, MessageSquare, Package } from "lucide-react"
+import { Mic, SendHorizontal, BadgeCheck, Brain, Scale, Lightbulb, ShieldCheck, Wind, Tablet, MessageSquare, Package, WashingMachine } from "lucide-react"
 import { Button } from "../ui/button"
 import { Badge } from "../ui/badge"
 
+// "Cap nhat ton kho" cu bi bo: he thong CHUA co Stock API va bot noi thang
+// dieu do - landing khong duoc hua thu chat khong lam.
 const bulletPoints = [
   { icon: Brain,       text: "Hiểu nhu cầu thật của bạn" },
   { icon: Scale,       text: "So sánh sản phẩm khách quan" },
   { icon: Lightbulb,   text: "Giải thích dễ hiểu, dễ ra quyết định" },
-  { icon: RefreshCcw,  text: "Cập nhật giá, khuyến mãi & tồn kho" },
+  { icon: ShieldCheck, text: "Mọi con số đều có nguồn — không bịa" },
 ]
 
+// Chi goi y nganh CO du lieu that (laptop/tai nghe chua co sheet -> bot tu
+// choi, dua len landing la tu ban vao chan luc demo).
 const suggestions = [
-  { icon: Wind,      text: "Máy lạnh cho phòng 20m²" },
-  { icon: Laptop,    text: "Laptop cho sinh viên" },
-  { icon: Package,   text: "Tủ lạnh dưới 10 triệu" },
-  { icon: Headphones,text: "Tai nghe chống ồn" },
+  { icon: Wind,           text: "Máy lạnh cho phòng 20m²" },
+  { icon: Package,        text: "Tủ lạnh dưới 10 triệu" },
+  { icon: Tablet,         text: "Tablet màn 11 inch pin trâu" },
+  { icon: WashingMachine, text: "Máy giặt cho nhà 4 người" },
 ]
 
-const features = ["Phù hợp phòng 15 - 20m²", "Tiết kiệm điện Inverter", "Bảo hành 5 năm"]
+const denChat = (hoi?: string) => {
+  window.location.href = hoi ? `/chat?hoi=${encodeURIComponent(hoi)}` : "/chat"
+}
+
+type KhuyenMai = { ten: string; gia: number; gia_goc: number; phan_tram: number }
+const vnd = (n: number) => n.toLocaleString("vi-VN") + "đ"
 
 export function HeroSection() {
+  // Card "Goi y cho ban": may giam sau nhat THAT tu catalog, khong hardcode.
+  const [km, setKm] = useState<KhuyenMai | null>(null)
+  const [oNhap, setONhap] = useState("")
+  useEffect(() => {
+    fetch("/api/khuyen-mai").then(r => r.json()).then(d => setKm(d[0] ?? null)).catch(() => {})
+  }, [])
   return (
     <section
       className="relative w-full bg-cover bg-center overflow-hidden"
@@ -59,7 +75,10 @@ export function HeroSection() {
           </ul>
 
           {/* CTA */}
-          <Button className="bg-[#FFD400] text-blue-900 hover:bg-yellow-300 font-bold rounded-full px-7 h-12 w-fit flex items-center gap-2 shadow-lg text-[15px]">
+          <Button
+            onClick={() => denChat()}
+            className="bg-[#FFD400] text-blue-900 hover:bg-yellow-300 font-bold rounded-full px-7 h-12 w-fit flex items-center gap-2 shadow-lg text-[15px]"
+          >
             <MessageSquare className="w-5 h-5" />
             Bắt đầu tư vấn ngay
           </Button>
@@ -96,6 +115,7 @@ export function HeroSection() {
                 {suggestions.map(({ icon: Icon, text }, i) => (
                   <button
                     key={i}
+                    onClick={() => denChat(text)}
                     className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl border border-gray-200 text-[13px] font-semibold text-gray-700 hover:border-[#005BFF] hover:text-[#005BFF] hover:bg-blue-50 transition-all text-left"
                   >
                     <Icon className="w-4 h-4 text-[#005BFF] shrink-0" />
@@ -104,62 +124,63 @@ export function HeroSection() {
                 ))}
               </div>
 
-              {/* Input */}
-              <div className="relative mt-auto">
+              {/* Input: go xong Enter/bam gui -> sang trang chat, cau duoc gui luon */}
+              <form
+                className="relative mt-auto"
+                onSubmit={e => { e.preventDefault(); if (oNhap.trim()) denChat(oNhap.trim()) }}
+              >
                 <input
                   type="text"
+                  value={oNhap}
+                  onChange={e => setONhap(e.target.value)}
                   placeholder="Nhập nhu cầu của bạn..."
                   className="w-full h-11 pl-4 pr-20 rounded-full border border-gray-200 focus:outline-none focus:border-[#005BFF] text-[13px] shadow-sm transition-colors"
                 />
                 <div className="absolute right-1 top-1/2 -translate-y-1/2 flex items-center gap-0.5">
-                  <button className="w-9 h-9 rounded-full flex items-center justify-center text-gray-400 hover:text-[#005BFF] transition-colors">
+                  <button type="button" onClick={() => denChat()} title="Nói trong trang chat" className="w-9 h-9 rounded-full flex items-center justify-center text-gray-400 hover:text-[#005BFF] transition-colors">
                     <Mic className="w-4 h-4" />
                   </button>
-                  <button className="w-9 h-9 rounded-full flex items-center justify-center bg-[#005BFF] text-white hover:bg-blue-700 shadow-md transition-colors">
+                  <button type="submit" className="w-9 h-9 rounded-full flex items-center justify-center bg-[#005BFF] text-white hover:bg-blue-700 shadow-md transition-colors">
                     <SendHorizontal className="w-4 h-4" />
                   </button>
                 </div>
-              </div>
+              </form>
             </div>
 
-            {/* Product Panel */}
-            <div className="w-[200px] xl:w-[215px] shrink-0 border-l border-gray-100 pl-5 flex flex-col">
-              <h4 className="font-bold text-gray-900 text-[13px] mb-3">Gợi ý cho bạn</h4>
+            {/* Product Panel: may giam sau nhat THAT tu /api/khuyen-mai -
+                khong hardcode gia, khong sao/danh gia bia (khong co du lieu do) */}
+            {km && (
+              <div className="w-[200px] xl:w-[215px] shrink-0 border-l border-gray-100 pl-5 flex-col hidden sm:flex">
+                <h4 className="font-bold text-gray-900 text-[13px] mb-3">Đang giảm sâu nhất</h4>
 
-              <div className="relative flex flex-col flex-1 bg-white border border-gray-100 rounded-2xl p-3 shadow-sm hover:border-green-200 transition-colors cursor-pointer group">
-                <Badge className="absolute -top-2.5 left-3 bg-green-100 text-green-700 hover:bg-green-100 border-none px-2 py-0.5 text-[10px] font-bold flex items-center gap-1 shadow-sm z-10">
-                  <BadgeCheck className="w-3 h-3" /> Best Match
-                </Badge>
+                <div
+                  onClick={() => denChat("Máy lạnh nào đang giảm giá?")}
+                  className="relative flex flex-col flex-1 bg-white border border-gray-100 rounded-2xl p-3 shadow-sm hover:border-green-200 transition-colors cursor-pointer group"
+                >
+                  <Badge className="absolute -top-2.5 left-3 bg-green-100 text-green-700 hover:bg-green-100 border-none px-2 py-0.5 text-[10px] font-bold flex items-center gap-1 shadow-sm z-10">
+                    <BadgeCheck className="w-3 h-3" /> Khuyến mãi thật
+                  </Badge>
 
-                <div className="w-full h-[90px] flex items-center justify-center mt-3 mb-2">
-                  <img src="/images/ac1.png" alt="Daikin" className="object-contain h-full group-hover:scale-105 transition-transform duration-300" />
+                  <div className="w-full h-[90px] flex items-center justify-center mt-3 mb-2">
+                    <img src="/images/ac1.png" alt={km.ten} className="object-contain h-full group-hover:scale-105 transition-transform duration-300" />
+                  </div>
+
+                  <h5 className="font-bold text-gray-900 text-[12px] leading-snug mb-1.5 group-hover:text-[#005BFF] transition-colors">
+                    {km.ten}
+                  </h5>
+
+                  <div className="flex items-center gap-1.5 mb-2 flex-wrap">
+                    <span className="text-red-600 font-bold text-[15px]">{vnd(km.gia)}</span>
+                    <span className="text-[10px] font-bold text-red-600 bg-red-50 px-1.5 py-0.5 rounded">-{km.phan_tram}%</span>
+                  </div>
+                  <div className="text-[11px] text-gray-400 line-through mb-3">{vnd(km.gia_goc)}</div>
+
+                  <Button variant="outline" className="w-full h-8 text-[11px] font-medium text-[#005BFF] border-[#005BFF] hover:bg-blue-50 rounded-lg mt-auto">
+                    Tư vấn máy này
+                  </Button>
                 </div>
-
-                <h5 className="font-bold text-gray-900 text-[12px] leading-snug mb-1.5 group-hover:text-[#005BFF] transition-colors">
-                  Daikin FTKB35YVMV<br />Inverter 1.5 HP
-                </h5>
-
-                <div className="flex items-center gap-1 mb-2">
-                  <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                  <span className="text-[11px] font-bold text-gray-800">4.8</span>
-                  <span className="text-[10px] text-gray-500">(128 đánh giá)</span>
-                </div>
-
-                <div className="text-red-600 font-bold text-[15px] mb-2">9.990.000đ</div>
-
-                <div className="flex flex-col gap-1.5 mb-3">
-                  {features.map((f, i) => (
-                    <div key={i} className="flex items-center gap-1 text-[10px] text-green-700 font-medium">
-                      <BadgeCheck className="w-3 h-3 shrink-0" /> {f}
-                    </div>
-                  ))}
-                </div>
-
-                <Button variant="outline" className="w-full h-8 text-[11px] font-medium text-[#005BFF] border-[#005BFF] hover:bg-blue-50 rounded-lg mt-auto">
-                  Xem chi tiết
-                </Button>
               </div>
-            </div>
+            )}
           </motion.div>
         </div>
 

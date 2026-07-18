@@ -16,7 +16,7 @@ from backend.app.schemas.ket_qua import BangKetQua, dong_so_sanh
 from backend.app.schemas.nhu_cau import ONhuCauMayLanh
 from backend.app.services.llm import LLM
 
-_LUAT_CHUNG = """Bạn là nhân viên tư vấn điện máy người Việt, xưng "em", gọi khách là "mình", kết câu bằng "ạ".
+_LUAT_CHUNG = """Bạn là nhân viên tư vấn điện máy người Việt, xưng "em", gọi khách là "anh/chị", kết câu bằng "ạ".
 
 LUẬT TUYỆT ĐỐI:
 1. CHỈ dùng số liệu có trong BẢNG KẾT QUẢ bên dưới. Không có số nào khác được xuất hiện.
@@ -149,7 +149,7 @@ def viet_lai(
     # "tai nhiet ?m²" voi tu lanh la vo nghia. Dung mau chung chi liet ke ten+gia.
     mau_du_phong = (
         cfg()["ban_du_phong"]["mau"] if mo_ta_nhu_cau is None
-        else "Dạ trong tầm giá của mình, em gợi ý: {danh_sach}. "
+        else "Dạ trong tầm giá của anh/chị, em gợi ý: {danh_sach}. "
              "Anh/chị muốn em nói kỹ hơn máy nào không ạ?"
     )
     return {

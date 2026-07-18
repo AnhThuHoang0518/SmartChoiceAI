@@ -42,7 +42,7 @@ export function Navbar() {
             <span className="text-[11px] font-medium">Đăng nhập</span>
           </button>
 
-          <Button className="hidden md:flex">Tư vấn AI</Button>
+          <Button className="hidden md:flex" onClick={() => { window.location.href = "/chat" }}>Tư vấn AI</Button>
         </div>
       </div>
     </header>
