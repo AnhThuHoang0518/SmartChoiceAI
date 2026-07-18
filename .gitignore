@@ -23,6 +23,9 @@ logs/*
 !logs/.gitkeep
 data/processed/*
 !data/processed/.gitkeep
+# Ban nen zip/scp tay data private, nhung file zip do cung khong duoc len git.
+data/*.zip
+data/**/*.zip
 evaluations/results/*
 !evaluations/results/.gitkeep
 
