@@ -26,7 +26,7 @@ const denChat = (hoi?: string) => {
   window.location.href = hoi ? `/chat?hoi=${encodeURIComponent(hoi)}` : "/chat"
 }
 
-type KhuyenMai = { ten: string; gia: number; gia_goc: number; phan_tram: number }
+type KhuyenMai = { ten: string; gia: number; gia_goc: number; phan_tram: number; anh_url?: string }
 const vnd = (n: number) => n.toLocaleString("vi-VN") + "đ"
 
 export function HeroSection() {
@@ -162,7 +162,7 @@ export function HeroSection() {
                   </Badge>
 
                   <div className="w-full h-[90px] flex items-center justify-center mt-3 mb-2">
-                    <img src="/images/ac1.png" alt={km.ten} className="object-contain h-full group-hover:scale-105 transition-transform duration-300" />
+                    <img src={km.anh_url || "/images/ac1.png"} alt={km.ten} className="object-contain h-full group-hover:scale-105 transition-transform duration-300" />
                   </div>
 
                   <h5 className="font-bold text-gray-900 text-[12px] leading-snug mb-1.5 group-hover:text-[#005BFF] transition-colors">

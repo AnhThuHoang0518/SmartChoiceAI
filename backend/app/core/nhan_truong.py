@@ -83,10 +83,11 @@ def tien_chu(v: float) -> str:
     v = float(v)
     if v >= 1e9:
         s = f"{v / 1e9:.1f}".rstrip("0").rstrip(".")
-        return f"{s} tỷ"
+        return f"{s.replace('.', ',')} tỷ"
     if v >= 1e6:
         s = f"{v / 1e6:.2f}".rstrip("0").rstrip(".")
-        return f"{s} triệu"
+        # dau PHAY thap phan chuan tieng Viet - TTS doc "phẩy" thay vi "chấm"
+        return f"{s.replace('.', ',')} triệu"
     s = f"{v / 1e3:.0f}"
     return f"{s} nghìn"
 

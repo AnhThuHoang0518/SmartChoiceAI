@@ -45,6 +45,9 @@
   [data-theme="dark"] .khach .bong{background:#2058c9}
   .bot .bong{background:var(--the);border:1px solid var(--vien);border-bottom-left-radius:4px}
   .the-sp{background:var(--the);border:1px solid var(--vien);border-radius:12px;padding:12px 14px;margin-top:8px;font-size:14px}
+  .anh-sp-nho{width:62px;height:62px;object-fit:contain;float:right;margin:0 0 6px 10px;border-radius:8px;background:#fff}
+  #o-anh .khung-anh img{max-width:100%;max-height:112px;object-fit:contain}
+  .nguon-anh{font-size:10.5px;color:var(--phu);margin-top:4px}
   .the-sp b{font-size:15px}
   .hang-to{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
   .gia{color:var(--chinh);font-weight:700;white-space:nowrap}
@@ -169,8 +172,11 @@ function chonSP(sp){
   if (!o) return;
   const giam = sp.gg && sp.gg > sp.gia
     ? ' <span class="giam">-' + Math.round((1 - sp.gia / sp.gg) * 100) + '%</span>' : '';
+  const anh = sp.anh
+    ? '<div class="khung-anh" style="border-style:solid"><img src="' + sp.anh + '" onerror="this.parentNode.innerHTML=\'<span class=bieu-tuong>' + (ICON_NGANH[sp.nganh] || '📦') + '</span>\'" alt=""></div><div class="nguon-anh">Ảnh: dienmayxanh.com (productidweb)</div>'
+    : '<div class="khung-anh"><span class="bieu-tuong">' + (ICON_NGANH[sp.nganh] || '📦') + '</span><span>Ảnh thật: chờ nối<br>Image API của ĐMX (productidweb)</span></div>';
   o.innerHTML = '<div style="font-size:12.5px;color:var(--phu);text-align:left">SẢN PHẨM ĐANG XEM</div>'
-    + '<div class="khung-anh"><span class="bieu-tuong">' + (ICON_NGANH[sp.nganh] || '📦') + '</span><span>Ảnh thật: chờ nối<br>Image API của ĐMX (productidweb)</span></div>'
+    + anh
     + '<div class="ten-sp">' + sp.ten + '</div>'
     + '<div class="gia-sp">' + sp.gia.toLocaleString('vi-VN') + 'đ' + giam + '</div>';
 }
@@ -186,6 +192,8 @@ async function docTo(text){
     .replace(/(\d+)\.(\d{3})\.(\d{3})\s*đ/g, (m, a, b) =>
       a + ' triệu ' + (b !== '000' ? parseInt(b) + ' nghìn ' : '') + 'đồng')
     .replace(/anh\/chị/gi, 'anh chị')
+    .replace(/(\d)\.(\d+)\s*(triệu|tỷ|tr\b)/g, '$1 phẩy $2 $3')
+    .replace(/(\d),(\d+)\s*(triệu|tỷ|tr\b)/g, '$1 phẩy $2 $3')
     .replace(/[—–·]/g, ' ')
     .replace(/\//g, ' trên ')
     .replace(/\s{2,}/g, ' ')
@@ -281,8 +289,10 @@ function veSanPham(u, i){
   } else {
     giaHtml += u.gia.toLocaleString('vi-VN') + 'đ</span>';
   }
-  const spNho = JSON.stringify({ten: u.ten, gia: u.gia, gg: gg, nganh: nganhHienTai}).replace(/'/g, "&#39;");
-  let s = '<div class="the-sp" style="cursor:pointer" onclick=\'chonSP(' + spNho + ')\' title="Bấm để xem ở panel trái"><div class="hang-to"><b>' + (i+1) + '. ' + u.ten + '</b>' + giaHtml + '</div>';
+  const spNho = JSON.stringify({ten: u.ten, gia: u.gia, gg: gg, nganh: nganhHienTai, anh: u.anh_url || ''}).replace(/'/g, "&#39;");
+  let s = '<div class="the-sp" style="cursor:pointer" onclick=\'chonSP(' + spNho + ')\' title="Bấm để xem ở panel trái">';
+  if (u.anh_url) s += '<img class="anh-sp-nho" src="' + u.anh_url + '" onerror="this.remove()" alt="">';
+  s += '<div class="hang-to"><b>' + (i+1) + '. ' + u.ten + '</b>' + giaHtml + '</div>';
   (u.hon||[]).forEach(h => s += '<div class="to hon">✓ ' + nhanTruc(h.truc, true) + ': ' + h.cua_minh + ' (so với ' + h.doi_thu + ')</div>');
   (u.kem||[]).forEach(k => s += '<div class="to kem">△ ' + nhanTruc(k.truc, false) + ': ' + k.cua_minh + ' (so với ' + k.doi_thu + ')</div>');
   s += '<div>';

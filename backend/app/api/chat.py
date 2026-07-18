@@ -121,6 +121,29 @@ def _ngan_sach_muc(gia_cac_may: list, muc: str) -> float:
     return float(gs[len(gs) // 3] if muc == "re" else gs[(2 * len(gs)) // 3])
 
 
+_ANH: dict | None = None
+
+
+def _anh_sp() -> dict:
+    """ma_sp -> URL anh chinh chu dienmayxanh.com (sinh boi scripts/lay_anh_dmx.py,
+    doi chieu qua productidweb). Khong co file -> {} - UI giu icon nganh."""
+    global _ANH
+    if _ANH is None:
+        import json as _j
+        from pathlib import Path as _P
+        f = _P("data/processed/anh_sp.json")
+        _ANH = _j.loads(f.read_text(encoding="utf-8")) if f.exists() else {}
+    return _ANH
+
+
+def _gan_anh(top3: list[dict]) -> list[dict]:
+    for u in top3:
+        url = _anh_sp().get(str(u.get("ma_sp")))
+        if url:
+            u["anh_url"] = url
+    return top3
+
+
 _HANG: set[str] | None = None
 
 
@@ -288,7 +311,7 @@ def _xu_ly_tu_lanh(t: TinNhan, ma: str, p: dict, t0: float, giong: str) -> TraLo
     mo_ta = bang_thanh_chu_tu_lanh(bang, nc, thieu_kt, giong)
     r = viet_lai(bang, nc, llm(), giong, mo_ta_nhu_cau=mo_ta)
     p["loai_truoc"] = "tu_van"
-    p["top3_truoc"] = [u.model_dump(mode="json") for u in bang.top3]
+    p["top3_truoc"] = _gan_anh([u.model_dump(mode="json") for u in bang.top3])
     return TraLoi(
         phien_id=ma, loai="tu_van", text=r["text"],
         o_nhu_cau=nc.model_dump(exclude_none=True, mode="json"),
@@ -374,7 +397,7 @@ def _xu_ly_nganh_khung(t: TinNhan, ma: str, p: dict, t0: float, giong: str,
     nc_shim = SimpleNamespace(**{k: v for k, v in nc.gia_tri.items() if v is not None})
     r = viet_lai(bang, nc_shim, llm(), giong, mo_ta_nhu_cau=mo_ta)
     p["loai_truoc"] = "tu_van"
-    p["top3_truoc"] = [u.model_dump(mode="json") for u in bang.top3]
+    p["top3_truoc"] = _gan_anh([u.model_dump(mode="json") for u in bang.top3])
     return TraLoi(
         phien_id=ma, loai="tu_van", text=r["text"],
         o_nhu_cau=nc.dump(),
@@ -441,6 +464,7 @@ def khuyen_mai_that() -> list[dict]:
     return [{"ten": s.ten, "gia": s.gia, "gia_goc": s.gia_goc,
              "giam": s.gia_goc - s.gia,
              "qua": getattr(s, "qua", "")[:100],
+             "anh_url": _anh_sp().get(str(s.ma_sp), ""),
              "phan_tram": round((1 - s.gia / s.gia_goc) * 100)} for s in giam]
 
 
@@ -799,7 +823,7 @@ def chat(t: TinNhan) -> TraLoi:
 
     r = viet_lai(bang, nc, llm(), giong)
     p["loai_truoc"] = "tu_van"
-    p["top3_truoc"] = [u.model_dump(mode="json") for u in bang.top3]
+    p["top3_truoc"] = _gan_anh([u.model_dump(mode="json") for u in bang.top3])
 
     # Hoi ton kho KEM nhu cau -> van tu van binh thuong nhung phai ghi chu ro
     # phan ton kho thieu nguon (khong lam nhu cau hoi do chua ton tai).
