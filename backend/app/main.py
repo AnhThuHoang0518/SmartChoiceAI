@@ -36,9 +36,21 @@ if GIAO_DIEN.exists():
         return FileResponse(GIAO_DIEN / "index.html")
 
     if LANDING.exists():
-        # Landing React o goc "/", chat o "/chat". Mount "/" dat CUOI de cac
-        # route API/healthz/chat khai bao truoc van thang.
-        app.mount("/", StaticFiles(directory=LANDING, html=True), name="landing")
+        # Landing React (SPA react-router) o goc "/", chat o "/chat".
+        # KHONG mount StaticFiles(html=True) o "/" vi no tra 404 cho deep-link
+        # nhu /category/may-lanh (khong co file that) -> nut ngoanh nganh CHET.
+        # Thay bang catch-all: file tinh co that -> tra file; con lai -> tra
+        # index.html de react-router tu dinh tuyen (/category/*, F5 khong 404).
+        _LANDING_ABS = LANDING.resolve()
+
+        @app.get("/{full_path:path}")
+        def landing_spa(full_path: str):
+            if full_path:
+                f = (LANDING / full_path).resolve()
+                # chan path traversal: chi phuc vu file NAM TRONG dist
+                if f.is_file() and (f == _LANDING_ABS or _LANDING_ABS in f.parents):
+                    return FileResponse(f)
+            return FileResponse(LANDING / "index.html")
     else:
         # Chua build landing (dev local chua chay npm) -> "/" van la chat,
         # khong co gi bi 404.
