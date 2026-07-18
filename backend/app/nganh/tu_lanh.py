@@ -23,7 +23,7 @@ from pathlib import Path
 
 from pydantic import BaseModel, Field
 
-from backend.app.core.chuan_hoa_tv import bo_dau, chuan_hoa
+from backend.app.core.chuan_hoa_tv import bo_dau, chuan_hoa, dem_nguoi
 from backend.app.schemas.ket_qua import (
     BangKetQua,
     LyDoLoai,
@@ -173,15 +173,18 @@ def trich_tu_lanh(text: str, cu: ONhuCauTuLanh | None = None,
     kd = bo_dau(t).lower()
     nc = (cu or ONhuCauTuLanh()).model_copy()
 
-    # so nguoi: "nha 4 nguoi", "gia dinh 5 nguoi"
-    m = re.search(r"(?:nha|gia dinh|cho)?\s*(\d{1,2})\s*(?:nguoi|thanh vien)", kd)
+    # dem thanh phan gia dinh TRUOC ('2 nguoi lon 1 be' -> 3), roi moi den
+    # so truc tiep ("nha 4 nguoi")
+    if nc.so_nguoi is None and (dn := dem_nguoi(text)):
+        nc.so_nguoi = dn
+    m = re.search(r"(?:nha|gia dinh|cho)?\s*(\d{1,2})\s*(?:nguoi|thanh vien)\b(?!\s*lon)", kd)
     if m and nc.so_nguoi is None:
         nc.so_nguoi = int(m.group(1))
 
     # ngan sach (chuan_hoa da doi 15tr -> 15000000). So moi GHI DE so cu -
     # khach doi y "thoi 10tr thoi" phai an, khong lang le giu so cu.
     m = re.search(r"(?:duoi|khoang|tam|toi da|max|gia)\s*([\d]{6,})", kd) \
-        or re.search(r"\b([\d]{7,})\b", kd)
+        or re.search(r"\b([\d]{6,})\b(?!\s*(?:lit|kwh|w\b))", kd)
     if m:
         nc.ngan_sach_max = int(m.group(1))
 

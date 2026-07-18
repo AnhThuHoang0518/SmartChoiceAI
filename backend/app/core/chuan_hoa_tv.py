@@ -35,6 +35,10 @@ VIET_TAT = {
     r"\btra gop\b": "trả góp",
     r"\bkm\b": "khuyến mãi",
     r"\bbh\b": "bảo hành",
+    # Tieng Anh pho bien - khach go duoc thi hieu duoc
+    r"\bair\s*con(?:ditioner)?\b": "máy lạnh",
+    r"\bfridge\b|\brefrigerator\b": "tủ lạnh",
+    r"\bwashing\s*machine\b|\bwasher\b": "máy giặt",
 }
 
 
@@ -63,6 +67,9 @@ def chuan_hoa_tien(s: str) -> str:
         v = float(m.group(1).replace(",", "."))
         return str(int(v * 1_000_000_000))
 
+    # 'X trieu ruoi' -> X.5 trieu (quy doi tieng Viet, chay TRUOC luat trieu)
+    s = re.sub(r"\b([\d]+)\s*(?:triệu|trieu|tr)\s*(?:rưỡi|ruoi)\b",
+               lambda m: str(int((int(m.group(1)) + 0.5) * 1_000_000)), s, flags=re.I)
     # 'ty/ti' khong dau chi khop khi co SO dung truoc -> khong dinh 'ti vi'.
     # Bai hoc tu demo that: khach go '20 tỷ' ma khong hieu -> hoi ngan sach lap
     # vo tan. Tien VN co 4 don vi noi mieng: nghin/k, trieu/tr, ty - thieu 1 la thua.
@@ -87,13 +94,15 @@ NGANH_KHAC = [
 
 
 def co_nganh_may_lanh(text: str) -> bool:
-    """Khach co nhac toi may lanh (nganh dang bat trong demo) khong."""
-    return bool(re.search(r"\b(may lanh|dieu hoa|dhkk|ml)\b", bo_dau(text or "").lower()))
+    """Khach co nhac toi may lanh khong (ke ca tieng Anh pho bien)."""
+    return bool(re.search(r"\b(may lanh|dieu hoa|dhkk|ml|air ?con(?:ditioner)?)\b",
+                          bo_dau(text or "").lower()))
 
 
 def co_nganh_tu_lanh(text: str) -> bool:
     """Khach nhac tu lanh - nganh thu 2 da co vertical rieng."""
-    return bool(re.search(r"\btu lanh\b", bo_dau(text or "").lower()))
+    return bool(re.search(r"\btu lanh\b|\bfridge\b|\brefrigerator\b",
+                          bo_dau(text or "").lower()))
 
 
 # ── Nhan biet khach ranh ky thuat ───────────────────────────────────────────
@@ -251,6 +260,21 @@ def hoi_hang(text: str) -> bool:
         r"|(?:hang|thuong hieu) nao dang|cac hang nao|nhung thuong hieu nao", kd))
 
 
+def hoi_vi_sao_xep(text: str) -> int | None:
+    """Khach hoi VI SAO de xuat/xep hang: 'sao lai chon may 1?', 'vi sao may
+    nay dung dau?'. Tra chi so may (mac dinh 0 = may dau bang).
+
+    Tra loi bang BANG DIEM code da tinh - he giai trinh duoc chinh minh,
+    khong nho LLM bao chua.
+    """
+    kd = bo_dau(text or "").lower()
+    if not re.search(r"\b(?:vi sao|tai sao|sao lai|ly do(?: gi| nao)?)\b.{0,30}"
+                     r"\b(?:chon|xep|de xuat|goi y|dung dau|so 1|may nay|may \d)\b", kd):
+        return None
+    m = re.search(r"may\s*(?:so\s*)?([123])\b", kd)
+    return int(m.group(1)) - 1 if m else 0
+
+
 def yeu_cau_so_sanh(text: str) -> tuple[int, int] | None:
     """Khach xin SO SANH truc tiep 2 may trong top 3 vua tu van.
 
@@ -324,3 +348,24 @@ def chuan_hoa(s: str) -> str:
         ra = ra[:i] + day_du + ra[j:]
 
     return chuan_hoa_don_vi(chuan_hoa_tien(ra))
+
+
+def dem_nguoi(text: str) -> int | None:
+    """'2 vo chong 2 dua con' -> 4 | 'vo chong va 1 be' -> 3.
+
+    PHEP DEM tu loi khach, khong doan. Khach da noi thang 'X nguoi' thi khong
+    can (duong trich truc tiep lo roi). Khong thay thanh phan nao -> None.
+    """
+    kd = bo_dau(text or "").lower()
+    if re.search(r"\d\s*nguoi\b(?!\s*lon)", kd):
+        return None                        # da co so truc tiep ('4 nguoi') - khong dem de
+    tong = 0
+    if re.search(r"\b(?:2\s*)?vo chong\b|\b2\s*vc\b|\bhai vo chong\b", kd):
+        tong += 2
+    if m := re.search(r"(\d)\s*nguoi lon", kd):
+        tong += int(m.group(1))
+    if m := re.search(r"(\d)\s*(?:dua con|tre em|tre nho|con nho|dua tre|em be|be con|dua nho)", kd):
+        tong += int(m.group(1))
+    elif re.search(r"\bmot (?:dua con|be|chau)\b|\b1 (?:be|chau)\b", kd):
+        tong += 1
+    return tong or None

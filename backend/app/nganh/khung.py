@@ -29,7 +29,7 @@ from pathlib import Path
 
 from pydantic import BaseModel, Field
 
-from backend.app.core.chuan_hoa_tv import bo_dau, chuan_hoa
+from backend.app.core.chuan_hoa_tv import bo_dau, chuan_hoa, dem_nguoi
 from backend.app.schemas.ket_qua import (
     BangKetQua,
     LyDoLoai,
@@ -137,6 +137,12 @@ class Nganh:
         kd = bo_dau(t).lower()
         nc = (cu or NhuCauChung()).model_copy(deep=True)
 
+        # dem thanh phan gia dinh TRUOC: '2 nguoi lon 1 em be' phai ra 3,
+        # khong de regex '(\d) nguoi' cua config chup mat so 2
+        if "so_nguoi" in self.cfg["o_nhu_cau"] and nc.lay("so_nguoi") is None \
+                and (dn := dem_nguoi(text)):
+            nc.gia_tri["so_nguoi"] = float(dn)
+
         for o, spec in self.cfg["o_nhu_cau"].items():
             if nc.lay(o) is not None:
                 continue
@@ -158,7 +164,7 @@ class Nganh:
         # Khach noi so moi la GHI DE so cu ("thoi lay tam 5tr thoi") - giu
         # lang le so cu la bug doi y kinh dien.
         m = re.search(r"(?:duoi|khoang|tam|toi da|max|gia)\s*([\d]{6,})", kd) \
-            or re.search(r"\b([\d]{7,})\b", kd)
+            or re.search(r"\b([\d]{6,})\b(?!\s*(?:mah|gb|kwh|nit|w\b))", kd)
         if m:
             nc.gia_tri["ngan_sach_max"] = float(m.group(1))
 

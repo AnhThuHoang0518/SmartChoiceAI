@@ -35,7 +35,10 @@ DAU_HIEU_UU_TIEN = {
 
 DAU_HIEU_PHONG = {
     LoaiPhong.NGU: ("phong ngu", "ngu"),
-    LoaiPhong.KHACH: ("phong khach", "khach", "phong an"),
+    # Quan/van phong/shop: khong gian sinh hoat chung - tinh nhu phong khach
+    # (do on it quan trong hon phong ngu). ANH XA loai khong gian, khong sinh so.
+    LoaiPhong.KHACH: ("phong khach", "khach", "phong an", "van phong", "quan cafe",
+                      "quan ca phe", "quan an", "quan nhau", "cua hang", "shop", "tiem"),
 }
 
 HE_THONG = """Bạn là bộ trích xuất thông tin. Nhiệm vụ DUY NHẤT: đọc lời khách và điền vào JSON.
@@ -60,13 +63,24 @@ def trich_bang_luat(text: str) -> ONhuCauMayLanh:
     # Ngan sach: chuan_hoa da doi '20tr' -> '20000000'
     m = re.search(r"(?:duoi|khoang|tam|toi da|max|<=?|gia)\s*([\d]{6,})", kd)
     if not m:
-        m = re.search(r"\b([\d]{7,})\b", kd)          # so tien tran trong cau
+        # So tien tran: 6+ chu so (500k -> 500000 cung la ngan sach that -
+        # bug tim ra khi fuzz: '500k' bi bo qua roi hoi lai ngan sach).
+        m = re.search(r"\b([\d]{6,})\b(?!\s*(?:m2|m²|mah|w\b))", kd)
     if m:
         nc.ngan_sach_max = int(m.group(1))
 
     m = re.search(r"([\d]+(?:[.,][\d]+)?)\s*m²", t)
     if m:
         nc.dien_tich_m2 = float(m.group(1).replace(",", "."))
+    if nc.dien_tich_m2 is None:
+        # "phong 3x4" / "3m x 4m" -> 12m². PHEP NHAN tu so khach cho, khong
+        # phai doan. Chi nhan cap 2 so nho (canh phong hop ly 2-15m), va khong
+        # dinh chuoi 3 so kieu "60x65x86" (kich thuoc hoc tu lanh).
+        m = re.search(r"(?<![x×\d])(\d{1,2})\s*m?\s*[x×]\s*(\d{1,2})\s*m?\b(?!\s*[x×])", kd)
+        if m:
+            a, b = int(m.group(1)), int(m.group(2))
+            if 2 <= a <= 15 and 2 <= b <= 15:
+                nc.dien_tich_m2 = float(a * b)
 
     if re.search(r"\b(co nang|nang chieu|nang truc tiep|huong tay|nang lam)\b", kd):
         nc.co_nang = True

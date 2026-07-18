@@ -653,6 +653,58 @@
      "in_nhieu"
     ]
    }
+  },
+  {
+   "ten": "suy_luan_phong_3x4",
+   "tin_dau": "máy lạnh cho phòng 3m x 4m, 15 triệu rưỡi, không nắng, phòng ngủ",
+   "ky_vong_loai": "tu_van",
+   "toi_da_cau_hoi": 1,
+   "ky_vong_o": {
+    "dien_tich_m2": 12,
+    "ngan_sach_max": 15500000
+   },
+   "_ghi_chu": "N2: 3x4 -> nhan ra 12m2; 'trieu ruoi' -> 15.5tr (deu la so hoc, khong doan)"
+  },
+  {
+   "ten": "suy_luan_dem_nguoi",
+   "tin_dau": "tủ lạnh cho 2 vợ chồng 2 đứa con tầm 12tr",
+   "ky_vong_loai": "tu_van",
+   "toi_da_cau_hoi": 1,
+   "ky_vong_o": {
+    "so_nguoi": 4
+   }
+  },
+  {
+   "ten": "quan_ca_phe_la_phong_khach",
+   "tin_dau": "máy lạnh cho quán cà phê 30m2 tầm 10-15 triệu có nắng",
+   "ky_vong_loai": "bat_ky_khong_loi",
+   "toi_da_cau_hoi": 1,
+   "ky_vong_o": {
+    "loai_phong": "khach",
+    "ngan_sach_max": 15000000
+   }
+  },
+  {
+   "ten": "tieng_anh_air_conditioner",
+   "tin_dau": "I need an air conditioner, room 18m2, 15tr, no sun, bedroom",
+   "ky_vong_loai": "bat_ky_khong_loi",
+   "toi_da_cau_hoi": 3,
+   "ky_vong_o": {
+    "dien_tich_m2": 18
+   }
+  },
+  {
+   "ten": "vi_sao_chon_may_1",
+   "tin_dau": "tablet man 11 inch pin trau 10tr",
+   "ky_vong_loai": "giai_trinh_xep_hang",
+   "toi_da_cau_hoi": 1,
+   "tiep_theo": [
+    {
+     "tin": "vì sao lại chọn máy 1?",
+     "ky_vong_loai": "giai_trinh_xep_hang"
+    }
+   ],
+   "_ghi_chu": "N3: giai trinh xep hang bang bang diem code da tinh, 0 LLM"
   }
  ]
 }

@@ -30,6 +30,7 @@ from backend.app.core.chuan_hoa_tv import (
     co_nganh_tu_lanh,
     hoi_chu_quan,
     hoi_hang,
+    hoi_vi_sao_xep,
     hoi_khuyen_mai,
     hoi_ton_kho,
     muc_gia,
@@ -105,6 +106,7 @@ def _goi_y_tu_van(top3, giong: str) -> list[str]:
     ra = []
     if len(top3) >= 2:
         ra.append("So sánh máy 1 và máy 2")
+    ra.append("Vì sao chọn máy 1?")
     if giong != "ky_thuat":
         ra.append("Cho xin thông số chi tiết")
     return ra
@@ -420,6 +422,37 @@ def chat(t: TinNhan) -> TraLoi:
     if cap and p.get("top3_truoc"):
         return _so_sanh_2_may(t, ma, p, t0, cap)
 
+    # "Vi sao chon may nay?" -> giai trinh bang BANG DIEM code da tinh:
+    # diem tung may + duoc gi/mat gi + cach tinh. He tu bao chua duoc chinh
+    # minh, 0 LLM - day chinh la loi the cua flow do code dieu khien.
+    vs = hoi_vi_sao_xep(t.tin_nhan)
+    if vs is not None and p.get("top3_truoc"):
+        top = p["top3_truoc"]
+        if vs >= len(top):
+            vs = 0
+        u = top[vs]
+        dong = [f"Dạ **{u['ten']}** đứng vị trí {vs + 1} vì tổng điểm cao "
+                f"{'nhất' if vs == 0 else 'thứ ' + str(vs + 1)} trên các tiêu chí "
+                f"anh/chị nêu ạ ({u['diem']:.2f}/1):"]
+        for h in u.get("hon", []):
+            nh = "Rẻ hơn" if h["truc"] == "giá" else f"Nhỉnh hơn về {h['truc']}"
+            dong.append(f"✓ {nh}: {h['cua_minh']} (so với {h['doi_thu']})")
+        for k in u.get("kem", []):
+            nh = "Đắt hơn" if k["truc"] == "giá" else f"Chịu thiệt về {k['truc']}"
+            dong.append(f"△ {nh}: {k['cua_minh']} (so với {k['doi_thu']})")
+        dong.append("")
+        dong.append("Điểm cả bảng: " + " · ".join(
+            f"{i + 1}. {x['ten']} ({x['diem']:.2f})" for i, x in enumerate(top)))
+        dong.append("Cách tính: mỗi tiêu chí chuẩn hóa 0-1 giữa các máy đã qua lọc, "
+                    "nhân trọng số sinh từ chính ưu tiên anh/chị nói, cộng lại — "
+                    "không có cảm tính, không nhờ AI chấm ạ.")
+        return TraLoi(
+            phien_id=ma, loai="giai_trinh_xep_hang", text="\n".join(dong),
+            goi_y=["So sánh máy 1 và máy 2"] if len(top) >= 2 else [],
+            thong_ke={"ms": int((time.perf_counter() - t0) * 1000), "cham_llm": 0,
+                      "nganh": p.get("nganh")},
+        )
+
     # "Co nhung hang nao?" -> liet ke hang THAT trong catalog nganh (kem so
     # may dem duoc), khong ke ten hang ngoai du lieu. Chua ro nganh thi de
     # flow chao hoi phia duoi hoi nganh truoc.
@@ -702,7 +735,8 @@ def chat(t: TinNhan) -> TraLoi:
             ns = nc.ngan_sach_max
             text = cfg()["khong_co_may"]["mau"].format(
                 ngan_sach=("không giới hạn" if ns and ns >= 10**11
-                           else f"{ns/1_000_000:.0f} triệu" if ns else "này"),
+                           else (f"{ns/1_000_000:.1f}".rstrip("0").rstrip(".") + " triệu")
+                           if ns else "này"),
                 dien_tich=(f"{nc.dien_tich_m2:.0f}" if nc.dien_tich_m2 else "?"),
                 gia_thap_nhat=(f"{gia_min/1_000_000:.1f} triệu" if gia_min else "cao hơn"),
             )
