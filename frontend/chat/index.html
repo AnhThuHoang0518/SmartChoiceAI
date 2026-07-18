@@ -30,6 +30,9 @@
   .ten-bot{font-weight:700;font-size:14.5px}
   .trang-thai{font-size:12px;color:var(--phu);margin-top:2px}
   .o-mat.dang-noi ~ .trang-thai{color:var(--chinh)}
+  .mic-avatar{margin-top:10px;width:100%;display:flex;align-items:center;justify-content:center;gap:6px;background:var(--chinh);color:#fff;border:none;border-radius:20px;padding:8px 12px;font-size:13px;font-weight:700;cursor:pointer;transition:filter .15s}
+  .mic-avatar:hover{filter:brightness(1.08)}
+  .mic-avatar.dang-ghi{background:#b3541e}
   .dong{display:flex;margin-bottom:14px}
   .dong.khach{justify-content:flex-end}
   .bong{max-width:78%;padding:11px 15px;border-radius:14px;line-height:1.55;font-size:15px;white-space:pre-wrap}
@@ -136,6 +139,7 @@
     <div class="o-mat" id="mat-bot"><canvas id="mat-3d" aria-label="Khuôn mặt trợ lý Smart Choice"></canvas></div>
     <div class="ten-bot">Trợ lý Smart Choice</div>
     <div class="trang-thai" id="trang-thai">Sẵn sàng tư vấn</div>
+    <button type="button" id="mic-avatar" class="mic-avatar" title="Bấm để nói bằng giọng">🎤 Bấm để nói</button>
   </div>
   <div class="the-panel" style="text-align:left">
     <div style="font-size:12.5px;color:var(--phu)">LỐI TẮT</div>
@@ -623,23 +627,37 @@ function veSanPham(u, i){
 // Giong noi: Web Speech API cua trinh duyet (Chrome/Edge), nhan vi-VN.
 // Khong ton credit, khong can backend. STT cua FPT de danh cho pilot.
 const mic = document.getElementById('mic');
+const micAvatar = document.getElementById('mic-avatar');
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-if (!SR) { mic.style.display = 'none'; }
+if (!SR) { mic.style.display = 'none'; if (micAvatar) micAvatar.style.display = 'none'; }
 else {
   const nghe = new SR();
   nghe.lang = 'vi-VN'; nghe.interimResults = false;
   let dang = false;
-  mic.onclick = () => {
+  // Dong bo trang thai giua nut mic nho o thanh nhap va nut mic to canh
+  // avatar "Tro ly Smart Choice" - 2 nut, 1 phien nhan dien giong.
+  const capNhatMic = () => {
+    if (dang) {
+      mic.style.background = '#b3541e'; mic.textContent = '●';
+      if (micAvatar) { micAvatar.classList.add('dang-ghi'); micAvatar.textContent = '● Đang nghe...'; }
+    } else {
+      mic.style.background = 'var(--chinh-nhat)'; mic.textContent = '🎤';
+      if (micAvatar) { micAvatar.classList.remove('dang-ghi'); micAvatar.textContent = '🎤 Bấm để nói'; }
+    }
+  };
+  const batTatMic = () => {
     if (dang) { nghe.stop(); return; }
-    dang = true; mic.style.background = '#b3541e'; mic.textContent = '●';
+    dang = true; capNhatMic();
     nghe.start();
   };
+  mic.onclick = batTatMic;
+  if (micAvatar) micAvatar.onclick = batTatMic;
   nghe.onresult = ev => { oNhap.value = ev.results[0][0].transcript; };
   nghe.onend = () => {
-    dang = false; mic.style.background = 'var(--chinh-nhat)'; mic.textContent = '🎤';
+    dang = false; capNhatMic();
     if (oNhap.value.trim()) { vuaDungMic = true; document.querySelector('form').requestSubmit(); }
   };
-  nghe.onerror = () => { dang = false; mic.style.background = 'var(--chinh-nhat)'; mic.textContent = '🎤'; };
+  nghe.onerror = () => { dang = false; capNhatMic(); };
 }
 
 async function gui(e){
