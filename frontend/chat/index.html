@@ -106,11 +106,26 @@ nutDoc.onclick = () => {
   tuDoc = !tuDoc; localStorage.setItem('tu_doc', tuDoc ? '1' : '0'); veNutDoc();
   if (!tuDoc) speechSynthesis.cancel();
 };
-function docTo(text){
-  if (!('speechSynthesis' in window)) return;
-  speechSynthesis.cancel();
+let amThanh = null;                           // audio dang phat - phat cai moi thi tat cai cu
+async function docTo(text){
   // bo markdown + bullet cho de nghe; cat 400 ky tu de khong doc ca bang
   const sach = text.replace(/\*\*/g, '').replace(/^[•✓△→-]\s*/gm, '').slice(0, 400);
+  if (amThanh) { amThanh.pause(); amThanh = null; }
+  if ('speechSynthesis' in window) speechSynthesis.cancel();
+  // Uu tien TTS FPT.AI-VITs (9 giong dien vien long tieng, server /api/doc);
+  // server chua cau hinh / loi -> roi ve giong trinh duyet, khong bao gio cam.
+  try {
+    const r = await fetch('/api/doc', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({text: sach})
+    });
+    if (r.ok) {
+      amThanh = new Audio(URL.createObjectURL(await r.blob()));
+      amThanh.play();
+      return;
+    }
+  } catch (e) { /* roi ve trinh duyet */ }
+  if (!('speechSynthesis' in window)) return;
   const u = new SpeechSynthesisUtterance(sach);
   u.lang = 'vi-VN';
   const giong = speechSynthesis.getVoices().find(v => v.lang && v.lang.startsWith('vi'));

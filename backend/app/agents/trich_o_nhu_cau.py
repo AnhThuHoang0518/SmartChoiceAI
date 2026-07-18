@@ -82,10 +82,11 @@ def trich_bang_luat(text: str) -> ONhuCauMayLanh:
             if 2 <= a <= 15 and 2 <= b <= 15:
                 nc.dien_tich_m2 = float(a * b)
 
-    if re.search(r"\b(co nang|nang chieu|nang truc tiep|huong tay|nang lam)\b", kd):
-        nc.co_nang = True
-    elif re.search(r"\b(khong nang|khong co nang|rop|mat)\b", kd):
+    # 'ko/k nang' la viet tat pho bien - thieu la hoi lai thu khach vua noi
+    if re.search(r"\b(?:khong|ko|k) (?:co )?nang\b|\brop\b|\bmat\b", kd):
         nc.co_nang = False
+    elif re.search(r"\b(co nang|nang chieu|nang truc tiep|huong tay|nang lam)\b", kd):
+        nc.co_nang = True
 
     for lp, tu in DAU_HIEU_PHONG.items():
         if any(re.search(rf"\b{re.escape(x)}\b", kd) for x in tu):

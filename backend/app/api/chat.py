@@ -389,6 +389,48 @@ def _xu_ly_nganh_khung(t: TinNhan, ma: str, p: dict, t0: float, giong: str,
     )
 
 
+class DocYeuCau(BaseModel):
+    text: str
+
+
+@router.post("/doc")
+def doc_thanh_tieng(y: DocYeuCau):
+    """TTS FPT.AI-VITs - theo DUNG tai lieu tren trang model (Inference API):
+    client.audio.speech.create(model='FPT.AI-VITs', input=..., voice='std_kimngan',
+    response_format='wav') tren base https://mkp-api.fptcloud.com (OpenAI compat)
+    -> POST /audio/speech. 9 giong tieng Viet thu am dien vien long tieng.
+
+    Chua cau hinh FPT -> 503, UI tu roi ve giong trinh duyet (van doc duoc).
+    Gioi han 400 ky tu: gia $16.5/1M ky tu -> ~1/3 xu moi cau, khong chay lan.
+    """
+    import os as _os
+
+    import requests as _rq
+    from fastapi import HTTPException
+    from fastapi.responses import Response as _Resp
+
+    khoa = (_os.getenv("LLM_API_KEY") or "").strip()
+    if not khoa or (_os.getenv("LLM_NHA_CUNG_CAP") or "").strip().lower() != "fpt":
+        raise HTTPException(503, "TTS chua cau hinh")
+    text = (y.text or "").strip()[:400]
+    if not text:
+        raise HTTPException(400, "text rong")
+    try:
+        r = _rq.post(
+            "https://mkp-api.fptcloud.com/audio/speech",
+            headers={"Authorization": f"Bearer {khoa}"},
+            json={"model": _os.getenv("TTS_MODEL", "FPT.AI-VITs"),
+                  "input": text,
+                  "response_format": "wav",
+                  "voice": _os.getenv("TTS_GIONG", "std_kimngan")},
+            timeout=20,
+        )
+        r.raise_for_status()
+    except Exception as e:                  # noqa: BLE001
+        raise HTTPException(503, f"TTS loi: {e}") from e
+    return _Resp(content=r.content, media_type="audio/wav")
+
+
 @router.get("/khuyen-mai")
 def khuyen_mai_that() -> list[dict]:
     """Top 4 may lanh giam sau nhat - cho landing page. Gia goc/gia KM lay
