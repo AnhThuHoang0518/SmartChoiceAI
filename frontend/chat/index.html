@@ -61,7 +61,7 @@
 </style>
 </head>
 <body>
-<header><a href="/" style="text-decoration:none;color:var(--phu);font-size:13px;margin-right:2px" title="Về trang chủ">←</a><b>Smart Choice</b><span>· tư vấn theo nhu cầu thật · mọi con số đều có nguồn</span><button id="doi-nen" title="Đổi giao diện sáng/tối" style="margin-left:auto;background:none;border:1px solid var(--vien);border-radius:18px;padding:4px 12px;cursor:pointer;font-size:15px;color:var(--muc)">🌙</button></header>
+<header><a href="/" style="text-decoration:none;color:var(--phu);font-size:13px;margin-right:2px" title="Về trang chủ">←</a><b>Smart Choice</b><span>· tư vấn theo nhu cầu thật · mọi con số đều có nguồn</span><button id="doc-tl" title="Bot đọc câu trả lời (bật/tắt)" style="margin-left:auto;background:none;border:1px solid var(--vien);border-radius:18px;padding:4px 12px;cursor:pointer;font-size:15px;color:var(--muc)">🔇</button><button id="doi-nen" title="Đổi giao diện sáng/tối" style="margin-left:auto;background:none;border:1px solid var(--vien);border-radius:18px;padding:4px 12px;cursor:pointer;font-size:15px;color:var(--muc)">🌙</button></header>
 
 <div id="khung">
   <div class="dong bot"><div class="bong">Em chào anh/chị ạ! Em tư vấn được 13 ngành hàng: máy lạnh, tủ lạnh, máy giặt, máy sấy, máy rửa chén, tủ đông, máy nước nóng, tablet, đồng hồ, màn hình, PC, máy in, micro. Cứ nói tự nhiên — viết tắt hay không dấu đều được ạ.</div></div>
@@ -93,6 +93,31 @@ nutNen.onclick = () => {
   const t = goc.dataset.theme === 'dark' ? 'light' : 'dark';
   localStorage.setItem('giao_dien', t); apDungNen(t);
 };
+
+// ── Bot DOC cau tra loi (Web Speech Synthesis, vi-VN) ──────────────────────
+// Ghep voi mic san co = hoi thoai 2 chieu bang giong. Chay ngay tren trinh
+// duyet, 0 chi phi; ban TTS FPT.AI-VITs (9 giong) de danh cho pilot.
+const nutDoc = document.getElementById('doc-tl');
+let tuDoc = localStorage.getItem('tu_doc') === '1';
+let vuaDungMic = false;                       // noi bang giong -> tra bang giong
+function veNutDoc(){ nutDoc.textContent = tuDoc ? '🔊' : '🔇'; }
+veNutDoc();
+nutDoc.onclick = () => {
+  tuDoc = !tuDoc; localStorage.setItem('tu_doc', tuDoc ? '1' : '0'); veNutDoc();
+  if (!tuDoc) speechSynthesis.cancel();
+};
+function docTo(text){
+  if (!('speechSynthesis' in window)) return;
+  speechSynthesis.cancel();
+  // bo markdown + bullet cho de nghe; cat 400 ky tu de khong doc ca bang
+  const sach = text.replace(/\*\*/g, '').replace(/^[•✓△→-]\s*/gm, '').slice(0, 400);
+  const u = new SpeechSynthesisUtterance(sach);
+  u.lang = 'vi-VN';
+  const giong = speechSynthesis.getVoices().find(v => v.lang && v.lang.startsWith('vi'));
+  if (giong) u.voice = giong;
+  u.rate = 1.05;
+  speechSynthesis.speak(u);
+}
 
 let phienId = null;
 const khung = document.getElementById('khung');
@@ -188,7 +213,7 @@ else {
   nghe.onresult = ev => { oNhap.value = ev.results[0][0].transcript; };
   nghe.onend = () => {
     dang = false; mic.style.background = '#5f6e7c'; mic.textContent = '🎤';
-    if (oNhap.value.trim()) document.querySelector('form').requestSubmit();
+    if (oNhap.value.trim()) { vuaDungMic = true; document.querySelector('form').requestSubmit(); }
   };
   nghe.onerror = () => { dang = false; mic.style.background = '#5f6e7c'; mic.textContent = '🎤'; };
 }
@@ -231,6 +256,9 @@ async function gui(e){
       html += '<div class="chip-bot">' + d.goi_y.map(g =>
         '<button onclick="guiVB(this.textContent)">' + g.replace(/</g,'&lt;') + '</button>').join('') + '</div>';
     cho.querySelector('.bong').innerHTML = html;
+    // doc to khi: khach dang bat tu doc, HOAC khach vua noi bang mic
+    if ((tuDoc || vuaDungMic) && d.text) docTo(d.text);
+    vuaDungMic = false;
   } catch(err){
     cho.querySelector('.bong').innerHTML = 'Lỗi kết nối server — kiểm tra backend đang chạy chưa.';
   }
