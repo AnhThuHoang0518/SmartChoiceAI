@@ -21,7 +21,7 @@
 **00:00–00:20 — Mở đầu, đặt vấn đề**
 Màn hình: trang chủ demo, có thể lướt nhanh qua bảng thông số kiểu cũ (RAM/BTU/dB) trước khi bấm vào khung chat.
 
-> "Khách mua điện máy không cần bảng thông số — họ cần biết máy nào hợp với nhu cầu THẬT của họ. Smart Choice hỏi đúng vài câu quyết định rồi tư vấn bằng ngôn ngữ người thường, trên dữ liệu thật của Điện Máy Xanh: 13 ngành hàng, 2.176 sản phẩm đang bán."
+> "Khách mua điện máy không cần bảng thông số — họ cần biết máy nào hợp với nhu cầu THẬT của họ. Smart Choice hỏi đúng vài câu quyết định rồi tư vấn bằng ngôn ngữ người thường, trên dữ liệu thật của Điện Máy Xanh: 14 ngành hàng, 2.176 sản phẩm đang bán."
 
 **00:20–01:05 — Câu hỏi mẫu của đề bài**
 Thao tác: gõ trực tiếp vào ô chat, không dừng quay: `e muon mua may lanh duoi 20tr cho phong 18m2, tk dien, it on`, bấm gửi.
@@ -52,7 +52,7 @@ Thao tác: bấm icon 🎤, nói rõ vào micro: "nếu giảm còn mười lăm
 
 Thao tác: gõ `thế còn tủ lạnh thì sao`, gửi.
 
-> "Đổi hẳn ngành giữa cuộc nói chuyện — nó chuyển sang tủ lạnh và MANG ngân sách 15 triệu theo, không bắt khách khai lại. Mười ba ngành đều đi chung một bộ não: thêm ngành mới chỉ là thêm một file cấu hình."
+> "Đổi hẳn ngành giữa cuộc nói chuyện — nó chuyển sang tủ lạnh và MANG ngân sách 15 triệu theo, không bắt khách khai lại. Mười bốn ngành đều đi chung một bộ não: thêm ngành mới chỉ là thêm một file cấu hình."
 
 Thao tác: gõ `co laptop nao ngon khong`, gửi.
 
