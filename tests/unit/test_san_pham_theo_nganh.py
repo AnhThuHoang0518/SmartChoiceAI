@@ -3,7 +3,7 @@
 KHONG mock. Nganh co data -> tra san pham + danh sach hang; nganh khong co data
 -> rong (UI hien 'dang cap nhat'). Loc hang/gia + sap xep chay tren data that."""
 from backend.app.api.chat import san_pham_theo_nganh as f
-from backend.app.api.chat import danh_muc_landing
+from backend.app.api.chat import danh_muc_landing, khuyen_mai_that
 
 
 def test_nganh_co_data_tra_san_pham_that():
@@ -36,6 +36,16 @@ def test_loc_hang_va_gia_chay_that():
 def test_slug_khong_ton_tai_khong_no():
     r = f(nganh="khong-co-nganh-nay")
     assert r["san_pham"] == [] and r["tong"] == 0
+
+
+def test_khuyen_mai_landing_pho_thong_da_hang():
+    km = khuyen_mai_that()
+    assert 1 <= len(km) <= 4
+    for d in km:
+        assert d["gia"] <= 20_000_000, d["ten"]        # tam pho thong
+        assert d["gia"] < d["gia_goc"] and d["phan_tram"] > 0
+    hang = [d["ten"].split()[0] for d in km]
+    assert len(set(hang)) == len(hang)                 # moi hang 1 may (da dang)
 
 
 def test_danh_muc_landing_moi_muc_co_anh_that_khop_nganh():

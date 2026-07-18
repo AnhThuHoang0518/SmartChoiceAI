@@ -701,16 +701,34 @@ def doc_thanh_tieng(y: DocYeuCau):
 
 @router.get("/khuyen-mai")
 def khuyen_mai_that() -> list[dict]:
-    """Top 4 may lanh giam sau nhat - cho landing page. Gia goc/gia KM lay
-    thang tu catalog, KHONG hardcode: landing cung phai theo luat 'moi con so
-    deu co nguon' nhu chat."""
-    giam = sorted((s for s in catalog() if s.gia < s.gia_goc),
-                  key=lambda s: s.gia_goc - s.gia, reverse=True)[:4]
+    """Top 4 may lanh khuyen mai cho landing - THAY vi 'giam nhieu TIEN nhat'
+    (hay ra 4 cuc thuong mai 40-50 trieu), lay 'giam sau % + tam gia PHO THONG'
+    va DA DANG HANG. Gia/anh lay thang catalog - dung luat 'moi con so co nguon'.
+    """
+    NGUONG_PHO_THONG = 20_000_000       # loc may cong nghiep/thuong mai gia cao
+    ds = sorted(
+        (s for s in catalog() if s.gia < s.gia_goc and s.gia <= NGUONG_PHO_THONG),
+        key=lambda s: (s.gia_goc - s.gia) / s.gia_goc, reverse=True,
+    )
+    ra, hang_roi = [], set()
+    for s in ds:                        # pass 1: moi hang 1 may -> da dang
+        if s.hang in hang_roi:
+            continue
+        ra.append(s)
+        hang_roi.add(s.hang)
+        if len(ra) == 4:
+            break
+    if len(ra) < 4:                     # pass 2: it hang -> bu them cho du 4
+        for s in ds:
+            if s not in ra:
+                ra.append(s)
+                if len(ra) == 4:
+                    break
     return [{"ten": s.ten, "gia": s.gia, "gia_goc": s.gia_goc,
              "giam": s.gia_goc - s.gia,
              "qua": getattr(s, "qua", "")[:100],
              "anh_url": _anh_sp().get(str(s.ma_sp), ""),
-             "phan_tram": round((1 - s.gia / s.gia_goc) * 100)} for s in giam]
+             "phan_tram": round((1 - s.gia / s.gia_goc) * 100)} for s in ra]
 
 
 def _catalog_theo_slug(slug: str):

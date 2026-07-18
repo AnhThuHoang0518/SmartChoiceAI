@@ -36,16 +36,20 @@ export function CategoryNavigation() {
           {/* Dropdown Content with bridge */}
           <div className="absolute top-[44px] left-0 pt-2 w-[280px] transition-all duration-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible z-50">
             <div className="bg-white rounded-lg shadow-xl border border-gray-100 py-2">
-              {CATEGORIES.map((cat, i) => (
-                <Link
-                  to={cat.label === "Khuyến mãi" ? "/chat" : `/category/${getSlug(cat.label)}`}
-                  key={`drop-${i}`}
-                  className="flex items-center gap-3 px-4 py-2.5 hover:bg-[#F3F4F6] hover:text-[#005BFF] text-[#002D62] transition-colors group/item"
-                >
-                  <cat.icon className="w-5 h-5 text-gray-500 group-hover/item:text-[#005BFF] transition-colors" />
-                  <span className="text-[14px] font-medium">{cat.label}</span>
-                </Link>
-              ))}
+              {CATEGORIES.map((cat, i) => {
+                const cls = "flex items-center gap-3 px-4 py-2.5 hover:bg-[#F3F4F6] hover:text-[#005BFF] text-[#002D62] transition-colors group/item"
+                const noi = (
+                  <>
+                    <cat.icon className="w-5 h-5 text-gray-500 group-hover/item:text-[#005BFF] transition-colors" />
+                    <span className="text-[14px] font-medium">{cat.label}</span>
+                  </>
+                )
+                // "/chat" do FastAPI phuc vu (ngoai SPA) -> phai dieu huong THAT
+                // bang <a>, khong dung <Link> (react-router se ra trang trang).
+                return cat.label === "Khuyến mãi"
+                  ? <a href="/chat" key={`drop-${i}`} className={cls}>{noi}</a>
+                  : <Link to={`/category/${getSlug(cat.label)}`} key={`drop-${i}`} className={cls}>{noi}</Link>
+              })}
             </div>
           </div>
         </div>
@@ -69,13 +73,13 @@ export function CategoryNavigation() {
 
         {/* Right Links */}
         <div className="flex items-center gap-2 ml-4 flex-shrink-0 h-full">
-          <Link to="/chat" className="text-[13px] font-medium px-3 py-1.5 rounded-full text-[#002D62] hover:bg-[#005BFF] hover:text-white transition-all duration-300 whitespace-nowrap">
+          <a href="/chat" className="text-[13px] font-medium px-3 py-1.5 rounded-full text-[#002D62] hover:bg-[#005BFF] hover:text-white transition-all duration-300 whitespace-nowrap">
             Mua online giá rẻ
-          </Link>
-          <Link to="/chat" className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[#002D62] hover:bg-[#005BFF] hover:text-white transition-all duration-300 whitespace-nowrap group">
+          </a>
+          <a href="/chat" className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[#002D62] hover:bg-[#005BFF] hover:text-white transition-all duration-300 whitespace-nowrap group">
             <span className="text-[#E30A17] group-hover:text-white font-bold text-base leading-none mb-[2px]">✿</span>
             <span className="text-[13px] font-semibold">Khuyến mãi</span>
-          </Link>
+          </a>
         </div>
 
       </div>
