@@ -1,61 +1,83 @@
-# Kịch bản video demo 3 phút
+# Kịch bản video demo — 1 shot, 3 phút
 
-> Quay màn hình https://demo.aibutler.vn + lồng tiếng. Mỗi cảnh ghi sẵn lời thoại — đọc chậm là vừa khung giờ.
+> Quay **một lần liên tục, không cắt cảnh**: 1 file video, 1 lần bấm record,
+> giữ nguyên tab trình duyệt https://demo.aibutler.vn từ đầu đến cuối. Lồng
+> tiếng đọc trực tiếp trong lúc quay (hoặc thu riêng rồi ghép — nhưng hành
+> động trên màn hình phải khớp giây với lời đọc bên dưới). Đọc với tốc độ
+> vừa phải sẽ vừa đúng 3:00. Toàn bộ thao tác gõ/bấm liệt kê theo đúng thứ
+> tự thực hiện — không nhảy tab, không refresh, không dừng quay giữa chừng.
 
-## Cảnh 1 — Vấn đề (0:00–0:20)
+## Chuẩn bị trước khi bấm record
 
-Chiếu trang so sánh thông số kiểu cũ (bảng đầy RAM/BTU/dB).
+- Mở sẵn https://demo.aibutler.vn ở `/chat`, zoom trình duyệt to chữ (Ctrl +).
+- Chọn 1 theme (sáng hoặc tối) và giữ nguyên suốt video.
+- Mở sẵn 1 phiên chat dự phòng ở tab ẩn (phòng mạng chậm) — không đụng tới
+  nếu tab chính chạy mượt.
+- Tắt thông báo, để màn hình sạch, con trỏ chuột không nhấp nháy linh tinh.
+- Micro test trước — lồng tiếng phải rõ hơn tiếng gõ phím.
+
+## Dòng thời gian liên tục (00:00 → 03:00)
+
+**00:00–00:20 — Mở đầu, đặt vấn đề**
+Màn hình: trang chủ demo, có thể lướt nhanh qua bảng thông số kiểu cũ (RAM/BTU/dB) trước khi bấm vào khung chat.
 
 > "Khách mua điện máy không cần bảng thông số — họ cần biết máy nào hợp với nhu cầu THẬT của họ. Smart Choice hỏi đúng vài câu quyết định rồi tư vấn bằng ngôn ngữ người thường, trên dữ liệu thật của Điện Máy Xanh: 13 ngành hàng, 2.176 sản phẩm đang bán."
 
-## Cảnh 2 — Kịch bản chuẩn của đề bài (0:20–1:05)
+**00:20–01:05 — Câu hỏi mẫu của đề bài**
+Thao tác: gõ trực tiếp vào ô chat, không dừng quay: `e muon mua may lanh duoi 20tr cho phong 18m2, tk dien, it on`, bấm gửi.
 
-Gõ đúng câu trong đề: `e muon mua may lanh duoi 20tr cho phong 18m2, tk dien, it on`
+> "Viết tắt, không dấu — hệ thống vẫn hiểu: ngân sách 20 triệu, phòng 18 mét vuông, ưu tiên tiết kiệm điện và ít ồn. Nó KHÔNG hỏi cả đống — chỉ hỏi câu làm thay đổi kết quả."
 
-> "Viết tắt, không dấu — hệ thống vẫn hiểu: ngân sách 20 triệu, phòng 18m², ưu tiên tiết kiệm điện và ít ồn. Nó KHÔNG hỏi cả đống — chỉ hỏi câu làm thay đổi kết quả."
-
-Chỉ vào dòng "Vì sao hỏi câu này: co_nang = 1.00".
+Thao tác: khi bot hỏi lại, trỏ chuột vào dòng "Vì sao hỏi câu này: co_nang = 1.00" — không bấm gì, chỉ di chuột chỉ vào.
 
 > "Mỗi câu hỏi có điểm số. Nắng chiều làm đổi toàn bộ danh sách máy phù hợp — nên nó hỏi. Phòng ngủ hay phòng khách với ca này không đổi kết quả — nên nó không làm phiền."
 
-Trả lời `co, chieu nang lam` → hiện top 3.
+Thao tác: gõ trả lời `co, chieu nang lam`, gửi, đợi top 3 hiện ra.
 
 > "Top 3, mỗi máy nói rõ ĐƯỢC gì — MẤT gì: rẻ hơn, êm hơn, chịu thiệt chỗ nào. Máy đang khuyến mãi hiện giá gốc gạch và mức giảm THẬT. Và dòng 'Vì sao em không đề xuất' — máy quảng cáo giá tốt nhưng thiếu tải cho phòng có nắng. Tư vấn thật là dám nói câu đó."
 
-## Cảnh 3 — So sánh trực tiếp + chống bịa (1:05–1:45)
-
-Bấm nút **⚖ So sánh với máy 1** trên card máy 2.
+**01:05–01:45 — So sánh trực tiếp + chống bịa**
+Thao tác: bấm nút **⚖ So sánh với máy 1** trên card máy thứ 2, đợi bảng so sánh hiện.
 
 > "Đề bài tên là 'so sánh sản phẩm' — đây: bảng đối chiếu từng thông số, kết luận rẻ hơn bao nhiêu tiền. Bảng này do CODE dựng từ dữ liệu có nguồn, không qua model sinh chữ — nên không thể bịa và trả về tức thì."
 
-Bấm badge ⓘ cạnh Giá.
+Thao tác: bấm badge ⓘ cạnh dòng Giá, đợi popup nguồn dữ liệu hiện.
 
 > "Mọi con số truy được về nguồn: trường nào, API nào, lấy lúc nào, mã sản phẩm nào. Còn khi model định nói một số KHÔNG có trong dữ liệu — dòng 'đã chặn bịa' này — nó bị chặn và bắt viết lại. Chống hallucination là cơ chế chạy từng câu, không phải lời hứa trong slide."
 
-## Cảnh 4 — Giọng nói, đổi ý, đổi ngành (1:45–2:25)
-
-Bấm 🎤, nói: "nếu giảm còn mười lăm triệu thì sao"
+**01:45–02:25 — Giọng nói, đổi ý giữa chừng, đổi ngành**
+Thao tác: bấm icon 🎤, nói rõ vào micro: "nếu giảm còn mười lăm triệu thì sao", đợi hệ thống nhận diện và trả lời.
 
 > "Nói bằng giọng — và khách vừa ĐỔI ngân sách giữa chừng: hệ thống ghi đè đúng ô đó, giữ mọi thứ đã biết, tính lại từ đầu."
 
-Gõ `thế còn tủ lạnh thì sao`:
+Thao tác: gõ `thế còn tủ lạnh thì sao`, gửi.
 
 > "Đổi hẳn ngành giữa cuộc nói chuyện — nó chuyển sang tủ lạnh và MANG ngân sách 15 triệu theo, không bắt khách khai lại. Mười ba ngành đều đi chung một bộ não: thêm ngành mới chỉ là thêm một file cấu hình."
 
-Gõ `có laptop nào ngon không`:
+Thao tác: gõ `co laptop nao ngon khong`, gửi.
 
 > "Còn ngành chưa có dữ liệu thì nói thẳng là chưa có — không đoán bừa một cái tên máy nào."
 
-## Cảnh 5 — Số liệu + kiến trúc (2:25–3:00)
+**02:25–03:00 — Số liệu + kiến trúc, chốt**
+Thao tác: cuộn xuống hoặc chuyển sang tab đã mở sẵn bảng số liệu đánh giá + sơ đồ kiến trúc (mở sẵn từ trước, chỉ cần chuyển tab trong cùng cửa sổ, không dừng quay).
 
-Chiếu bảng: 50/50 tình huống · 100% ô nhu cầu đúng · 0,7 câu hỏi trung bình · 0 hallucination lọt · xử lý ngoài LLM <100ms. Rồi sơ đồ kiến trúc.
+> "Toàn bộ đo được, chạy lại được bằng một lệnh — trên cả dữ liệu thật lẫn dữ liệu mẫu công khai: 50 trên 50 tình huống đúng, 100% ô nhu cầu trích đúng, trung bình 0,7 câu hỏi mỗi phiên, 0 hallucination lọt, phần xử lý ngoài LLM dưới 100 mili giây."
 
-> "Toàn bộ đo được, chạy lại được bằng một lệnh — trên cả dữ liệu thật lẫn dữ liệu mẫu công khai. Kiến trúc: LLM chỉ xuất hiện đúng hai chỗ — hiểu lời khách và diễn đạt kết quả. Mọi quyết định là code: lặp lại được, giải trình được, chạy trên hạ tầng model tại Việt Nam qua FPT AI Marketplace — đổi nhà cung cấp bằng một dòng cấu hình. Smart Choice — tư vấn như người bán hàng giỏi nhất của bạn, nhưng không bao giờ bịa."
+> "Kiến trúc: LLM chỉ xuất hiện đúng hai chỗ — hiểu lời khách và diễn đạt kết quả. Mọi quyết định là code: lặp lại được, giải trình được, chạy trên hạ tầng model tại Việt Nam qua FPT AI Marketplace — đổi nhà cung cấp bằng một dòng cấu hình. Smart Choice — tư vấn như người bán hàng giỏi nhất của bạn, nhưng không bao giờ bịa."
 
-## Ghi chú quay
+Dừng quay ở đúng 03:00.
 
-- Quay 1 lần liền mạch nếu được — giám khảo tin bản không cắt ghép.
-- Zoom chữ to (Ctrl +) trước khi quay. Thử cả dark mode — nếu quay tối thì bật từ đầu, đừng đổi giữa video.
-- Chip gợi ý dưới câu trả lời bấm được luôn — dùng nó cho mạch quay nhanh, đỡ gõ.
-- Chuẩn bị sẵn phiên dự phòng đã chạy tốt trong tab khác, phòng mạng chậm lúc quay.
-- Nếu câu trả lời LLM lượt quay chậm >5s, cắt cảnh chờ, giữ timestamp thống kê ms trên màn hình.
+## Ghi chú quay 1 shot
+
+- Không cắt, không ghép hậu kỳ — giám khảo tin bản không chỉnh sửa. Nếu hỏng
+  giữa chừng, quay lại từ đầu, không nối 2 đoạn.
+- Tập đọc lời thoại to trước 1–2 lần cho khớp nhịp với thao tác, vì mỗi câu
+  đọc phải trùng lúc thao tác đang diễn ra trên màn hình, không đọc trước
+  hoặc sau hành động quá xa.
+- Chip gợi ý dưới câu trả lời bấm được luôn — ưu tiên bấm chip thay vì gõ tay
+  ở đoạn nào chip có sẵn đúng ý, để rút ngắn thời gian gõ.
+- Nếu một lượt trả lời của LLM chậm quá 5 giây, cứ để nguyên trong bản quay
+  (không cắt cảnh chờ vì đây là 1 shot) — giữ đúng tinh thần "video thật,
+  không dàn dựng"; nếu cần, chọn trước câu hỏi/thời điểm mạng ổn định.
+- Phiên dự phòng ở tab ẩn chỉ dùng khi tab chính lỗi thật sự — nếu phải
+  chuyển tab, đó vẫn tính là quay lại từ đầu, không dùng đoạn đã quay dở.
