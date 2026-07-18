@@ -16,6 +16,33 @@ def tra_loi_quy_tac_du_lieu(text: str) -> tuple[str, str] | None:
     """Tra ``(ma_quy_tac, cau_tra_loi)`` neu cau noi dung hang rao du lieu."""
     kd = bo_dau(text or "").lower()
 
+    if re.search(r"\b(?:qua|khuyen mai)\b", kd) \
+            and re.search(r"mien phi.{0,15}(?:cong )?lap dat|cong lap dat", kd) \
+            and re.search(r"\b(?:micro|tablet|dong ho|may in|man hinh|pc)\b", kd):
+        return "qua_khuyen_mai_sai_ngu_canh", (
+            "Dạ quà 'miễn phí công lắp đặt' có dấu hiệu không phù hợp ngữ cảnh "
+            "với loại sản phẩm anh chị nêu ạ. Em sẽ không tự động quảng bá quà "
+            "này; cần đối chiếu điều kiện khuyến mãi theo đúng SKU và ngành hàng "
+            "từ nguồn bán hàng chính thức."
+        )
+
+    if re.search(r"gia khuyen mai.{0,40}(?:bat thuong|co ve sai|nghi sai)", kd):
+        return "gia_khuyen_mai_can_doi_chieu", (
+            "Dạ em ghi nhận đây là giá khuyến mãi cần đối chiếu ạ. Chỉ một con "
+            "số chưa đủ để em tự sửa hoặc gọi là hợp lệ; cần đúng SKU, giá gốc "
+            "và thời điểm nguồn. Nếu giá khuyến mãi cao hơn giá gốc, hệ thống sẽ "
+            "không hiển thị là khuyến mãi."
+        )
+
+    if re.search(r"\bsku\b", kd) and re.search(
+        r"cung gia.{0,30}cau hinh khac|cau hinh khac.{0,30}cung gia", kd
+    ):
+        return "khong_gop_sku_theo_gia", (
+            "Dạ em không gộp các SKU chỉ vì cùng giá ạ. Mỗi SKU/model và cấu "
+            "hình phải được giữ riêng; khi CPU, RAM, ổ cứng hoặc GPU khác nhau, "
+            "đó vẫn là các biến thể khác để so sánh có nguồn."
+        )
+
     if re.search(r"\b(?:bo qua|phớt lờ|phot lo)\b.{0,30}\b(?:catalog|nguon|bang diem|ranking)\b", kd):
         return "giu_nguon_xep_hang", (
             "Dạ em không thể bỏ qua catalog, nguồn dữ liệu hoặc bảng điểm để "

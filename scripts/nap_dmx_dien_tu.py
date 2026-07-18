@@ -183,11 +183,16 @@ def nap_mot_nganh(wb, ten: str, spec: dict) -> None:
 
 
 def p_gio(s):
-    """'8 - 10 tieng' -> 10 (max — van la so hang cong bo)."""
+    """'8 - 10 tieng' -> 8 (can duoi bao thu cua dai hang cong bo).
+
+    Dung 10 de loc dieu kien "it nhat 9 gio" se xac nhan qua tay trong khi
+    chinh nguon noi thoi luong co the chi 8 gio. Ranking va hard filter dung
+    can duoi de khong hua qua muc toi thieu.
+    """
     if la_rong(s):
         return None
     so = re.findall(r"[\d.]+", str(s))
-    return max(float(x) for x in so) if so else None
+    return min(float(x) for x in so) if so else None
 
 
 def nap_micro(wb) -> None:

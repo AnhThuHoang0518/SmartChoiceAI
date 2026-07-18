@@ -31,27 +31,49 @@
  "yeu_cau_khong_co_du_lieu": [
   {
    "truong": "duplex_tu_dong",
-   "mau": ["hai mat tu dong", "in 2 mat tu dong", "duplex"],
+   "mau": [
+    "hai mat tu dong",
+    "in 2 mat tu dong",
+    "duplex"
+   ],
    "text": "Dạ catalog máy in hiện chưa có trường xác nhận in hai mặt tự động. Danh sách loại giấy in hai mặt không đủ chứng minh máy có duplex tự động, nên em chưa thể lọc chắc chắn ạ."
   },
   {
    "truong": "do_net_in_anh",
-   "mau": ["in anh", "anh net", "do net", "do phan giai in"],
+   "mau": [
+    "in anh",
+    "anh net",
+    "do net",
+    "do phan giai in"
+   ],
    "text": "Dạ dữ liệu máy in hiện chưa có độ phân giải/chất lượng in và loại giấy ảnh đã chuẩn hóa. Em không thể xếp máy in ảnh nét chỉ dựa vào tốc độ hoặc giá ạ."
   },
   {
    "truong": "chi_phi_muc",
-   "mau": ["tien muc", "chi phi muc", "gia muc", "ton muc", "\\btco\\b"],
+   "mau": [
+    "tien muc",
+    "chi phi muc",
+    "gia muc",
+    "ton muc",
+    "\\btco\\b"
+   ],
    "text": "Dạ catalog hiện chưa có giá mực và số trang in được của từng hộp/bình mực, nên em không thể tính chi phí mỗi trang hoặc tổng chi phí sử dụng. Em không lấy loại mực làm số tiền thay thế ạ."
   },
   {
    "truong": "tuong_thich_he_dieu_hanh",
-   "mau": ["\\bmacos\\b", "he dieu hanh", "phien ban.*(?:mac|windows)"],
+   "mau": [
+    "\\bmacos\\b",
+    "he dieu hanh",
+    "phien ban.*(?:mac|windows)"
+   ],
    "text": "Dạ dữ liệu máy in hiện chưa có phiên bản hệ điều hành tương thích. Em chưa thể cam kết chạy với macOS/Windows mới nhất nếu không có danh sách phiên bản do hãng công bố ạ."
   },
   {
    "truong": "toc_do_theo_che_do",
-   "mau": ["toc do.*mau.*den trang", "toc do.*den trang.*mau"],
+   "mau": [
+    "toc do.*mau.*den trang",
+    "toc do.*den trang.*mau"
+   ],
    "text": "Dạ dữ liệu xử lý hiện chỉ có một giá trị tốc độ in, chưa tách chế độ màu và đen trắng. Em không lấy số lớn nhất áp cho mọi chế độ nên chưa thể so theo yêu cầu này ạ."
   }
  ],
@@ -77,8 +99,11 @@
   "wifi": {
    "kieu": "chu",
    "bat_buoc": false,
-   "trich": [
-    "(wifi|khong day)"
+   "trich_gan": [
+    {
+     "mau": "wi-?fi|khong day",
+     "gia_tri": "wifi"
+    }
    ],
    "cau_hoi": "Dạ anh chị cần in qua WiFi không ạ?",
    "nhan": "cần {}"
@@ -161,5 +186,8 @@
    "cot": "khay_to",
    "fmt": "khay {:.0f} tờ"
   }
+ ],
+ "tu_khoa_loai_tru": [
+  "may in 3d\\b"
  ]
 }

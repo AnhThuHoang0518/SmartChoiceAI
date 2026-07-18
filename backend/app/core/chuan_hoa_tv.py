@@ -168,6 +168,9 @@ NGANH_KHAC = [
     # 'may giat' + 'may say' DA GO (18/07): chay tren khung generic configs/nganh/
     # 'may say toc/tay' KHAC 'may say quan ao' - khong co du lieu -> ngoai pham vi
     (r"\bmay say (?:toc|tay)\b|\bsay (?:toc|tay)\b", "máy sấy tóc/tay"),
+    # San pham dinh tu khoa nganh nhung KHAC han, khong co du lieu:
+    (r"quat dieu hoa|quat hoi nuoc|quat lam mat|may lam mat\b", "quạt điều hòa/làm mát"),
+    (r"may loc nuoc|may loc khong khi|may hut bui|may loc", "máy lọc"),
     (r"\b(?:tivi|ti vi|tv\b)\b", "tivi"),
     (r"\b(?:laptop|may tinh xach tay|macbook)\b", "laptop"),
     # khach hoi ten dong may cu the ('cos iphone 13 k?') cung phai nhan ra
@@ -177,9 +180,14 @@ NGANH_KHAC = [
 
 
 def co_nganh_may_lanh(text: str) -> bool:
-    """Khach co nhac toi may lanh khong (ke ca tieng Anh pho bien)."""
-    return bool(re.search(r"\b(may lanh|dieu hoa|dhkk|ml|air ?con(?:ditioner)?)\b",
-                          bo_dau(text or "").lower()))
+    """Khach co nhac toi may lanh khong (ke ca tieng Anh pho bien).
+
+    LOAI 'quat dieu hoa'/'quat hoi nuoc'/'may lam mat' (air cooler) - la san
+    pham KHAC, khong co du lieu; dinh 'dieu hoa' -> ngoai pham vi (bug that)."""
+    kd = bo_dau(text or "").lower()
+    if re.search(r"quat dieu hoa|quat hoi nuoc|quat lam mat|may lam mat\b", kd):
+        return False
+    return bool(re.search(r"\b(may lanh|dieu hoa|dhkk|ml|air ?con(?:ditioner)?)\b", kd))
 
 
 def co_nganh_tu_lanh(text: str) -> bool:
@@ -303,10 +311,15 @@ def hoi_chu_quan(text: str) -> str | None:
     chi chu quan / khong co truong du lieu, KHONG xep hang bua.
     Tra ve ten tieu chi de dien vao template, None neu khong dinh."""
     kd = bo_dau(text or "").lower()
+    # "chụp ảnh đẹp" hỏi chất lượng camera, không phải thẩm mỹ sản phẩm. Để
+    # guardrail ngành kiểm tra field camera thay vì trả lời lạc sang gu thiết kế.
+    if re.search(r"\b(?:chup anh|camera).{0,12}dep", kd):
+        return None
     for mau, ten in [
         (r"\b(dep|sang|xin|thoi trang|ngau) (?:nhat|hon|nao)\b", "đẹp/sang"),
         (r"\bmau (?:nao )?dep\b", "đẹp/sang"),
         (r"\b(ben|ben bi) (?:nhat|hon|khong|nao)\b", "độ bền"),
+        (r"\b(?:hat |am thanh |micro )?hay nhat\b", "chất lượng âm thanh"),
         # CHU Y khong dua 'tot nhat/ngon nhat' vao day: do la cau mo mang mo ho
         # binh thuong - sale dap bang cach GOM NHU CAU (flow hien tai da dung),
         # khong phai bai giang ve tinh chu quan.
@@ -525,7 +538,9 @@ def nganh_ngoai_pham_vi(text: str) -> str | None:
     -> van tu van may lanh, nganh kia tu nhien duoc nhac trong cau tra loi).
     """
     kd = bo_dau(text or "").lower()
-    if re.search(r"\b(may lanh|dieu hoa|dhkk|ml)\b", kd):
+    # Nhac may lanh THAT (co_nganh_may_lanh da loai 'quat dieu hoa') -> trong
+    # pham vi, khong flag ngoai pham vi (vd 'may lanh va tivi' van tu van may lanh).
+    if co_nganh_may_lanh(text):
         return None
     for mau, ten in NGANH_KHAC:
         if re.search(mau, kd):

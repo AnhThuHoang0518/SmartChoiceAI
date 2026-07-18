@@ -1,70 +1,168 @@
 {
-  "ten_nganh": "tu_dong_mat",
-  "ten_hien_thi": "tủ mát/tủ đông",
-  "tu_khoa_nganh": ["tu dong", "tu mat"],
-  "csv_that": "data/processed/tu_dong_mat.csv",
-  "csv_mau": "data/mock/catalog/tu_dong_mat_mau.csv",
-  "cot_so": {
-    "dung_tich_lit": {"nguon": "catalog:Dung tích tổng", "ro": "lit"},
-    "dien_kwh_ngay": {"nguon": "catalog:Điện năng tiêu thụ", "ro": "kwh"},
-    "ngang_cm": {"nguon": "catalog:Ngang", "ro": "cm"},
-    "cao_cm": {"nguon": "catalog:Cao", "ro": "cm"},
-    "sau_cm": {"nguon": "catalog:Sâu", "ro": "cm"}
+ "ten_nganh": "tu_dong_mat",
+ "ten_hien_thi": "tủ mát/tủ đông",
+ "tu_khoa_nganh": [
+  "tu dong",
+  "tu mat"
+ ],
+ "csv_that": "data/processed/tu_dong_mat.csv",
+ "csv_mau": "data/mock/catalog/tu_dong_mat_mau.csv",
+ "cot_so": {
+  "dung_tich_lit": {
+   "nguon": "catalog:Dung tích tổng",
+   "ro": "lit"
   },
-  "cot_chu": { "loai": {"nguon": "catalog:Loại sản phẩm"} },
-  "yeu_cau_khong_co_du_lieu": [
-    {
-      "truong": "do_on",
-      "mau": ["do\\s*on", "duoi\\s*\\d{2}\\s*db", "gan\\s*phong\\s*ngu"],
-      "text": "Dạ catalog tủ mát/tủ đông hiện chưa có trường độ ồn, nên em chưa thể lọc theo dB hoặc xác nhận tủ phù hợp đặt gần phòng ngủ ạ."
-    },
-    {
-      "truong": "chuyen_doi_mat_dong",
-      "mau": ["doi\\s*qua\\s*lai", "chuyen\\s*(?:doi)?.{0,15}tu\\s*(?:mat|dong)", "vua\\s*mat\\s*vua\\s*dong"],
-      "text": "Dạ dữ liệu hiện chưa có trường chuyển đổi qua lại giữa chế độ tủ mát và tủ đông, nên em chưa thể xác nhận model nào có tính năng này ạ."
-    }
-  ],
-  "o_nhu_cau": {
-    "loai": {
-      "kieu": "chu", "bat_buoc": true,
-      "trich": ["(tu dong|tu mat)"],
-      "cau_hoi": "Dạ anh chị cần tủ ĐÔNG (trữ đông thịt cá) hay tủ MÁT (nước ngọt, rau củ) ạ?",
-      "cau_hoi_lap": "Dạ anh chị chọn giúp em 'tủ đông' hoặc 'tủ mát' ạ.",
-      "nhan": "loại {}"
-    },
-    "dung_tich_min": {
-      "kieu": "so", "bat_buoc": false,
-      "trich": ["(?:tu|it nhat|toi thieu)?\\s*(\\d{2,4})\\s*(?:lit|l)\\b"],
-      "cau_hoi": "Dạ anh chị cần dung tích khoảng bao nhiêu lít ạ?",
-      "nhan": "từ {:.0f} lít"
-    },
-    "ngang_cm": {
-      "kieu": "so", "bat_buoc": false,
-      "trich": ["(?:rong|ngang)\\s*(?:chi\\s*)?(\\d{2,3})\\s*cm"],
-      "cau_hoi": "Dạ chỗ đặt rộng bao nhiêu cm ạ?",
-      "nhan": "chỗ đặt ngang {:.0f} cm"
-    }
+  "dien_kwh_ngay": {
+   "nguon": "catalog:Điện năng tiêu thụ",
+   "ro": "kwh"
   },
-  "cau_hoi_ngan_sach": {
-    "cau_hoi": "Dạ anh chị dự tính khoảng bao nhiêu ạ?",
-    "cau_hoi_lap": "Dạ anh chị cho em xin ngân sách ạ — ví dụ: 'khoảng 8 triệu'."
+  "ngang_cm": {
+   "nguon": "catalog:Ngang",
+   "ro": "cm"
   },
-  "loc_cung": [
-    {"kieu": "khop_ten", "o": "loai", "cot": "loai", "ly_do": "loai"},
-    {"kieu": "ngan_sach"},
-    {"kieu": "toi_da", "o": "ngang_cm", "cot": "ngang_cm", "don_vi": "cm", "ly_do": "kich_thuoc"}
-  ],
-  "truc_cham": [
-    {"uu_tien": "tiet_kiem_dien", "ten": "điện năng", "cot": "dien_kwh_ngay", "thap_tot": true, "fmt": "{:.2f} kWh/ngày", "mac_dinh": 0.2,
-     "trich_uu_tien": ["tiet kiem dien", "it ton dien", "tkd"]},
-    {"uu_tien": "dung_tich", "ten": "dung tích", "cot": "dung_tich_lit", "thap_tot": false, "fmt": "{:.0f} lít",
-     "trich_uu_tien": ["dung tich lon", "chua nhieu", "\\bto\\b"]},
-    {"uu_tien": "gia", "ten": "giá", "cot": "gia", "thap_tot": true, "fmt": "{:,.0f}đ", "mac_dinh": 0.2,
-     "trich_uu_tien": ["\\bre\\b", "gia re", "khuyen mai"]}
-  ],
-  "hien_thi_thong_so": [
-    {"cot": "dung_tich_lit", "fmt": "dung tích {:.0f} lít"},
-    {"cot": "dien_kwh_ngay", "fmt": "điện {:.2f} kWh/ngày"},
-    {"cot": "ngang_cm", "fmt": "ngang {:.0f} cm"}
-  ]
+  "cao_cm": {
+   "nguon": "catalog:Cao",
+   "ro": "cm"
+  },
+  "sau_cm": {
+   "nguon": "catalog:Sâu",
+   "ro": "cm"
+  }
+ },
+ "cot_chu": {
+  "loai": {
+   "nguon": "catalog:Loại sản phẩm"
+  }
+ },
+ "yeu_cau_khong_co_du_lieu": [
+  {
+   "truong": "do_on",
+   "mau": [
+    "do\\s*on",
+    "duoi\\s*\\d{2}\\s*db",
+    "gan\\s*phong\\s*ngu"
+   ],
+   "text": "Dạ catalog tủ mát/tủ đông hiện chưa có trường độ ồn, nên em chưa thể lọc theo dB hoặc xác nhận tủ phù hợp đặt gần phòng ngủ ạ."
+  },
+  {
+   "truong": "chuyen_doi_mat_dong",
+   "mau": [
+    "doi\\s*qua\\s*lai",
+    "chuyen\\s*(?:doi)?.{0,15}tu\\s*(?:mat|dong)",
+    "vua\\s*mat\\s*vua\\s*dong"
+   ],
+   "text": "Dạ dữ liệu hiện chưa có trường chuyển đổi qua lại giữa chế độ tủ mát và tủ đông, nên em chưa thể xác nhận model nào có tính năng này ạ."
+  }
+ ],
+ "o_nhu_cau": {
+  "loai": {
+   "kieu": "chu",
+   "bat_buoc": true,
+   "trich": [
+    "(tu dong|tu mat)"
+   ],
+   "cau_hoi": "Dạ anh chị cần tủ ĐÔNG (trữ đông thịt cá) hay tủ MÁT (nước ngọt, rau củ) ạ?",
+   "cau_hoi_lap": "Dạ anh chị chọn giúp em 'tủ đông' hoặc 'tủ mát' ạ.",
+   "nhan": "loại {}"
+  },
+  "dung_tich_min": {
+   "kieu": "so",
+   "bat_buoc": false,
+   "trich": [
+    "(?:tu|it nhat|toi thieu)?\\s*(\\d{2,4})\\s*(?:lit|l)\\b"
+   ],
+   "cau_hoi": "Dạ anh chị cần dung tích khoảng bao nhiêu lít ạ?",
+   "nhan": "từ {:.0f} lít"
+  },
+  "ngang_cm": {
+   "kieu": "so",
+   "bat_buoc": false,
+   "trich": [
+    "(?:rong|ngang)\\s*(?:chi\\s*)?(\\d{2,3})\\s*cm"
+   ],
+   "cau_hoi": "Dạ chỗ đặt rộng bao nhiêu cm ạ?",
+   "nhan": "chỗ đặt ngang {:.0f} cm"
+  }
+ },
+ "cau_hoi_ngan_sach": {
+  "cau_hoi": "Dạ anh chị dự tính khoảng bao nhiêu ạ?",
+  "cau_hoi_lap": "Dạ anh chị cho em xin ngân sách ạ — ví dụ: 'khoảng 8 triệu'."
+ },
+ "loc_cung": [
+  {
+   "kieu": "khop_ten",
+   "o": "loai",
+   "cot": "loai",
+   "ly_do": "loai"
+  },
+  {
+   "kieu": "ngan_sach"
+  },
+  {
+   "kieu": "toi_da",
+   "o": "ngang_cm",
+   "cot": "ngang_cm",
+   "don_vi": "cm",
+   "ly_do": "kich_thuoc"
+  }
+ ],
+ "truc_cham": [
+  {
+   "uu_tien": "tiet_kiem_dien",
+   "ten": "điện năng",
+   "cot": "dien_kwh_ngay",
+   "thap_tot": true,
+   "fmt": "{:.2f} kWh/ngày",
+   "mac_dinh": 0.2,
+   "trich_uu_tien": [
+    "tiet kiem dien",
+    "it ton dien",
+    "tkd"
+   ]
+  },
+  {
+   "uu_tien": "dung_tich",
+   "ten": "dung tích",
+   "cot": "dung_tich_lit",
+   "thap_tot": false,
+   "fmt": "{:.0f} lít",
+   "trich_uu_tien": [
+    "dung tich lon",
+    "chua nhieu",
+    "\\bto\\b"
+   ]
+  },
+  {
+   "uu_tien": "gia",
+   "ten": "giá",
+   "cot": "gia",
+   "thap_tot": true,
+   "fmt": "{:,.0f}đ",
+   "mac_dinh": 0.2,
+   "trich_uu_tien": [
+    "\\bre\\b",
+    "gia re",
+    "khuyen mai"
+   ]
+  }
+ ],
+ "hien_thi_thong_so": [
+  {
+   "cot": "dung_tich_lit",
+   "fmt": "dung tích {:.0f} lít"
+  },
+  {
+   "cot": "dien_kwh_ngay",
+   "fmt": "điện {:.2f} kWh/ngày"
+  },
+  {
+   "cot": "ngang_cm",
+   "fmt": "ngang {:.0f} cm"
+  }
+ ],
+ "tu_khoa_loai_tru": [
+  "(?:che do|cua|tuoi|giat|say|pha|van hanh|dieu khien|nau|ve sinh|lai|bat|tat|mo|dong|xa|cap)\\s+\\S*\\s*tu dong",
+  "tu dong\\s+(?:hoa|hoan toan|mo|dong|bat|tat|ngat|cap|xa|nghieng)",
+  "may (?:pha|giat|say|lanh|loc|hut|rua)\\S* .*tu dong"
+ ]
 }

@@ -102,3 +102,34 @@ def test_may_in_doc_dung_hang_nghin_trang_moi_thang():
     nc = nganh.trich("Máy in văn phòng 2.000 trang/tháng")
 
     assert nc.lay("cong_suat_thang_min") == 2000
+
+
+def test_may_in_wifi_co_gach_noi_van_la_hard_filter():
+    r = _chat("Máy in qua Wi-Fi dưới 10 triệu")
+
+    assert r.loai == "tu_van"
+    assert r.top3
+    assert all(
+        "wifi" in str(u.get("chu", {}).get("ket_noi", "")).lower()
+        or any(
+            n.get("truong") == "ket_noi" and "wifi" in str(n.get("gia_tri", "")).lower()
+            for n in u.get("nguon", [])
+        )
+        for u in r.top3
+    )
+
+
+def test_micro_hat_hay_nhat_khong_xep_hang_theo_gia():
+    r = _chat("Top 3 micro hát hay nhất")
+
+    assert r.loai == "chu_quan"
+    assert r.top3 == []
+    assert r.thong_ke["cham_llm"] == 0
+
+
+def test_chup_anh_dep_nhat_de_guard_camera_xu_ly_khong_phai_gu_tham_my():
+    r = _chat("Tablet nào chụp ảnh đẹp nhất?")
+
+    assert r.loai == "thieu_du_lieu"
+    assert r.thong_ke["truong_thieu"] == "camera_dinh_luong"
+    assert r.thong_ke["cham_llm"] == 0
