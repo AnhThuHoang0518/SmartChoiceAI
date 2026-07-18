@@ -90,7 +90,12 @@ def parse_nhan_nang_luong(s) -> tuple[float | None, float | None]:
 
 
 def parse_gia(goc, km) -> tuple[int | None, int | None]:
-    """Tra (gia_ban, gia_goc). Uu tien gia khuyen mai - do la gia khach tra that."""
+    """Tra ``(gia_ban, gia_goc)`` va vo hieu cap gia bat thuong.
+
+    Gia khuyen mai chi hop le khi THAP HON gia goc. Neu nguon gui nguoc
+    (khuyen mai cao hon gia goc), dung gia goc cho ca hai truong de UI khong
+    tao badge giam gia sai va khong khuyen khach tra muc gia bat thuong.
+    """
 
     def _so(x):
         if la_rong(x):
@@ -103,7 +108,9 @@ def parse_gia(goc, km) -> tuple[int | None, int | None]:
     g, k = _so(goc), _so(km)
     if k and g and k < g:
         return k, g          # co khuyen mai that
-    return (k or g), (g or k)
+    if g:
+        return g, g          # khong KM, bang nhau, hoac cap gia bi nguoc
+    return k, k              # chi co mot gia: xem la gia ban, khong bao giam
 
 
 def parse_inverter(s) -> bool:

@@ -173,6 +173,48 @@ class FptLLM(LLM):
         return ung if len(ung) >= 40 else ""
 
 
+def nhin_anh(khoa: str, anh_b64: str, dinh_dang: str = "jpeg",
+             model: str = "Qwen2.5-VL-7B-Instruct") -> str:
+    """Qwen2.5-VL doc anh khach chup - theo DUNG docs FPT (VLM.md): OpenAI compat,
+    POST /chat/completions, content co type image_url voi data URI base64.
+
+    Prompt ep model CHI mo ta thu NHIN THAY (nhan nang luong, may cu, model) -
+    khong doan. Ket qua la van ban tieng Viet, se di vao pipeline trich o nhu
+    cau + hau kiem nhu 1 tin nhan khach go tay -> anh khong mo cua cho bia.
+    """
+    import requests
+
+    ht = ("Bạn là trợ lý điện máy. Nhìn ảnh và cho biết NGẮN GỌN (1-2 câu tiếng Việt): "
+          "đây là sản phẩm hay nhãn gì (máy lạnh, tủ lạnh...), hãng, model, và các "
+          "thông số ĐỌC ĐƯỢC trên ảnh (HP, dung tích, số sao năng lượng, loại). "
+          "CHỈ nói điều nhìn thấy rõ, KHÔNG đoán. Nếu ảnh không phải đồ điện máy, "
+          "nói 'Ảnh này không phải sản phẩm điện máy'.")
+    try:
+        r = requests.post(
+            "https://mkp-api.fptcloud.com/chat/completions",
+            headers={"Authorization": f"Bearer {khoa}"},
+            json={
+                "model": model,
+                "messages": [
+                    {"role": "system", "content": ht},
+                    {"role": "user", "content": [
+                        {"type": "image_url",
+                         "image_url": {"url": f"data:image/{dinh_dang};base64,{anh_b64}"}},
+                        {"type": "text", "text": "Đây là gì, đọc giúp thông số?"},
+                    ]},
+                ],
+                "temperature": 0.0,
+                "max_tokens": 300,
+                "stream": False,
+            },
+            timeout=25,
+        )
+        r.raise_for_status()
+        return (r.json()["choices"][0]["message"]["content"] or "").strip()
+    except Exception as e:
+        raise LoiLLM(f"VLM loi: {e}") from e
+
+
 class LuatLLM(LLM):
     """Khong goi mang. Tra ve chuoi rong -> tang tren tu dong roi ve duong luat.
 

@@ -16,6 +16,7 @@ from pathlib import Path
 from pydantic import BaseModel, Field
 
 from backend.app.schemas.ket_qua import Nguon
+from backend.app.services.parse_dmx import parse_gia
 
 MAC_DINH = Path("data/processed/may_lanh.csv")
 
@@ -72,12 +73,13 @@ class SanPham(BaseModel):
         return self.nguon.get(truong)
 
 
-def _nguon(truong: str, gia_tri, ma_sp: str, tu: str, suy_luan: bool = False) -> Nguon:
+def _nguon(truong: str, gia_tri, ma_sp: str, tu: str, suy_luan: bool = False,
+           lay_luc: str | None = None) -> Nguon:
     return Nguon(
         truong=truong,
         gia_tri=str(gia_tri),
         nguon=tu,
-        lay_luc=_bay_gio(),
+        lay_luc=lay_luc or _bay_gio(),
         ma_sp=ma_sp,
         suy_luan=suy_luan,
     )
@@ -99,13 +101,23 @@ def tai_catalog(duong_dan: str | Path | None = None) -> list[SanPham]:
                 f"scripts/sinh_catalog_mau.py)."
             )
     duong_dan = Path(duong_dan)
+    lay_luc = datetime.fromtimestamp(
+        duong_dan.stat().st_mtime, timezone.utc
+    ).isoformat(timespec="seconds")
 
     ds: list[SanPham] = []
     with open(duong_dan, encoding="utf-8") as f:
         for r in csv.DictReader(f):
             ma = r["ma_sp"]
             do_on, cspf, sao = _so(r["do_on_db"]), _so(r["cspf"]), _so(r["sao"])
-            gia, gia_goc = int(r["gia"]), int(r["gia_goc"])
+            gia, gia_goc = parse_gia(r.get("gia_goc"), r.get("gia"))
+            if gia is None:
+                continue
+            gia_goc = gia_goc or gia
+
+            def ng(truong, gia_tri, tu, suy_luan=False):
+                return _nguon(truong, gia_tri, ma, tu, suy_luan, lay_luc)
+
             ds.append(
                 SanPham(
                     ma_sp=ma,
@@ -123,29 +135,30 @@ def tai_catalog(duong_dan: str | Path | None = None) -> list[SanPham]:
                     loai_may=r["loai_may"],
                     qua=(r.get("qua") or "").strip(),
                     nguon={
-                        "pham_vi": _nguon(
+                        "pham_vi": ng(
                             "pham_vi",
                             f"{r['pham_vi_min']}-{r['pham_vi_max']}m²",
-                            ma,
                             "catalog:Phạm vi sử dụng",
                         ),
-                        "gia": _nguon("gia", gia, ma, "price_api"),
-                        **({"qua": _nguon("qua", (r.get("qua") or "").strip(), ma,
-                                          "catalog:khuyến mãi quà")}
+                        "gia": ng("gia", gia, "catalog:Giá bán"),
+                        **({"qua": ng("qua", (r.get("qua") or "").strip(),
+                                    "catalog:khuyến mãi quà")}
                            if (r.get("qua") or "").strip() else {}),
-                        "do_on_db": _nguon("do_on_db", do_on, ma, "catalog:Độ ồn"),
-                        "cspf": _nguon("cspf", cspf, ma, "catalog:Nhãn năng lượng"),
-                        "lam_lanh_nhanh": _nguon(
+                        **({"do_on_db": ng("do_on_db", do_on, "catalog:Độ ồn")}
+                           if do_on is not None else {}),
+                        **({"cspf": ng("cspf", cspf, "catalog:Nhãn năng lượng")}
+                           if cspf is not None else {}),
+                        "lam_lanh_nhanh": ng(
                             "lam_lanh_nhanh",
                             "Có" if r["lam_lanh_nhanh"] == "1" else "Không ghi nhận",
-                            ma,
                             "catalog:Công nghệ làm lạnh",
                         ),
-                        "inverter": _nguon("inverter", r["inverter"], ma, "catalog:Loại Inverter"),
+                        "inverter": ng("inverter", r["inverter"], "catalog:Loại Inverter"),
                         # 2 truong duoi phuc vu GIONG KY THUAT (khach ranh thong so
                         # duoc xem day du) - phai co nguon thi hau kiem moi cho noi.
-                        "sao": _nguon("sao", sao, ma, "catalog:Nhãn năng lượng"),
-                        "gia_goc": _nguon("gia_goc", gia_goc, ma, "price_api"),
+                        **({"sao": ng("sao", sao, "catalog:Nhãn năng lượng")}
+                           if sao is not None else {}),
+                        "gia_goc": ng("gia_goc", gia_goc, "catalog:Giá gốc"),
                     },
                 )
             )

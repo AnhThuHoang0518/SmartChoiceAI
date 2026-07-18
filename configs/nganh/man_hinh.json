@@ -58,9 +58,10 @@
   "tam_nen": {
    "kieu": "chu",
    "bat_buoc": false,
-   "trich": [
-    "\\b(ips|va|tn|oled)\\b"
-   ],
+    "trich": [
+    "(?:tam nen|panel)\\s*(ips|va|tn|oled)",
+    "\\b(ips|tn|oled)\\b"
+    ],
    "cau_hoi": "Dạ anh chị có yêu cầu tấm nền không ạ (IPS/VA)?",
    "nhan": "tấm nền {}"
   },

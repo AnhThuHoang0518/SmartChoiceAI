@@ -27,10 +27,12 @@ from backend.app.core.hoi_tiep_noi import (
     tieu_chi_may_lanh_chua_co_nguon,
     tra_loi_tiet_kiem_dien,
 )
+from backend.app.core.hoi_tiep_san_pham import tra_loi_truong_san_pham
 from backend.app.core.chuan_hoa_tv import (
     bo_dau,
     bo_hang,
     bo_ngan_sach,
+    can_hoi_lam_ro_nganh,
     cau_hoi_cong_suat,
     chi_la_xac_nhan_dong_y,
     co_nganh_may_lanh,
@@ -43,6 +45,7 @@ from backend.app.core.chuan_hoa_tv import (
     hoi_ton_kho,
     muc_gia,
     nganh_ngoai_pham_vi,
+    so_dien_thoai_trong,
     trich_hang,
     tra_loi_xac_nhan_goi_y,
     tu_ky_thuat_trong,
@@ -492,6 +495,38 @@ def _xu_ly_nganh_khung(t: TinNhan, ma: str, p: dict, t0: float, giong: str,
     )
 
 
+class AnhYeuCau(BaseModel):
+    anh_b64: str
+    dinh_dang: str = "jpeg"
+
+
+@router.post("/nhin-anh")
+def nhin_anh_khach(y: AnhYeuCau) -> dict:
+    """Khach chup anh (nhan nang luong may cu, may dang phan van) -> Qwen2.5-VL
+    doc -> tra MO TA. UI dua mo ta vao o nhap -> chay flow tu van binh thuong
+    (anh chi giup DIEN o nhu cau nhu tin nhan go tay, moi so van qua hau kiem).
+
+    Chua cau hinh FPT -> 503, UI bao khach go tay. Gioi han base64 ~ 6MB.
+    """
+    import os as _os
+
+    from fastapi import HTTPException
+
+    from backend.app.services.llm import nhin_anh
+
+    khoa = (_os.getenv("LLM_API_KEY") or "").strip()
+    if not khoa or (_os.getenv("LLM_NHA_CUNG_CAP") or "").strip().lower() != "fpt":
+        raise HTTPException(503, "Tính năng đọc ảnh cần cấu hình FPT")
+    if len(y.anh_b64) > 8_000_000:
+        raise HTTPException(413, "Ảnh quá lớn — chụp lại nhỏ hơn giúp em ạ")
+    try:
+        mo_ta = nhin_anh(khoa, y.anh_b64, y.dinh_dang,
+                         _os.getenv("VLM_MODEL", "Qwen2.5-VL-7B-Instruct"))
+    except Exception as e:                  # noqa: BLE001
+        raise HTTPException(503, f"Đọc ảnh lỗi: {e}") from e
+    return {"mo_ta": mo_ta}
+
+
 class DocYeuCau(BaseModel):
     text: str
 
@@ -564,6 +599,35 @@ def chat(t: TinNhan) -> TraLoi:
     ma = t.phien_id if t.phien_id and phien.lay(t.phien_id) else phien.tao_phien()
     p = phien.lay(ma)
 
+    # PII khong phai o nhu cau va he thong khong co kha nang tu goi lai. Chan
+    # truoc chuan hoa tien de 0912345678 khong bao gio thanh ngan sach.
+    if so_dien_thoai_trong(t.tin_nhan):
+        return TraLoi(
+            phien_id=ma,
+            loai="bao_mat",
+            text=("Dạ em không thể tự gọi điện hoặc tạo yêu cầu gọi lại ạ. "
+                  "Anh chị vui lòng không gửi số điện thoại trong đoạn chat; "
+                  "em có thể tiếp tục tư vấn sản phẩm ngay tại đây."),
+            thong_ke={"ms": int((time.perf_counter() - t0) * 1000),
+                      "cham_llm": 0, "pii_da_chan": True},
+        )
+
+    # Follow-up ve DUNG card thu N phai chay truoc Policy RAG. Neu khong,
+    # 'con thu hai co bao hanh gi?' se mat san pham va tra chinh sach chung.
+    if hoi_tiep := tra_loi_truong_san_pham(
+        t.tin_nhan, p.get("top3_truoc") or []
+    ):
+        return TraLoi(
+            phien_id=ma,
+            loai=hoi_tiep["loai"],
+            text=hoi_tiep["text"],
+            top3=p.get("top3_truoc") or [],
+            thong_ke={"ms": int((time.perf_counter() - t0) * 1000),
+                      "cham_llm": 0, "nganh": p.get("nganh"),
+                      "san_pham_thu": hoi_tiep["chi_so"] + 1,
+                      "truong_doi_chieu": hoi_tiep["truong"]},
+        )
+
     # Khach bam loi tat / noi chung chung "tu van san pham" -> PHẢI hoi san
     # pham gi truoc. Khong duoc muon nganh cu trong phien (vd vua xem khuyen
     # mai may lanh xong) roi nhay sang hoi ngan sach nhu screenshot demo.
@@ -600,7 +664,7 @@ def chat(t: TinNhan) -> TraLoi:
     # intent phu nhu "co hang nao/Samsung khong". Neu khong, cau "đth co
     # Samsung khong" se bi hoi_hang bat va muon nganh cu trong phien (vd may
     # giat Samsung) -> sai nganh.
-    from backend.app.nganh.khung import cac_nganh
+    from backend.app.nganh.khung import cac_nganh, tim_cac_nganh
     from backend.app.nganh.khung import tim_nganh as _tim
     nganh = nganh_ngoai_pham_vi(t.tin_nhan)
     nganh_ro = _tim(t.tin_nhan)
@@ -614,6 +678,32 @@ def chat(t: TinNhan) -> TraLoi:
             o_nhu_cau=p["nhu_cau"].model_dump(exclude_none=True, mode="json"),
             thong_ke={"ms": int((time.perf_counter() - t0) * 1000), "cham_llm": 0},
         )
+
+    # Khong xep hang hai nganh co muc dich/chu ky do khac nhau. Chi bat khi
+    # cau co y so sanh VA co tu noi 'va/voi/hay', tranh nham cau nhu
+    # 'so sanh tablet man hinh lon' thanh so sanh tablet voi monitor.
+    kd_router = bo_dau(t.tin_nhan).lower()
+    if yeu_cau_so_sanh(t.tin_nhan) is not None \
+            and _re.search(r"\b(?:va|voi|hay)\b", kd_router):
+        cac_ten_nganh = []
+        if co_nganh_may_lanh(t.tin_nhan):
+            cac_ten_nganh.append("máy lạnh")
+        if co_nganh_tu_lanh(t.tin_nhan):
+            cac_ten_nganh.append("tủ lạnh")
+        cac_ten_nganh.extend(ng.ten_hien_thi for ng in tim_cac_nganh(t.tin_nhan))
+        cac_ten_nganh = list(dict.fromkeys(cac_ten_nganh))
+        if len(cac_ten_nganh) >= 2:
+            ds_ten = " và ".join(cac_ten_nganh[:2])
+            return TraLoi(
+                phien_id=ma,
+                loai="khac_nganh",
+                text=(f"Dạ em không thể xếp hạng trực tiếp {ds_ten} vì chúng "
+                      "khác mục đích sử dụng và cách đo điện năng ạ. Anh chị "
+                      "chọn một loại sản phẩm trước, em sẽ so các máy cùng "
+                      "ngành và cùng điều kiện công bố để kết luận có nguồn."),
+                thong_ke={"ms": int((time.perf_counter() - t0) * 1000),
+                          "cham_llm": 0, "cac_nganh": cac_ten_nganh},
+            )
 
     # Tieu chi bat buoc nhung catalog nganh KHONG CO field: dung truoc moi
     # buoc trich LLM/xep hang. Vi du PC can card roi ma file chi co CPU/RAM/SSD
@@ -754,6 +844,21 @@ def chat(t: TinNhan) -> TraLoi:
             thong_ke={"ms": int((time.perf_counter() - t0) * 1000),
                       "cham_llm": 0, "suy_luan": True,
                       "bang_chung": "nhu_cau_lam_mat", "nganh_goi_y": "may_lanh"},
+        )
+
+    # 'May tiet kiem dien', 'may chay em', 'san pham duoi 10 trieu' dung cho
+    # nhieu nganh. Khong co bang chung rieng may lanh thi hoi nganh TRUOC, khong
+    # tu lay uu tien/gia roi ngam gan may_lanh.
+    if p.get("nganh") is None and not co_nganh_ro \
+            and can_hoi_lam_ro_nganh(t.tin_nhan) \
+            and giai_thich_truong(t.tin_nhan) is None:
+        p["da_hoi"].append("nganh")
+        return TraLoi(
+            phien_id=ma,
+            loai="cau_hoi",
+            text=cfg()["chao_hoi"]["mau_lap_lai"],
+            thong_ke={"ms": int((time.perf_counter() - t0) * 1000),
+                      "cham_llm": 0, "can_lam_ro_nganh": True},
         )
 
     # SO SANH TRUC TIEP 2 may trong top 3 vua tu van - bang do code dung tu
@@ -961,13 +1066,22 @@ def chat(t: TinNhan) -> TraLoi:
         da_chao = "nganh" in p["da_hoi"]
         phien.ghi(ma, nc, "nganh")
         mau = cfg()["chao_hoi"]["mau_lap_lai" if da_chao else "mau"]
+        # HIEU Y MO (embedding): khach noi MUC DICH ("cho con hoc online") ma
+        # keyword khong ra nganh -> goi y nganh gan nghia lam chip. Chi GOI Y,
+        # khach van bam chon; khong co FPT -> rong -> giu hanh vi cu.
+        from backend.app.agents.hieu_y_mo import goi_y_nganh
+        chip = goi_y_nganh(t.tin_nhan) if len(t.tin_nhan.split()) >= 3 else []
+        if chip:
+            mau = ("Dạ em đoán anh chị đang cần một trong số này — bấm giúp em để "
+                   "em tư vấn đúng ạ:")
         return TraLoi(
             phien_id=ma,
             loai="cau_hoi",
             text=mau,
             o_nhu_cau=nc.model_dump(exclude_none=True, mode="json"),
+            goi_y=chip,
             thong_ke={"ms": int((time.perf_counter() - t0) * 1000), "cham_llm": 1,
-                      "giong": giong},
+                      "giong": giong, "hieu_y_mo": bool(chip)},
         )
     if p.get("nganh") is None:
         p["nganh"] = "may_lanh"      # co thong tin phong/tien -> nganh dang bat duy nhat

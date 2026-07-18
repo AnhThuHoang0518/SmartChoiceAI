@@ -29,7 +29,7 @@ from pathlib import Path
 
 from pydantic import BaseModel, Field
 
-from backend.app.core.chuan_hoa_tv import bo_dau, chuan_hoa, dem_nguoi
+from backend.app.core.chuan_hoa_tv import bo_dau, bo_so_dien_thoai, chuan_hoa, dem_nguoi
 from backend.app.schemas.ket_qua import (
     BangKetQua,
     LyDoLoai,
@@ -38,6 +38,7 @@ from backend.app.schemas.ket_qua import (
     UngVien,
     dong_so_sanh,
 )
+from backend.app.services.parse_dmx import parse_gia
 
 
 class SanPhamChung(BaseModel):
@@ -64,9 +65,10 @@ class NhuCauChung(BaseModel):
         return d
 
 
-def _ng(truong, gia_tri, ma, tu, suy_luan=False) -> Nguon:
+def _ng(truong, gia_tri, ma, tu, suy_luan=False,
+        lay_luc: str | None = None) -> Nguon:
     return Nguon(truong=truong, gia_tri=str(gia_tri), nguon=tu,
-                 lay_luc=datetime.now(timezone.utc).isoformat(timespec="seconds"),
+                 lay_luc=lay_luc or datetime.now(timezone.utc).isoformat(timespec="seconds"),
                  ma_sp=ma, suy_luan=suy_luan)
 
 
@@ -80,9 +82,22 @@ class Nganh:
         self._ds: list[SanPhamChung] | None = None
 
     # ── nhan dien nganh trong cau khach ─────────────────────────────────────
-    def khop(self, text: str) -> bool:
+    def vi_tri_khop(self, text: str) -> tuple[int, int] | None:
+        """Tra (vi tri, -do dai) cua tu khoa xuat hien som nhat trong cau.
+
+        Registry sap theo ten file khong mang y nghia nghiep vu. Chon theo vi
+        tri nguoi dung neu san pham gi truoc se tranh 'tablet ... man hinh lon'
+        bi file man_hinh (dung truoc may_tinh_bang) cuop router.
+        """
         kd = bo_dau(text or "").lower()
-        return any(re.search(rf"\b{t}\b", kd) for t in self.cfg["tu_khoa_nganh"])
+        khop = []
+        for tu_khoa in self.cfg["tu_khoa_nganh"]:
+            if m := re.search(rf"\b{tu_khoa}\b", kd):
+                khop.append((m.start(), -(m.end() - m.start())))
+        return min(khop) if khop else None
+
+    def khop(self, text: str) -> bool:
+        return self.vi_tri_khop(text) is not None
 
     def yeu_cau_khong_co_du_lieu(self, text: str) -> dict | None:
         """Yeu cau bat buoc ma config xac nhan catalog CHUA co field.
@@ -106,6 +121,9 @@ class Nganh:
         if not p.exists():
             self._ds = []
             return self._ds
+        lay_luc = datetime.fromtimestamp(
+            p.stat().st_mtime, timezone.utc
+        ).isoformat(timespec="seconds")
 
         cot_so = self.cfg["cot_so"]        # {ten_cot: {"nguon": "...", "ro": "..."}}
         cot_chu = self.cfg.get("cot_chu", {})
@@ -113,9 +131,14 @@ class Nganh:
         with open(p, encoding="utf-8") as f:
             for r in csv.DictReader(f):
                 ma = r["ma_sp"]
+                gia, gia_goc = parse_gia(r.get("gia_goc"), r.get("gia"))
+                if gia is None:
+                    continue
+                gia_goc = gia_goc or gia
                 so, nguon = {}, {
-                    "gia": _ng("gia", r["gia"], ma, "price_api"),
-                    "gia_goc": _ng("gia_goc", r["gia_goc"], ma, "price_api"),
+                    "gia": _ng("gia", gia, ma, "catalog:Giá bán", lay_luc=lay_luc),
+                    "gia_goc": _ng("gia_goc", gia_goc, ma, "catalog:Giá gốc",
+                                    lay_luc=lay_luc),
                 }
                 for c, meta in cot_so.items():
                     v = None
@@ -126,18 +149,21 @@ class Nganh:
                         except ValueError:
                             v = None
                     so[c] = v
-                    nguon[c] = _ng(c, v, ma, meta["nguon"])
+                    if v is not None:
+                        nguon[c] = _ng(c, v, ma, meta["nguon"], lay_luc=lay_luc)
                 chu = {}
                 # 'qua' (khuyen mai qua) doc tu dong moi nganh - mock khong co
                 # cot nay thi thoi, khong loi
                 if (r.get("qua") or "").strip():
                     chu["qua"] = r["qua"].strip()
-                    nguon["qua"] = _ng("qua", chu["qua"], ma, "catalog:khuyến mãi quà")
+                    nguon["qua"] = _ng("qua", chu["qua"], ma,
+                                        "catalog:khuyến mãi quà", lay_luc=lay_luc)
                 for c, meta in cot_chu.items():
                     chu[c] = (r.get(c) or "").strip()
-                    nguon[c] = _ng(c, chu[c], ma, meta["nguon"])
+                    if chu[c]:
+                        nguon[c] = _ng(c, chu[c], ma, meta["nguon"], lay_luc=lay_luc)
                 ds.append(SanPhamChung(ma_sp=ma, ten=r["ten"], hang=r["hang"],
-                                       gia=int(r["gia"]), gia_goc=int(r["gia_goc"]),
+                                       gia=gia, gia_goc=gia_goc,
                                        so=so, chu=chu, nguon=nguon))
         self._ds = ds
         return ds
@@ -145,6 +171,7 @@ class Nganh:
     # ── trich o nhu cau (luat trong config, khong LLM) ──────────────────────
     def trich(self, text: str, cu: NhuCauChung | None = None,
               o_dang_cho: str | None = None) -> NhuCauChung:
+        text = bo_so_dien_thoai(text)
         t = chuan_hoa(text)
         kd = bo_dau(t).lower()
         nc = (cu or NhuCauChung()).model_copy(deep=True)
@@ -385,10 +412,17 @@ def cac_nganh() -> list[Nganh]:
 
 
 def tim_nganh(text: str) -> Nganh | None:
+    ds = tim_cac_nganh(text)
+    return ds[0] if ds else None
+
+
+def tim_cac_nganh(text: str) -> list[Nganh]:
+    """Tat ca nganh duoc nhac, xep theo vi tri tu khoa trong cau."""
+    co = []
     for ng in cac_nganh():
-        if ng.khop(text):
-            return ng
-    return None
+        if (vi_tri := ng.vi_tri_khop(text)) is not None:
+            co.append((vi_tri, ng.ten, ng))
+    return [ng for _, _, ng in sorted(co, key=lambda x: (x[0], x[1]))]
 
 
 def nganh_theo_ten(ten: str) -> Nganh | None:

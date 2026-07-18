@@ -20,7 +20,7 @@ from __future__ import annotations
 import json
 import re
 
-from backend.app.core.chuan_hoa_tv import bo_dau, chuan_hoa
+from backend.app.core.chuan_hoa_tv import bo_dau, bo_so_dien_thoai, chuan_hoa
 from backend.app.schemas.nhu_cau import LoaiPhong, ONhuCauMayLanh, UuTien
 from backend.app.services.llm import LLM
 
@@ -178,6 +178,9 @@ def trich(
     o_dang_cho: ten o ma bot vua hoi o luot truoc (tu may trang thai) - de
     hieu cau tra loi cut lun 'co'/'khong'/'18'.
     """
+    # PII khong duoc vao regex tien hay prompt trich o. Endpoint da chan som,
+    # nhung lop nay van tu bao ve khi duoc goi truc tiep trong test/service.
+    text = bo_so_dien_thoai(text)
     nc = _gop(o_cu or ONhuCauMayLanh(), trich_bang_luat(text), ghi_de=_khach_doi_y(text))
     nc = _dien_theo_ngu_canh(nc, text, o_dang_cho)
     if nc.thieu_bat_buoc():

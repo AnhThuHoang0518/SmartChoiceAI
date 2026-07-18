@@ -49,6 +49,40 @@ def bo_dau(s: str) -> str:
     return unicodedata.normalize("NFC", s).replace("đ", "d").replace("Đ", "D")
 
 
+# So dien thoai la du lieu ca nhan, dong thoi rat de bi regex ngan sach nham
+# thanh mot so tien lon (0912345678 -> 912.345.678d). Nhan dien truoc moi
+# buoc chuan hoa/trich o; cho phep cach viet co dau cach, cham hoac gach ngang.
+_MAU_SO_DIEN_THOAI = re.compile(
+    r"(?<!\d)(?:\+?84|0)(?:[\s.\-]*\d){9}(?!\d)"
+)
+
+
+def so_dien_thoai_trong(text: str) -> bool:
+    return bool(_MAU_SO_DIEN_THOAI.search(text or ""))
+
+
+def bo_so_dien_thoai(text: str) -> str:
+    """Bo PII khoi van ban dua vao bo trich o, khong tra lai gia tri da bo."""
+    return _MAU_SO_DIEN_THOAI.sub(" ", text or "")
+
+
+def can_hoi_lam_ro_nganh(text: str) -> bool:
+    """Cau mua sam noi 'may/san pham' nhung khong co dau hieu rieng may lanh.
+
+    Khong tu mac dinh may lanh cho cac tieu chi dung duoc o nhieu nganh nhu
+    tiet kiem dien, chay em hay gia. Van giu luong rut gon cho cau co m2/BTU/HP
+    vi day la bang chung ky thuat rieng cua may lanh.
+    """
+    kd = bo_dau(text or "").lower()
+    if not re.search(r"\b(?:may|san pham|thiet bi|cai|con)\b", kd):
+        return False
+    return not bool(re.search(
+        r"\b(?:lam lanh|cong suat lanh|btu|hp|ngua|dieu hoa|may lanh)\b"
+        r"|\b\d+(?:[.,]\d+)?\s*m(?:2|²)\b",
+        kd,
+    ))
+
+
 def chuan_hoa_tien(s: str) -> str:
     """'20tr' -> '20000000'. '500k' -> '500000'.
 

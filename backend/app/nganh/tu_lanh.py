@@ -23,7 +23,7 @@ from pathlib import Path
 
 from pydantic import BaseModel, Field
 
-from backend.app.core.chuan_hoa_tv import bo_dau, chuan_hoa, dem_nguoi
+from backend.app.core.chuan_hoa_tv import bo_dau, bo_so_dien_thoai, chuan_hoa, dem_nguoi
 from backend.app.schemas.ket_qua import (
     BangKetQua,
     LyDoLoai,
@@ -32,6 +32,7 @@ from backend.app.schemas.ket_qua import (
     UngVien,
     dong_so_sanh,
 )
+from backend.app.services.parse_dmx import parse_gia
 
 MAC_DINH = Path("data/processed/tu_lanh.csv")
 DU_PHONG_MAU = Path("data/mock/catalog/tu_lanh_mau.csv")
@@ -86,9 +87,10 @@ class TuLanh(BaseModel):
     nguon: dict[str, Nguon] = Field(default_factory=dict)
 
 
-def _ng(truong, gia_tri, ma, tu, suy_luan=False) -> Nguon:
+def _ng(truong, gia_tri, ma, tu, suy_luan=False,
+        lay_luc: str | None = None) -> Nguon:
     return Nguon(truong=truong, gia_tri=str(gia_tri), nguon=tu,
-                 lay_luc=datetime.now(timezone.utc).isoformat(timespec="seconds"),
+                 lay_luc=lay_luc or datetime.now(timezone.utc).isoformat(timespec="seconds"),
                  ma_sp=ma, suy_luan=suy_luan)
 
 
@@ -103,6 +105,9 @@ def tai_catalog_tu_lanh() -> list[TuLanh]:
     if not duong_dan.exists():
         _DS = []                          # khong co du lieu -> nganh tat, router se tu choi lich su
         return _DS
+    lay_luc = datetime.fromtimestamp(
+        duong_dan.stat().st_mtime, timezone.utc
+    ).isoformat(timespec="seconds")
 
     def _f(x):
         # x co the la None khi CSV (vd ban mau) thieu han cot moi
@@ -117,6 +122,10 @@ def tai_catalog_tu_lanh() -> list[TuLanh]:
     with open(duong_dan, encoding="utf-8") as f:
         for r in csv.DictReader(f):
             ma = r["ma_sp"]
+            gia, gia_goc = parse_gia(r.get("gia_goc"), r.get("gia"))
+            if gia is None:
+                continue
+            gia_goc = gia_goc or gia
             dt, kwh = _f(r["dung_tich_lit"]), _f(r["dien_kwh_nam"])
             la_tong = r.get("dung_tich_la_tong") == "1"
             ds.append(TuLanh(
@@ -127,28 +136,38 @@ def tai_catalog_tu_lanh() -> list[TuLanh]:
                 ngang_cm=_f(r["ngang_cm"]), cao_cm=_f(r["cao_cm"]), sau_cm=_f(r["sau_cm"]),
                 kieu_dang=r["kieu_dang"], so_cua=r["so_cua"],
                 inverter=r["inverter"] == "1",
-                gia=int(r["gia"]), gia_goc=int(r["gia_goc"]),
+                gia=gia, gia_goc=gia_goc,
                 ngan_da_lit=_f(r.get("ngan_da_lit")),
                 qua=(r.get("qua") or "").strip(),
                 nguon={
                     "nguoi_phu_hop": _ng("nguoi_phu_hop",
                                          f"{r['nguoi_min']}-{r['nguoi_max']} nguoi",
-                                         ma, "catalog:Số người sử dụng"),
-                    "gia": _ng("gia", r["gia"], ma, "price_api"),
+                                         ma, "catalog:Số người sử dụng", lay_luc=lay_luc),
+                    "gia": _ng("gia", gia, ma, "catalog:Giá bán", lay_luc=lay_luc),
                     **({"qua": _ng("qua", (r.get("qua") or "").strip(), ma,
-                                   "catalog:khuyến mãi quà")}
+                                   "catalog:khuyến mãi quà", lay_luc=lay_luc)}
                        if (r.get("qua") or "").strip() else {}),
-                    "gia_goc": _ng("gia_goc", r["gia_goc"], ma, "price_api"),
-                    "dung_tich_lit": _ng("dung_tich_lit", dt, ma,
+                    "gia_goc": _ng("gia_goc", gia_goc, ma, "catalog:Giá gốc",
+                                    lay_luc=lay_luc),
+                    **({"dung_tich_lit": _ng("dung_tich_lit", dt, ma,
                                          "catalog:Dung tích tổng" if la_tong
                                          else "catalog:Dung tích sử dụng",
-                                         suy_luan=la_tong),
-                    "dien_kwh_nam": _ng("dien_kwh_nam", kwh, ma, "catalog:Điện năng tiêu thụ"),
-                    "ngang_cm": _ng("ngang_cm", _f(r["ngang_cm"]), ma, "catalog:Ngang"),
-                    "cao_cm": _ng("cao_cm", _f(r["cao_cm"]), ma, "catalog:Cao"),
-                    "sau_cm": _ng("sau_cm", _f(r["sau_cm"]), ma, "catalog:Sâu"),
+                                         suy_luan=la_tong, lay_luc=lay_luc)}
+                       if dt is not None else {}),
+                    **({"dien_kwh_nam": _ng("dien_kwh_nam", kwh, ma,
+                                             "catalog:Điện năng tiêu thụ", lay_luc=lay_luc)}
+                       if kwh is not None else {}),
+                    **({"ngang_cm": _ng("ngang_cm", _f(r["ngang_cm"]), ma,
+                                         "catalog:Ngang", lay_luc=lay_luc)}
+                       if _f(r["ngang_cm"]) is not None else {}),
+                    **({"cao_cm": _ng("cao_cm", _f(r["cao_cm"]), ma,
+                                       "catalog:Cao", lay_luc=lay_luc)}
+                       if _f(r["cao_cm"]) is not None else {}),
+                    **({"sau_cm": _ng("sau_cm", _f(r["sau_cm"]), ma,
+                                       "catalog:Sâu", lay_luc=lay_luc)}
+                       if _f(r["sau_cm"]) is not None else {}),
                     **({"ngan_da_lit": _ng("ngan_da_lit", _f(r.get("ngan_da_lit")), ma,
-                                           "catalog:Dung tích ngăn đá")}
+                                           "catalog:Dung tích ngăn đá", lay_luc=lay_luc)}
                        if _f(r.get("ngan_da_lit")) is not None else {}),
                 },
             ))
@@ -169,6 +188,7 @@ _KIEU_DANG = [
 
 def trich_tu_lanh(text: str, cu: ONhuCauTuLanh | None = None,
                   o_dang_cho: str | None = None) -> ONhuCauTuLanh:
+    text = bo_so_dien_thoai(text)
     t = chuan_hoa(text)
     kd = bo_dau(t).lower()
     nc = (cu or ONhuCauTuLanh()).model_copy()

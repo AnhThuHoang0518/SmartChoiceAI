@@ -51,6 +51,18 @@
   .loai-noi-bat{margin-top:8px;padding:10px 14px;border-left:3px solid var(--kem);background:var(--canh-nen);border-radius:0;font-size:13.5px}
   .giai-trinh{margin-top:6px;font-size:12.5px;color:var(--phu)}
   .giai-trinh span{margin-right:10px}
+  /* ── Bang "AI minh bach": phoi bay AI lam gi / code lam gi moi cau (AI-native) ── */
+  .minh-bach{margin-top:8px;border:1px solid var(--vien);border-radius:10px;overflow:hidden;font-size:12.5px}
+  .mb-dau{display:flex;align-items:center;gap:6px;padding:6px 10px;background:var(--chinh-nhat);color:var(--chinh);cursor:pointer;font-weight:600;user-select:none}
+  .mb-dau .mui{margin-left:auto;transition:transform .2s}
+  .minh-bach.mo .mb-dau .mui{transform:rotate(180deg)}
+  .mb-than{display:none;padding:8px 10px;line-height:1.7}
+  .minh-bach.mo .mb-than{display:block}
+  .mb-than .ai{color:#7c3aed;font-weight:600}
+  .mb-than .code{color:var(--chinh);font-weight:600}
+  .mb-than .chan{color:#c0392b;font-weight:600}
+  .mb-buoc{display:flex;gap:7px;padding:1px 0}
+  .mb-buoc .cham{flex-shrink:0}
   form{display:flex;gap:10px;padding:14px 20px;background:var(--the);border-top:1px solid var(--vien)}
   form>div{display:flex;gap:10px;max-width:820px;width:100%;margin:0 auto}
   input{flex:1;padding:12px 16px;border:1px solid var(--vien);border-radius:24px;font-size:15px;outline:none}
@@ -165,7 +177,9 @@
 
 <form onsubmit="gui(event)">
   <div>
-    <input id="o-nhap" placeholder="Nhập tin nhắn hoặc bấm 🎤 nói..." autocomplete="off" autofocus>
+    <input id="o-nhap" placeholder="Nhập tin nhắn, bấm 🎤 nói hoặc 📷 chụp máy..." autocomplete="off" autofocus>
+    <input type="file" id="o-anh-in" accept="image/*" capture="environment" style="display:none">
+    <button type="button" class="gui" id="nut-anh" title="Chụp/gửi ảnh máy để AI đọc" style="background:var(--chinh-nhat);color:var(--chinh);border:1px solid var(--vien)">📷</button>
     <button type="button" class="gui" id="mic" title="Nói tiếng Việt" style="background:var(--chinh-nhat);color:var(--chinh);border:1px solid var(--vien)">🎤</button>
     <button class="gui" id="nut">Gửi</button>
   </div>
@@ -468,6 +482,47 @@ function dienMau(b){
 
 function guiVB(t){ oNhap.value = t; document.querySelector('form').requestSubmit(); }
 
+// ── AI THI GIAC: khach chup anh (nhan nang luong may cu / may dang phan van)
+// -> Qwen2.5-VL doc -> mo ta vao o nhap -> chay flow tu van. Anh chi DIEN o
+// nhu cau nhu tin go tay, moi so van qua hau kiem -> khong mo cua cho bia.
+const nutAnh = document.getElementById('nut-anh');
+const oAnhIn = document.getElementById('o-anh-in');
+nutAnh.onclick = () => oAnhIn.click();
+oAnhIn.onchange = async () => {
+  const f = oAnhIn.files[0]; oAnhIn.value = '';
+  if (!f) return;
+  them('📷 <i>Đang gửi ảnh cho AI đọc…</i>', 'khach');
+  const cho = them('<span class="cham"><i></i><i></i><i></i></span>', 'bot');
+  try {
+    const b64 = await nenAnh(f);          // resize + base64, bo tien to data URI
+    const r = await fetch('/api/nhin-anh', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({anh_b64: b64, dinh_dang: 'jpeg'})
+    });
+    if (!r.ok) throw new Error(r.status === 503 ? 'chưa bật' : 'lỗi');
+    const d = await r.json();
+    cho.querySelector('.bong').innerHTML = '👁️ AI đọc ảnh: <i>' + md(d.mo_ta) + '</i><br><span style="font-size:12px;color:var(--phu)">Em tư vấn theo thông tin này ạ…</span>';
+    guiVB(d.mo_ta);                        // dua mo ta vao flow tu van
+  } catch (e) {
+    cho.querySelector('.bong').innerHTML = 'Dạ em chưa đọc được ảnh (tính năng cần bật trên máy chủ). Anh chị mô tả bằng chữ giúp em nhé!';
+  }
+};
+// Resize ve toi da 1024px canh dai + JPEG 0.8 -> base64 gon (< vai tram KB)
+function nenAnh(file){
+  return new Promise((res, rej) => {
+    const img = new Image();
+    img.onload = () => {
+      const M = 1024, r = Math.min(1, M / Math.max(img.width, img.height));
+      const cv = document.createElement('canvas');
+      cv.width = img.width * r; cv.height = img.height * r;
+      cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height);
+      res(cv.toDataURL('image/jpeg', 0.8).split(',')[1]);
+    };
+    img.onerror = rej;
+    img.src = URL.createObjectURL(file);
+  });
+}
+
 function them(html, lop){
   const d = document.createElement('div');
   d.className = 'dong ' + lop;
@@ -505,6 +560,27 @@ function dongAnhNeuNen(e){
 window.addEventListener('keydown', e => {
   if (e.key === 'Escape') document.getElementById('hop-anh')?.close();
 });
+
+// ── Bang "AI minh bach": moi cau tra loi phoi bay AI lam gi, code lam gi.
+// Bien kien truc "LLM 2 diem cham, con lai la code" tu diem de bi hieu nham
+// thanh MAN PHO DIEN AI-native co trach nhiem - phuc vu "He thong cham diem AI".
+function bangMinhBach(d){
+  const t = d.thong_ke || {};
+  const b = [];
+  b.push('<div class="mb-buoc"><span class="cham ai">🧠 AI</span><span>Hiểu câu tiếng Việt của khách (viết tắt, không dấu, số tiền) → trích thành ô nhu cầu</span></div>');
+  if (d.loai === 'cau_hoi')
+    b.push('<div class="mb-buoc"><span class="cham code">⚙️ Code</span><span>Đo giá trị thông tin từng ô trống → chọn đúng 1 câu hỏi làm đổi kết quả (không hỏi thừa)</span></div>');
+  else {
+    b.push('<div class="mb-buoc"><span class="cham code">⚙️ Code</span><span>Lọc theo công bố hãng + chấm điểm theo ưu tiên khách → xếp top 3, mọi con số từ dữ liệu ĐMX</span></div>');
+    if (t.cham_llm >= 2)
+      b.push('<div class="mb-buoc"><span class="cham ai">🧠 AI</span><span>Diễn đạt bảng kết quả thành lời tư vấn tự nhiên' + (t.nguon_llm && t.nguon_llm !== 'ban_du_phong' ? ' (' + t.nguon_llm.toUpperCase() + ')' : '') + '</span></div>');
+    b.push('<div class="mb-buoc"><span class="cham ' + (t.so_lan_chan_bia ? 'chan' : 'code') + '">🛡️ Hậu kiểm</span><span>' + (t.so_lan_chan_bia ? 'AI định nói ' + t.so_lan_chan_bia + ' số không có trong dữ liệu — <b>đã chặn, bắt viết lại</b>' : 'Đối chiếu mọi con số ngược về dữ liệu — không phát hiện bịa') + '</span></div>');
+  }
+  const nhanh = t.ms != null ? ' · ' + t.ms + 'ms' : '';
+  return '<div class="minh-bach"><div class="mb-dau" onclick="this.parentNode.classList.toggle(\'mo\')">'
+    + '🔍 AI đã làm gì trong câu này?' + nhanh + '<span class="mui">▾</span></div>'
+    + '<div class="mb-than">' + b.join('') + '</div></div>';
+}
 
 function veSanPham(u, i){
   // Gia khuyen mai: co gia_goc > gia ban -> gach gia goc + badge % giam (so
@@ -602,7 +678,9 @@ async function gui(e){
       if (t.bo_vi_thieu)
         html += '<div class="giai-trinh">Có ' + t.bo_vi_thieu
               + ' sản phẩm thiếu dữ liệu để kiểm tra tiêu chí này nên em không đưa vào kết quả.</div>';
+      html += bangMinhBach(d);
     }
+    if (d.loai === 'cau_hoi') html += bangMinhBach(d);
     // Chip goi y cau tiep theo tu backend - bam gui luon, khach khoi nghi cau.
     if (d.goi_y?.length)
       html += '<div class="chip-bot">' + d.goi_y.map(g =>
