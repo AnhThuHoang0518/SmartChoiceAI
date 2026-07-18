@@ -531,6 +531,32 @@
     }
    ],
    "_ghi_chu": "so moi GHI DE so cu tren nganh khung - truoc day bi lang le giu 15tr"
+  },
+  {
+   "ten": "loc_theo_hang_may_lanh",
+   "tin_dau": "máy lạnh LG phòng 18m2 khoảng 15tr không nắng phòng ngủ",
+   "ky_vong_loai": "tu_van",
+   "toi_da_cau_hoi": 1,
+   "ky_vong_o": {
+    "hang": "LG"
+   },
+   "_ghi_chu": "loc theo hang: khach neu ten hang la top 3 chi con hang do",
+   "can_du_lieu_that": true
+  },
+  {
+   "ten": "hang_khong_ban_nganh_do",
+   "tin_dau": "máy giặt daikin nhà 4 người tầm 10tr",
+   "ky_vong_loai": "khong_co_hang",
+   "toi_da_cau_hoi": 0,
+   "_ghi_chu": "Daikin khong lam may giat -> noi that + liet ke hang dang co",
+   "can_du_lieu_that": true
+  },
+  {
+   "ten": "hoi_danh_sach_hang",
+   "tin_dau": "máy lạnh có những hãng nào",
+   "ky_vong_loai": "danh_sach_hang",
+   "toi_da_cau_hoi": 0,
+   "_ghi_chu": "liet ke hang that trong catalog kem so may dem duoc"
   }
  ]
 }

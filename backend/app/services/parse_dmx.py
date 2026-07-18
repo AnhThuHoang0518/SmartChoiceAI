@@ -108,3 +108,16 @@ def parse_gia(goc, km) -> tuple[int | None, int | None]:
 
 def parse_inverter(s) -> bool:
     return "không" not in str(s or "").lower() and "inverter" in str(s or "").lower()
+
+
+def parse_qua(v) -> str:
+    """Cot 'khuyen mai qua' -> chuoi gon cho UI/tu van.
+
+    Nhieu dong 1 o (moi dong 1 mon) -> lay 2 mon dau, cat 180 ky tu. Van la
+    NGUYEN VAN tu du lieu, khong sinh chu moi - chi cat gon.
+    """
+    if la_rong(v):
+        return ""
+    phan = [re.sub(r"\s*\(click xem chi tiết\)", "", x.strip(), flags=re.I)
+            for x in re.split(r"[\n|]", str(v)) if x.strip()]
+    return " · ".join(phan[:2])[:180]

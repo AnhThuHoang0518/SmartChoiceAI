@@ -76,8 +76,8 @@
     ]
   },
   "ngoai_pham_vi": {
-    "_doc": "Khach hoi nganh chua bat trong demo. Noi that pham vi + khoe kien truc da san sang 14 nganh (dung su that: file DMX co du 14 sheet, them nganh = them config).",
-    "mau": "Dạ hiện tại em đang tư vấn chuyên về máy lạnh ạ. Mặt hàng {nganh} đã có sẵn trong dữ liệu hệ thống (14 ngành hàng) — chỉ cần bật thêm cấu hình ngành là em tư vấn được ngay ạ. Còn nếu anh/chị đang cần tìm máy lạnh thì em giúp luôn ạ!"
+    "_doc": "Khach hoi nganh KHONG co sheet du lieu (tivi/laptop/dien thoai). Noi that chua co du lieu + tu liet ke het nganh dang ban ({danh_sach} do code dien tu registry - them nganh la tu cap nhat).",
+    "mau": "Dạ mặt hàng {nganh} em CHƯA có dữ liệu nên em không tư vấn bừa được ạ. Hiện em tư vấn được 13 ngành hàng: {danh_sach}. Anh/chị đang cần món nào trong số này, em giúp ngay ạ!"
   },
   "khong_co_may": {
     "_doc": "Loc xong 0 may (ngan sach qua thap / phong qua lon). Phai noi that + goi huong, khong duoc tra chuoi rong hay bia may.",

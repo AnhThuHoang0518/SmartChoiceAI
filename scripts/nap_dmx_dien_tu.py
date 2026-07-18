@@ -20,7 +20,7 @@ import openpyxl
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from backend.app.services.parse_dmx import la_rong, parse_gia  # noqa: E402
+from backend.app.services.parse_dmx import la_rong, parse_gia, parse_qua  # noqa: E402
 
 GOC = Path("data/raw/Spec_cate_gia.xlsx")
 
@@ -147,6 +147,7 @@ def nap_mot_nganh(wb, ten: str, spec: dict) -> None:
             "ten": f"{str(g(r, 'brand') or '').strip()} {g(r, 'model_code')}".strip(),
             "hang": str(g(r, "brand") or "").strip(),
             "gia": gia, "gia_goc": gia_goc or gia,
+            "qua": parse_qua(g(r, "khuyến mãi quà")),
         }
         for c, (cot_goc, ham) in spec["cot"].items():
             v = ham(g(r, cot_goc))
@@ -207,6 +208,7 @@ def nap_micro(wb) -> None:
                 "nhom": nhom,
                 "loai": str(g(r, "Loại sản phẩm") or "").strip(),
                 "ket_noi": str(g(r, "Kết nối") or "").strip(),
+                "qua": parse_qua(g(r, "khuyến mãi quà")),
             })
     out = Path("data/processed/micro.csv")
     with open(out, "w", encoding="utf-8", newline="") as f:

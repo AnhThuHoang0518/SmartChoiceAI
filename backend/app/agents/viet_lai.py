@@ -61,6 +61,8 @@ def _bang_thanh_chu(
         d.append("phòng ngủ" if nhu_cau.loai_phong.value == "ngu" else "phòng khách")
     if nhu_cau.uu_tien:
         d.append("ưu tiên: " + ", ".join(u.value for u in nhu_cau.uu_tien))
+    if getattr(nhu_cau, "hang", None):
+        d.append(f"chỉ xét hãng {nhu_cau.hang}")
 
     ra = [", ".join(d), ""]
     ra.append(f"Đã lọc {bang.tong_truoc_loc} máy còn {bang.con_lai_sau_loc} máy phù hợp.")

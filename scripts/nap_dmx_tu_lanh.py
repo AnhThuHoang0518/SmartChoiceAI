@@ -25,7 +25,7 @@ import openpyxl
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from backend.app.services.parse_dmx import la_rong, parse_gia  # noqa: E402
+from backend.app.services.parse_dmx import la_rong, parse_gia, parse_qua  # noqa: E402
 
 GOC = Path("data/raw/Spec_cate_gia.xlsx")
 RA = Path("data/processed/tu_lanh.csv")
@@ -33,7 +33,7 @@ RA = Path("data/processed/tu_lanh.csv")
 COT = [
     "ma_sp", "ten", "hang", "nguoi_min", "nguoi_max", "dung_tich_lit",
     "dung_tich_la_tong", "dien_kwh_nam", "ngang_cm", "cao_cm", "sau_cm",
-    "kieu_dang", "so_cua", "inverter", "gia", "gia_goc",
+    "kieu_dang", "so_cua", "inverter", "gia", "gia_goc", "qua",
 ]
 
 
@@ -145,6 +145,7 @@ def main() -> None:
             "inverter": int("inverter" in str(g(r, "Công nghệ tiết kiệm điện") or "").lower()),
             "gia": gia,
             "gia_goc": gia_goc or gia,
+            "qua": parse_qua(g(r, "khuyến mãi quà")),
         })
 
     RA.parent.mkdir(parents=True, exist_ok=True)

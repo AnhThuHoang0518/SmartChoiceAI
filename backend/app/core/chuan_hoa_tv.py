@@ -192,6 +192,65 @@ def cau_hoi_cong_suat(text: str) -> bool:
     return bool(re.search(r"\b(bao nhieu|bn|nao|the nao|sao|can|nen|du)\b", kd))
 
 
+# Tu tieng Viet pho thong hay xuat hien trong TEN HANG ("Hoa Phat") - khong
+# duoc dung mot minh de nhan hang, vi "dieu hoa" se dinh "Hoa Phat" (bug that).
+_TU_MO_HO = {"hoa", "phat", "viet", "nam", "thai", "hong", "quoc", "tan", "dai",
+             "son", "minh", "thanh", "xuan", "gia", "may", "dien"}
+
+
+def trich_hang(text: str, cac_hang: set[str]) -> str | None:
+    """Tim ten HANG trong cau khach - doi chieu danh sach hang THAT cua catalog
+    (khong co danh sach hang tu che). Tra ten hang dung chinh ta cua catalog.
+
+    Luat khop, tu chat den long:
+      1. Nguyen cum ten hang ("hoa phat", "ipad (apple)" -> "ipad apple")
+      2. Tung tu trong ten hang, tu >=4 ky tu va KHONG phai tu tieng Viet mo ho
+         ("apple" trong "Ipad (Apple)" - khach go 'apple' van ra)
+      3. Hang ten ngan 1 tu (LG, TCL): khop nguyen tu
+    """
+    kd = bo_dau(text or "").lower()
+
+    def _co(cum: str) -> bool:
+        return bool(cum) and bool(
+            re.search(rf"(?<![a-z0-9]){re.escape(cum)}(?![a-z0-9])", kd))
+
+    ung_vien = []                          # (do dai khop, ten hang goc)
+    for h in cac_hang:
+        if not h:
+            continue
+        hb = re.sub(r"[^a-z0-9]+", " ", bo_dau(h).lower()).strip()
+        tu_cua_hang = hb.split()
+        if _co(hb):                                        # 1. nguyen cum
+            ung_vien.append((len(hb), h))
+            continue
+        for tu in tu_cua_hang:
+            du_dai = len(tu) >= 4 and tu not in _TU_MO_HO  # 2. tu dai ro nghia
+            ten_ngan = len(tu_cua_hang) == 1               # 3. LG / TCL
+            if (du_dai or ten_ngan) and _co(tu):
+                ung_vien.append((len(tu), h))
+                break
+    return max(ung_vien)[1] if ung_vien else None
+
+
+def bo_hang(text: str) -> bool:
+    """Khach tuyen bo khong quan trong hang -> xoa loc hang dang co."""
+    kd = bo_dau(text or "").lower()
+    return bool(re.search(
+        r"hang nao cung (?:duoc|dc|ok)|(?:khong|ko) quan trong hang|hang gi cung duoc"
+        r"|bo (?:loc )?hang|khong can hang", kd))
+
+
+def hoi_hang(text: str) -> bool:
+    """Khach hoi CO NHUNG HANG NAO - tra loi bang danh sach hang that trong
+    catalog nganh (dem duoc), khong ke ten hang ngoai du lieu."""
+    kd = bo_dau(text or "").lower()
+    if bo_hang(text):
+        return False
+    return bool(re.search(
+        r"(?:nhung|co|ban) (?:hang|thuong hieu) (?:nao|gi)|hang nao (?:tot|ngon|ok|uy tin)"
+        r"|(?:hang|thuong hieu) nao dang|cac hang nao|nhung thuong hieu nao", kd))
+
+
 def yeu_cau_so_sanh(text: str) -> tuple[int, int] | None:
     """Khach xin SO SANH truc tiep 2 may trong top 3 vua tu van.
 

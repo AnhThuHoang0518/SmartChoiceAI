@@ -8,7 +8,7 @@ import { Button } from "../ui/button"
 // GIO: keo top may giam sau nhat THAT tu /api/khuyen-mai (gia goc/gia KM
 // trong catalog DMX). Khong co du lieu danh gia sao -> khong hien sao.
 
-type KhuyenMai = { ten: string; gia: number; gia_goc: number; phan_tram: number; giam: number }
+type KhuyenMai = { ten: string; gia: number; gia_goc: number; phan_tram: number; giam: number; qua?: string }
 
 const anh = ["/images/ac1.png", "/images/ac2.png", "/images/ac3.png", "/images/ac4.png"]
 const vnd = (n: number) => n.toLocaleString("vi-VN") + "đ"
@@ -54,6 +54,10 @@ export function ProductRecommendation() {
               <h3 className="font-bold text-gray-900 line-clamp-2 text-sm md:text-base group-hover:text-primary transition-colors">
                 {sp.ten}
               </h3>
+
+              {sp.qua && (
+                <p className="text-[11.5px] text-green-700 mt-1.5 line-clamp-2">🎁 {sp.qua}</p>
+              )}
 
               <div className="mt-auto pt-3">
                 <div className="flex items-center gap-2 mb-3 flex-wrap">

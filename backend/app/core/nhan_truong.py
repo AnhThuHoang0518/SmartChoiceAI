@@ -9,6 +9,8 @@ lay qua /api/nhan-truong luc tai trang - khong hardcode 2 noi).
 NHAN: dict[str, tuple[str, str]] = {
     "gia": ("Giá", "đ"),
     "gia_goc": ("Giá gốc", "đ"),
+    "hang": ("Hãng", ""),
+    "qua": ("Quà tặng", ""),
     # may lanh
     "pham_vi": ("Phạm vi phòng", ""),
     "do_on_db": ("Độ ồn", " dB"),

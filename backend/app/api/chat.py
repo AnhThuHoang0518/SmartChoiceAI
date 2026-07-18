@@ -22,15 +22,19 @@ from backend.app.agents.trich_o_nhu_cau import trich
 from backend.app.agents.viet_lai import viet_lai
 from backend.app.core import phien
 from backend.app.core.chuan_hoa_tv import (
+    bo_dau,
+    bo_hang,
     bo_ngan_sach,
     cau_hoi_cong_suat,
     co_nganh_may_lanh,
     co_nganh_tu_lanh,
     hoi_chu_quan,
+    hoi_hang,
     hoi_khuyen_mai,
     hoi_ton_kho,
     muc_gia,
     nganh_ngoai_pham_vi,
+    trich_hang,
     tu_ky_thuat_trong,
     yeu_cau_so_sanh,
     yeu_cau_thong_so,
@@ -113,6 +117,41 @@ def _ngan_sach_muc(gia_cac_may: list, muc: str) -> float:
         return float(KHONG_GIOI_HAN)
     gs = sorted(gia_cac_may)
     return float(gs[len(gs) // 3] if muc == "re" else gs[(2 * len(gs)) // 3])
+
+
+_HANG: set[str] | None = None
+
+
+def _cac_hang_toan_he() -> set[str]:
+    """Moi ten hang co that trong 13 catalog - de nhan ra hang trong cau khach.
+    KHONG co danh sach hang tu che: hang khong co trong du lieu thi khong biet."""
+    global _HANG
+    if _HANG is None:
+        from backend.app.nganh.khung import cac_nganh
+        from backend.app.nganh.tu_lanh import tai_catalog_tu_lanh
+        hang = {s.hang for s in catalog()} | {s.hang for s in tai_catalog_tu_lanh()}
+        for ng in cac_nganh():
+            hang |= {s.hang for s in ng.catalog()}
+        _HANG = {h for h in hang if h}
+    return _HANG
+
+
+def _hang_trong_cau(text: str, ds_nganh, ten_nganh: str):
+    """Tra (hang_khop_catalog_nganh | None, cau_tu_choi | None).
+
+    Hang co that o nganh KHAC nhung nganh nay khong ban (vd 'may giat Daikin')
+    -> noi that + liet ke hang dang co, khong loc ra 0 may roi do loi ngan sach.
+    """
+    h = trich_hang(text, _cac_hang_toan_he())
+    if not h:
+        return None, None
+    for s in ds_nganh:
+        if bo_dau(s.hang).lower() == bo_dau(h).lower():
+            return s.hang, None
+    from collections import Counter
+    co = ", ".join(k for k, _ in Counter(s.hang for s in ds_nganh).most_common(8))
+    return None, (f"Dạ {ten_nganh} bên em chưa có hàng {h} ạ. Các hãng đang có: {co}. "
+                  f"Anh/chị xem hãng nào trong số này em lọc ngay ạ?")
 
 
 def _so_sanh_2_may(t: TinNhan, ma: str, p: dict, t0: float,
@@ -198,6 +237,17 @@ def _xu_ly_tu_lanh(t: TinNhan, ma: str, p: dict, t0: float, giong: str) -> TraLo
         nc = nc.model_copy(update={"ngan_sach_max": int(p["ngan_sach_chung"])})
     if nc.ngan_sach_max:
         p["ngan_sach_chung"] = nc.ngan_sach_max
+    if bo_hang(t.tin_nhan):
+        nc = nc.model_copy(update={"hang": None})
+    else:
+        h, tu_choi = _hang_trong_cau(t.tin_nhan, ds, "tủ lạnh")
+        if tu_choi:
+            p["nhu_cau_tl"] = nc
+            return TraLoi(phien_id=ma, loai="khong_co_hang", text=tu_choi,
+                          thong_ke={"ms": int((time.perf_counter() - t0) * 1000),
+                                    "cham_llm": 0, "nganh": "tu_lanh"})
+        if h:
+            nc = nc.model_copy(update={"hang": h})
     p["nhu_cau_tl"] = nc
     p["luc"] = time.time()
 
@@ -267,6 +317,17 @@ def _xu_ly_nganh_khung(t: TinNhan, ma: str, p: dict, t0: float, giong: str,
         nc.gia_tri["ngan_sach_max"] = float(p["ngan_sach_chung"])
     if nc.lay("ngan_sach_max"):
         p["ngan_sach_chung"] = nc.lay("ngan_sach_max")
+    if bo_hang(t.tin_nhan):
+        nc.gia_tri["hang"] = None
+    else:
+        h, tu_choi = _hang_trong_cau(t.tin_nhan, ds, nganh.ten_hien_thi)
+        if tu_choi:
+            p[khoa] = nc
+            return TraLoi(phien_id=ma, loai="khong_co_hang", text=tu_choi,
+                          thong_ke={"ms": int((time.perf_counter() - t0) * 1000),
+                                    "cham_llm": 0, "nganh": nganh.ten})
+        if h:
+            nc.gia_tri["hang"] = h
     p[khoa] = nc
     p["luc"] = time.time()
 
@@ -320,6 +381,7 @@ def khuyen_mai_that() -> list[dict]:
                   key=lambda s: s.gia_goc - s.gia, reverse=True)[:4]
     return [{"ten": s.ten, "gia": s.gia, "gia_goc": s.gia_goc,
              "giam": s.gia_goc - s.gia,
+             "qua": getattr(s, "qua", "")[:100],
              "phan_tram": round((1 - s.gia / s.gia_goc) * 100)} for s in giam]
 
 
@@ -343,15 +405,46 @@ def chat(t: TinNhan) -> TraLoi:
     if cap and p.get("top3_truoc"):
         return _so_sanh_2_may(t, ma, p, t0, cap)
 
+    # "Co nhung hang nao?" -> liet ke hang THAT trong catalog nganh (kem so
+    # may dem duoc), khong ke ten hang ngoai du lieu. Chua ro nganh thi de
+    # flow chao hoi phia duoi hoi nganh truoc.
+    if hoi_hang(t.tin_nhan):
+        from backend.app.nganh.khung import nganh_theo_ten as _ntt
+        from backend.app.nganh.khung import tim_nganh as _tim_h
+        ds_h, ten_h = None, None
+        ng_h = _tim_h(t.tin_nhan) or (_ntt(p["nganh"]) if p.get("nganh") else None)
+        if ng_h is not None:
+            ds_h, ten_h = ng_h.catalog(), ng_h.ten_hien_thi
+        elif co_nganh_tu_lanh(t.tin_nhan) or p.get("nganh") == "tu_lanh":
+            from backend.app.nganh.tu_lanh import tai_catalog_tu_lanh
+            ds_h, ten_h = tai_catalog_tu_lanh(), "tủ lạnh"
+        elif co_nganh_may_lanh(t.tin_nhan) or p.get("nganh") == "may_lanh":
+            ds_h, ten_h = catalog(), "máy lạnh"
+        if ds_h:
+            from collections import Counter
+            dem = Counter(s.hang for s in ds_h if s.hang)
+            ds_hang = " · ".join(f"{k} ({v} máy)" for k, v in dem.most_common(8))
+            return TraLoi(
+                phien_id=ma, loai="danh_sach_hang",
+                text=(f"Dạ {ten_h} bên em đang có {len(dem)} hãng ạ: {ds_hang}."
+                      f" Anh/chị muốn xem hãng nào, cho em xin kèm ngân sách để em lọc luôn ạ?"),
+                goi_y=[k for k, _ in dem.most_common(3)],
+                thong_ke={"ms": int((time.perf_counter() - t0) * 1000), "cham_llm": 0},
+            )
+
     # Khach hoi nganh khac (tu lanh, may giat...) -> noi that pham vi, dung lai
     # cau hoi ngan sach nhu robot hong. Phat hien tu demo that.
+    from backend.app.nganh.khung import cac_nganh
     from backend.app.nganh.khung import tim_nganh as _tim
     nganh = nganh_ngoai_pham_vi(t.tin_nhan)
     if nganh and _tim(t.tin_nhan) is None:
+        # Liet ke nganh tu REGISTRY chu khong hardcode - them nganh moi la cau
+        # tra loi tu cap nhat, khong bao gio noi "co san" thu khong co.
+        danh_sach = ", ".join(["máy lạnh", "tủ lạnh"] + [n.ten_hien_thi for n in cac_nganh()])
         return TraLoi(
             phien_id=ma,
             loai="ngoai_pham_vi",
-            text=cfg()["ngoai_pham_vi"]["mau"].format(nganh=nganh),
+            text=cfg()["ngoai_pham_vi"]["mau"].format(nganh=nganh, danh_sach=danh_sach),
             o_nhu_cau=p["nhu_cau"].model_dump(exclude_none=True, mode="json"),
             thong_ke={"ms": int((time.perf_counter() - t0) * 1000), "cham_llm": 0},
         )
@@ -374,6 +467,20 @@ def chat(t: TinNhan) -> TraLoi:
         nc = nc.model_copy(update={"ngan_sach_max": int(p["ngan_sach_chung"])})
     if nc.ngan_sach_max:
         p["ngan_sach_chung"] = nc.ngan_sach_max
+
+    # Loc theo HANG - khach neu ten hang ("co may LG khong") la loc that;
+    # "hang nao cung duoc" la xoa loc.
+    if bo_hang(t.tin_nhan):
+        nc = nc.model_copy(update={"hang": None})
+    else:
+        h, tu_choi_hang = _hang_trong_cau(t.tin_nhan, ds, "máy lạnh")
+        if tu_choi_hang and (co_nganh_may_lanh(t.tin_nhan) or p.get("nganh") == "may_lanh"):
+            phien.ghi(ma, nc, None)
+            return TraLoi(phien_id=ma, loai="khong_co_hang", text=tu_choi_hang,
+                          o_nhu_cau=nc.model_dump(exclude_none=True, mode="json"),
+                          thong_ke={"ms": int((time.perf_counter() - t0) * 1000), "cham_llm": 1})
+        if h:
+            nc = nc.model_copy(update={"hang": h})
 
     # Hoi ton kho/con hang -> noi thang du lieu KHONG co truong ton kho, can
     # Stock API (TC-008/TC-017). Chi tra loi rieng khi cau hoi thuan tuy ve
@@ -483,6 +590,9 @@ def chat(t: TinNhan) -> TraLoi:
                 dong.append(
                     f"• {s.ten}: {s.gia_goc:,.0f}đ còn {s.gia:,.0f}đ (giảm {muc/1_000_000:.1f} triệu)".replace(",", ".")
                 )
+                # Qua tang NGUYEN VAN tu catalog - khong sinh chu, khong hua qua khong co
+                if getattr(s, "qua", ""):
+                    dong.append(f"   🎁 {s.qua[:120]}")
             text = (
                 "Dạ đang có mấy máy giảm sâu nhất nè ạ:\n" + "\n".join(dong)
                 + "\nMáy phù hợp hay không còn tùy phòng anh/chị ạ — phòng anh/chị rộng khoảng bao nhiêu m² để em xem máy nào đang giảm mà VỪA phòng anh/chị ạ?"

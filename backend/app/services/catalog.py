@@ -53,6 +53,7 @@ class SanPham(BaseModel):
     inverter: bool = False
     lam_lanh_nhanh: bool = False
     loai_may: str = ""
+    qua: str = Field("", description="Khuyen mai qua NGUYEN VAN tu catalog - khong sinh chu")
     nguon: dict[str, Nguon] = Field(default_factory=dict)
 
     def phu_duoc(self, m2: float) -> bool:
@@ -120,6 +121,7 @@ def tai_catalog(duong_dan: str | Path | None = None) -> list[SanPham]:
                     inverter=r["inverter"] == "1",
                     lam_lanh_nhanh=r["lam_lanh_nhanh"] == "1",
                     loai_may=r["loai_may"],
+                    qua=(r.get("qua") or "").strip(),
                     nguon={
                         "pham_vi": _nguon(
                             "pham_vi",
@@ -128,6 +130,9 @@ def tai_catalog(duong_dan: str | Path | None = None) -> list[SanPham]:
                             "catalog:Phạm vi sử dụng",
                         ),
                         "gia": _nguon("gia", gia, ma, "price_api"),
+                        **({"qua": _nguon("qua", (r.get("qua") or "").strip(), ma,
+                                          "catalog:khuyến mãi quà")}
+                           if (r.get("qua") or "").strip() else {}),
                         "do_on_db": _nguon("do_on_db", do_on, ma, "catalog:Độ ồn"),
                         "cspf": _nguon("cspf", cspf, ma, "catalog:Nhãn năng lượng"),
                         "inverter": _nguon("inverter", r["inverter"], ma, "catalog:Loại Inverter"),

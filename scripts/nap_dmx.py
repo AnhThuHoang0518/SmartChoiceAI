@@ -28,6 +28,7 @@ from backend.app.services.parse_dmx import (  # noqa: E402
     parse_inverter,
     parse_nhan_nang_luong,
     parse_pham_vi,
+    parse_qua,
 )
 
 GOC = Path("data/raw/Spec_cate_gia.xlsx")
@@ -35,7 +36,7 @@ RA = Path("data/processed/may_lanh.csv")
 
 COT = [
     "ma_sp", "ten", "hang", "pham_vi_min", "pham_vi_max", "gia", "gia_goc",
-    "do_on_db", "cspf", "sao", "inverter", "lam_lanh_nhanh", "loai_may",
+    "do_on_db", "cspf", "sao", "inverter", "lam_lanh_nhanh", "loai_may", "qua",
 ]
 
 # Cong nghe lam lanh nhanh - cot 'Cong nghe lam lanh' phu 93%.
@@ -100,6 +101,7 @@ def nap(sheet: str = "Máy lạnh") -> list[dict]:
                 "inverter": int(parse_inverter(g(r, "Loại Inverter"))),
                 "lam_lanh_nhanh": int(any(k in clm for k in TU_KHOA_TURBO)),
                 "loai_may": str(g(r, "Loại máy") or "").strip(),
+                "qua": parse_qua(g(r, "khuyến mãi quà")),
             }
         )
     return ra, dem

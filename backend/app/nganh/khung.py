@@ -116,6 +116,11 @@ class Nganh:
                     so[c] = v
                     nguon[c] = _ng(c, v, ma, meta["nguon"])
                 chu = {}
+                # 'qua' (khuyen mai qua) doc tu dong moi nganh - mock khong co
+                # cot nay thi thoi, khong loi
+                if (r.get("qua") or "").strip():
+                    chu["qua"] = r["qua"].strip()
+                    nguon["qua"] = _ng("qua", chu["qua"], ma, "catalog:khuyến mãi quà")
                 for c, meta in cot_chu.items():
                     chu[c] = (r.get(c) or "").strip()
                     nguon[c] = _ng(c, chu[c], ma, meta["nguon"])
@@ -178,7 +183,10 @@ class Nganh:
         con, loai, thieu = [], [], 0
         for s in ds:
             hong = None
-            for luat in self.cfg["loc_cung"]:
+            vh = nc.lay("hang")
+            if vh and bo_dau(s.hang).lower() != bo_dau(str(vh)).lower():
+                hong = ("hang", f"khác hãng {vh}")
+            for luat in self.cfg["loc_cung"] if hong is None else []:
                 k = luat["kieu"]
                 if k == "khoang_hang_cong_bo":
                     v = nc.lay(luat["o"])
@@ -304,6 +312,8 @@ class Nganh:
             v = nc.lay(o)
             if v is not None:
                 d.append(spec["nhan"].format(v))
+        if nc.lay("hang"):
+            d.append(f'chỉ xét hãng {nc.lay("hang")}')
         ns = nc.lay("ngan_sach_max")
         if ns and ns >= 10**11:
             d.append("KHÔNG giới hạn ngân sách")

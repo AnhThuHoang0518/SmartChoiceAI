@@ -106,6 +106,10 @@ def loc_cung(
     )
     con_lai, bi_loai = [], []
     for s in ds:
+        h = getattr(nhu_cau, "hang", None)
+        if h and s.hang.lower() != h.lower():
+            bi_loai.append((s, "hang", f"khác hãng {h}"))
+            continue
         if m2 is not None and not s.phu_duoc(m2):
             do = "không đủ tải" if s.pham_vi_max < m2 else "dư công suất, chạy ngắt quãng"
             bi_loai.append(

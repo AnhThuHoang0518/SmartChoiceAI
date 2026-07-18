@@ -153,7 +153,16 @@ def main() -> None:
     du_lieu = json.loads(DATASET.read_text(encoding="utf-8"))
     c = TestClient(app)
 
-    ket = [chay_tinh_huong(c, th, du_lieu["tra_loi_mac_dinh"]) for th in du_lieu["tinh_huong"]]
+    # Tinh huong danh dau 'can_du_lieu_that' (vd loc theo hang LG/Daikin) chi
+    # chay khi co data that - catalog mau dung hang AN DANH (Alpha/Bravo) theo
+    # yeu cau de bai nen ten hang that khong ton tai o do.
+    co_that = Path("data/processed/may_lanh.csv").exists()
+    ds_th = [th for th in du_lieu["tinh_huong"]
+             if co_that or not th.get("can_du_lieu_that")]
+    if len(ds_th) < len(du_lieu["tinh_huong"]):
+        print(f"(bo {len(du_lieu['tinh_huong']) - len(ds_th)} tinh huong can du lieu that)")
+
+    ket = [chay_tinh_huong(c, th, du_lieu["tra_loi_mac_dinh"]) for th in ds_th]
 
     dat = [k for k in ket if not k["loi"]]
     o_dung = sum(k.get("o_dung", 0) for k in ket)

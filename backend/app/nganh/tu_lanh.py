@@ -52,6 +52,7 @@ class ONhuCauTuLanh(BaseModel):
     cao_cm: float | None = None
     sau_cm: float | None = None
     kieu_dang: str | None = Field(None, description="TC-005: side by side / mini...")
+    hang: str | None = None
     uu_tien: list[UuTienTL] = Field(default_factory=list)
 
     O_BAT_BUOC: ClassVar[tuple] = ("so_nguoi", "ngan_sach_max")
@@ -79,6 +80,7 @@ class TuLanh(BaseModel):
     inverter: bool = False
     gia: int
     gia_goc: int
+    qua: str = ""
     nguon: dict[str, Nguon] = Field(default_factory=dict)
 
 
@@ -121,11 +123,15 @@ def tai_catalog_tu_lanh() -> list[TuLanh]:
                 kieu_dang=r["kieu_dang"], so_cua=r["so_cua"],
                 inverter=r["inverter"] == "1",
                 gia=int(r["gia"]), gia_goc=int(r["gia_goc"]),
+                qua=(r.get("qua") or "").strip(),
                 nguon={
                     "nguoi_phu_hop": _ng("nguoi_phu_hop",
                                          f"{r['nguoi_min']}-{r['nguoi_max']} nguoi",
                                          ma, "catalog:Số người sử dụng"),
                     "gia": _ng("gia", r["gia"], ma, "price_api"),
+                    **({"qua": _ng("qua", (r.get("qua") or "").strip(), ma,
+                                   "catalog:khuyến mãi quà")}
+                       if (r.get("qua") or "").strip() else {}),
                     "gia_goc": _ng("gia_goc", r["gia_goc"], ma, "price_api"),
                     "dung_tich_lit": _ng("dung_tich_lit", dt, ma,
                                          "catalog:Dung tích tổng" if la_tong
@@ -209,6 +215,9 @@ def xep_hang_tu_lanh(ds: list[TuLanh], nc: ONhuCauTuLanh) -> tuple[BangKetQua, i
     thieu_kich_thuoc = 0
     con, bi_loai = [], []
     for s in ds:
+        if nc.hang and s.hang.lower() != nc.hang.lower():
+            bi_loai.append((s, "hang", f"khác hãng {nc.hang}"))
+            continue
         if nc.so_nguoi is not None and not (s.nguoi_min <= nc.so_nguoi <= s.nguoi_max):
             bi_loai.append((s, "so_nguoi",
                             f"hãng công bố cho {s.nguoi_min:.0f}-{s.nguoi_max:.0f} người, "
@@ -295,6 +304,8 @@ def xep_hang_tu_lanh(ds: list[TuLanh], nc: ONhuCauTuLanh) -> tuple[BangKetQua, i
 def bang_thanh_chu_tu_lanh(bang: BangKetQua, nc: ONhuCauTuLanh,
                            thieu_kich_thuoc: int, giong: str) -> str:
     d = [f"NHU CẦU KHÁCH (TỦ LẠNH): nhà {nc.so_nguoi} người"]
+    if nc.hang:
+        d.append(f"chỉ xét hãng {nc.hang}")
     if nc.ngan_sach_max and nc.ngan_sach_max >= 10**11:
         d.append("KHÔNG giới hạn ngân sách")
     elif nc.ngan_sach_max:
