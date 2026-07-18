@@ -326,7 +326,8 @@ def bang_thanh_chu_tu_lanh(bang: BangKetQua, nc: ONhuCauTuLanh,
     if nc.ngan_sach_max and nc.ngan_sach_max >= 10**11:
         d.append("KHÔNG giới hạn ngân sách")
     elif nc.ngan_sach_max:
-        d.append(f"ngân sách {nc.ngan_sach_max/1e6:.0f} triệu")
+        from backend.app.core.nhan_truong import tien_chu
+        d.append(f"ngân sách {tien_chu(nc.ngan_sach_max)}")
     if nc.ngang_cm:
         d.append(f"hốc bếp ngang {nc.ngang_cm:.0f} cm"
                  + (f", sâu {nc.sau_cm:.0f} cm" if nc.sau_cm else "")

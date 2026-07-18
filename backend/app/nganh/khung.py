@@ -331,7 +331,8 @@ class Nganh:
         if ns and ns >= 10**11:
             d.append("KHÔNG giới hạn ngân sách")
         elif ns:
-            d.append(f"ngân sách {ns/1e6:.0f} triệu")
+            from backend.app.core.nhan_truong import tien_chu
+            d.append(f"ngân sách {tien_chu(ns)}")
 
         ra = [", ".join(d), "",
               f"Đã lọc {bang.tong_truoc_loc} máy còn {bang.con_lai_sau_loc} phù hợp.",

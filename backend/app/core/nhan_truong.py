@@ -77,6 +77,20 @@ NHAN: dict[str, tuple[str, str]] = {
 }
 
 
+def tien_chu(v: float) -> str:
+    """Tien -> chu nguoi Viet noi: 500000 -> '500 nghìn', 15500000 -> '15.5 triệu',
+    1200000000 -> '1.2 tỷ'. KHONG bao gio ra '0.5 triệu'."""
+    v = float(v)
+    if v >= 1e9:
+        s = f"{v / 1e9:.1f}".rstrip("0").rstrip(".")
+        return f"{s} tỷ"
+    if v >= 1e6:
+        s = f"{v / 1e6:.2f}".rstrip("0").rstrip(".")
+        return f"{s} triệu"
+    s = f"{v / 1e3:.0f}"
+    return f"{s} nghìn"
+
+
 def dinh_dang(truong: str, gia_tri: str) -> tuple[str, str]:
     """Tra (nhan, gia tri da ghep don vi). Tien thi cham nghin kieu VN."""
     nhan, dv = NHAN.get(truong, (truong, ""))

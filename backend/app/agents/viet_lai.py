@@ -56,7 +56,8 @@ def _bang_thanh_chu(
     if nhu_cau.ngan_sach_max and nhu_cau.ngan_sach_max >= 10**11:
         d.append("KHÔNG giới hạn ngân sách (khách đã xác nhận)")
     elif nhu_cau.ngan_sach_max:
-        d.append(f"ngân sách tối đa {nhu_cau.ngan_sach_max/1_000_000:.0f} triệu")
+        from backend.app.core.nhan_truong import tien_chu
+        d.append(f"ngân sách tối đa {tien_chu(nhu_cau.ngan_sach_max)}")
     if nhu_cau.loai_phong:
         d.append("phòng ngủ" if nhu_cau.loai_phong.value == "ngu" else "phòng khách")
     if nhu_cau.uu_tien:
@@ -118,15 +119,18 @@ def viet_lai(
     du_lieu = mo_ta_nhu_cau if mo_ta_nhu_cau is not None else _bang_thanh_chu(bang, nhu_cau, giong)
     nguoi_dung = du_lieu
     da_chan: list[str] = []
+    so_bia = 0                             # CHI dem hau kiem chan that
     tong_ms = 0
 
     for lan in range(c["so_lan_bat_viet_lai_toi_da"] + 1):
         try:
             text, ms = llm.sinh_do(he_thong, nguoi_dung)
-        except Exception:
-            # LLM chet giua chung (mang, het quota, server sap) -> khong duoc 500
-            # voi khach. Roi ve ban du phong nhu the LLM tra rong.
+        except Exception as e:              # noqa: BLE001
+            # LLM chet giua chung (mang, het quota, server sap) -> khong duoc
+            # 500 voi khach, NHUNG phai ghi ro ly do vao log thong ke - truoc
+            # day nuot im va bi dem nham thanh "chan bia" (sai su that).
             text, ms = "", 0
+            da_chan.append(f"LLM loi: {type(e).__name__}: {e}")
         tong_ms += ms
         if not text:
             break                                   # LuatLLM / LLM hong -> ban du phong
@@ -136,11 +140,12 @@ def viet_lai(
             return {
                 "text": text,
                 "nguon_llm": llm.ten,
-                "so_lan_bi_chan": lan,
+                "so_lan_bi_chan": so_bia,
                 "loi_da_chan": da_chan,
                 "ms": tong_ms,
             }
 
+        so_bia += 1
         da_chan += loi
         # Bao loi CU THE chu khong phai "sai roi viet lai" - noi ro so nao sai
         # thi lan sau no bo dung so do, khong thi no sua lung tung cho khac.
@@ -160,7 +165,7 @@ def viet_lai(
     return {
         "text": ban_du_phong(bang, mau_du_phong),
         "nguon_llm": "ban_du_phong",
-        "so_lan_bi_chan": c["so_lan_bat_viet_lai_toi_da"] + 1,
+        "so_lan_bi_chan": so_bia,
         "loi_da_chan": da_chan,
         "ms": tong_ms,
     }

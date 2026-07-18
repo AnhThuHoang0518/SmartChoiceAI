@@ -190,8 +190,6 @@ def ban_du_phong(bang: BangKetQua, cau_mau: str) -> str:
     Kho khan nhung MOI SO deu tu bang. Tha tra loi cung nhac con hon bia - de
     bai ghi ro "khong bia du lieu neu API/catalog khong co".
     """
-    ds = ", ".join(
-        f"{u.ten} ({u.gia / 1_000_000:.2f}".rstrip("0").rstrip(".") + " triệu)"
-        for u in bang.top3
-    )
+    from backend.app.core.nhan_truong import tien_chu
+    ds = ", ".join(f"{u.ten} ({tien_chu(u.gia)})" for u in bang.top3)
     return cau_mau.format(dien_tich_m2=bang.dien_tich_hieu_dung_m2 or "?", danh_sach=ds)

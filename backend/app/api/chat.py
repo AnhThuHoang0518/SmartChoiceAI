@@ -40,7 +40,7 @@ from backend.app.core.chuan_hoa_tv import (
     yeu_cau_so_sanh,
     yeu_cau_thong_so,
 )
-from backend.app.core.nhan_truong import dinh_dang
+from backend.app.core.nhan_truong import dinh_dang, tien_chu
 from backend.app.schemas.nhu_cau import UuTien
 
 # Sentinel "khong gioi han ngan sach": khach noi 'bao nhieu cung duoc' thi day
@@ -735,10 +735,9 @@ def chat(t: TinNhan) -> TraLoi:
             ns = nc.ngan_sach_max
             text = cfg()["khong_co_may"]["mau"].format(
                 ngan_sach=("không giới hạn" if ns and ns >= 10**11
-                           else (f"{ns/1_000_000:.1f}".rstrip("0").rstrip(".") + " triệu")
-                           if ns else "này"),
+                           else tien_chu(ns) if ns else "này"),
                 dien_tich=(f"{nc.dien_tich_m2:.0f}" if nc.dien_tich_m2 else "?"),
-                gia_thap_nhat=(f"{gia_min/1_000_000:.1f} triệu" if gia_min else "cao hơn"),
+                gia_thap_nhat=(tien_chu(gia_min) if gia_min else "cao hơn"),
             )
         p["loai_truoc"] = "khong_co_may"
         return TraLoi(
