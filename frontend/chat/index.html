@@ -40,8 +40,10 @@
   .khach .bong{background:var(--chinh);color:#fff;border-bottom-right-radius:4px}
   [data-theme="dark"] .khach .bong{background:#2058c9}
   .bot .bong{background:var(--the);border:1px solid var(--vien);border-bottom-left-radius:4px}
-  .the-sp{background:var(--the);border:1px solid var(--vien);border-radius:12px;padding:12px 14px;margin-top:8px;font-size:14px}
-  .anh-sp-nho{width:88px;height:88px;object-fit:contain;float:right;margin:0 0 8px 12px;border-radius:10px;background:#fff;border:1px solid var(--vien)}
+  .the-sp{background:var(--the);border:1px solid var(--vien);border-radius:12px;padding:14px 16px;margin-top:10px;font-size:14px;min-height:160px}
+  .anh-sp-nho{width:150px;height:150px;object-fit:contain;float:right;margin:0 0 10px 16px;border-radius:12px;background:#fff;border:1px solid var(--vien)}
+  img.anh-sp-nho{cursor:zoom-in;transition:transform .15s,box-shadow .15s}
+  img.anh-sp-nho:hover{transform:scale(1.03);box-shadow:0 10px 30px rgba(0,0,0,.16)}
   .nguon-anh{font-size:10.5px;color:var(--phu);margin-top:4px}
   .the-sp b{font-size:15px}
   .hang-to{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
@@ -66,6 +68,13 @@
   dialog h4{margin-bottom:8px}
   dialog table{border-collapse:collapse;width:100%}
   dialog td{padding:3px 6px;border-bottom:1px solid var(--vien);font-size:13px}
+  #hop-anh::backdrop{background:rgba(3,8,20,.78)}
+  #hop-anh{max-width:min(920px,92vw);width:min(920px,92vw);padding:14px;background:var(--the);border-color:var(--vien)}
+  .anh-full-wrap{display:flex;flex-direction:column;gap:10px}
+  .anh-full-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .anh-full-head b{font-size:15px;line-height:1.35}
+  .anh-full-head button{border:1px solid var(--vien);background:var(--chinh-nhat);color:var(--chinh);border-radius:18px;padding:5px 12px;cursor:pointer}
+  #anh-full{width:100%;max-height:72vh;object-fit:contain;background:#fff;border-radius:12px}
   .goi-y{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 10px}
   .goi-y button{background:var(--the);border:1px solid var(--vien);border-radius:18px;padding:6px 14px;font-size:13.5px;cursor:pointer;color:var(--muc)}
   .goi-y button:hover{border-color:var(--chinh);color:var(--chinh)}
@@ -93,6 +102,9 @@
     .nhom-goi-y{padding:11px}
     .hang-chip{flex-wrap:nowrap;overflow-x:auto;padding-bottom:2px}
     .hang-chip button{white-space:nowrap}
+    .the-sp{min-height:0}
+    .anh-sp-nho{width:112px;height:112px;margin-left:12px}
+    #hop-anh{width:96vw;max-width:96vw}
   }
   .chip-bot{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
   .chip-bot button{background:var(--chinh-nhat);border:1px solid transparent;border-radius:16px;padding:5px 12px;font-size:13px;cursor:pointer;color:var(--chinh)}
@@ -165,6 +177,16 @@
 </form>
 
 <dialog id="hop-nguon"></dialog>
+<dialog id="hop-anh" onclick="dongAnhNeuNen(event)">
+  <div class="anh-full-wrap">
+    <div class="anh-full-head">
+      <b id="anh-full-ten">Ảnh sản phẩm</b>
+      <button onclick="document.getElementById('hop-anh').close()">Đóng</button>
+    </div>
+    <img id="anh-full" alt="">
+    <div class="nguon-anh">Ảnh: dienmayxanh.com (productidweb)</div>
+  </div>
+</dialog>
 
 <script>
 // Giao dien sang/toi: uu tien lua chon da luu, chua co thi theo he dieu hanh.
@@ -301,6 +323,22 @@ function moNguon(n){
   h.showModal();
 }
 
+function moAnh(url, ten){
+  const h = document.getElementById('hop-anh');
+  document.getElementById('anh-full').src = url;
+  document.getElementById('anh-full').alt = ten || 'Ảnh sản phẩm';
+  document.getElementById('anh-full-ten').textContent = ten || 'Ảnh sản phẩm';
+  h.showModal();
+}
+
+function dongAnhNeuNen(e){
+  if (e.target && e.target.id === 'hop-anh') e.target.close();
+}
+
+window.addEventListener('keydown', e => {
+  if (e.key === 'Escape') document.getElementById('hop-anh')?.close();
+});
+
 function veSanPham(u, i){
   // Gia khuyen mai: co gia_goc > gia ban -> gach gia goc + badge % giam (so
   // % tinh tu 2 gia THAT trong catalog, khong phai so trang tri).
@@ -316,7 +354,10 @@ function veSanPham(u, i){
   }
   const qua = (u.nguon||[]).find(n => n.truong === 'qua' && n.gia_tri && n.gia_tri !== 'None');
   let s = '<div class="the-sp">';
-  if (u.anh_url) s += '<img class="anh-sp-nho" src="' + u.anh_url + '" onerror="this.remove()" alt="">';
+  if (u.anh_url) {
+    const lenhAnh = ('moAnh(' + JSON.stringify(u.anh_url) + ',' + JSON.stringify(u.ten) + ')').replace(/'/g, '&#39;');
+    s += '<img class="anh-sp-nho" src="' + u.anh_url + '" onclick=\'' + lenhAnh + '\' onerror="this.remove()" alt="' + u.ten.replace(/"/g, '&quot;') + '" title="Bấm để xem ảnh lớn">';
+  }
   else s += '<div class="anh-sp-nho" style="display:flex;align-items:center;justify-content:center;font-size:32px;color:var(--phu)">' + (ICON_NGANH[nganhHienTai] || '📦') + '</div>';
   s += '<div class="hang-to"><b>' + (i+1) + '. ' + u.ten + '</b>' + giaHtml + '</div>';
   if (qua) s += '<div class="to" style="color:var(--hon)">🎁 ' + md(String(qua.gia_tri).slice(0, 140)) + '</div>';
