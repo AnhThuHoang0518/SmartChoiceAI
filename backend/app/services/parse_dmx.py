@@ -16,12 +16,24 @@ from __future__ import annotations
 
 import re
 
-# Cac chuoi dong nghia voi "khong co du lieu" trong file that.
-RONG = {"", "không", "không có", "đang cập nhật", "hãng không công bố", "none"}
+# Khong gom "Không" (phu dinh that) voi "Hãng không công bố" (unknown).
+# ``RONG`` giu lai de cac parser SO cu coi ca hai nhom la khong co so; parser
+# boolean/text phai dung hai ham phan loai rieng ben duoi.
+KHONG_RO = {"", "đang cập nhật", "hãng không công bố", "none", "null"}
+PHU_DINH = {"không", "không có"}
+RONG = KHONG_RO | PHU_DINH
+
+
+def la_khong_ro(x) -> bool:
+    return x is None or str(x).strip().lower() in KHONG_RO
+
+
+def la_phu_dinh(x) -> bool:
+    return x is not None and str(x).strip().lower() in PHU_DINH
 
 
 def la_rong(x) -> bool:
-    return x is None or str(x).strip().lower() in RONG
+    return la_khong_ro(x) or la_phu_dinh(x)
 
 
 def parse_pham_vi(s) -> tuple[float, float] | None:

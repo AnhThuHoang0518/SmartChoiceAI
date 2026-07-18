@@ -38,7 +38,7 @@ from backend.app.schemas.ket_qua import (
     UngVien,
     dong_so_sanh,
 )
-from backend.app.services.parse_dmx import parse_gia
+from backend.app.services.parse_dmx import la_khong_ro, parse_gia
 
 
 class SanPhamChung(BaseModel):
@@ -159,7 +159,8 @@ class Nganh:
                     nguon["qua"] = _ng("qua", chu["qua"], ma,
                                         "catalog:khuyến mãi quà", lay_luc=lay_luc)
                 for c, meta in cot_chu.items():
-                    chu[c] = (r.get(c) or "").strip()
+                    raw = r.get(c)
+                    chu[c] = "" if la_khong_ro(raw) else str(raw).strip()
                     if chu[c]:
                         nguon[c] = _ng(c, chu[c], ma, meta["nguon"], lay_luc=lay_luc)
                 ds.append(SanPhamChung(ma_sp=ma, ten=r["ten"], hang=r["hang"],

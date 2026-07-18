@@ -705,6 +705,47 @@
     }
    ],
    "_ghi_chu": "N3: giai trinh xep hang bang bang diem code da tinh, 0 LLM"
+  },
+  {
+   "ten": "phu_dinh_hang_khong_phai_LG",
+   "can_du_lieu_that": true,
+   "tin_dau": "máy lạnh không phải LG tầm 15tr phòng 18m2 không nắng phòng ngủ",
+   "ky_vong_loai": "tu_van",
+   "toi_da_cau_hoi": 1,
+   "ky_vong_o": {
+    "hang_tru": "LG"
+   },
+   "_ghi_chu": "P0: 'khong phai LG' -> LOAI LG (truoc day hieu nguoc thanh chon LG)"
+  },
+  {
+   "ten": "so_tien_viet_bang_chu",
+   "tin_dau": "máy lạnh khoảng mười lăm triệu phòng 18m2 không nắng phòng ngủ",
+   "ky_vong_loai": "tu_van",
+   "toi_da_cau_hoi": 1,
+   "ky_vong_o": {
+    "ngan_sach_max": 15000000
+   },
+   "_ghi_chu": "P0: 'muoi lam trieu' -> 15tr"
+  },
+  {
+   "ten": "giai_thich_kien_thuc_inverter",
+   "tin_dau": "inverter với non-inverter khác nhau thế nào?",
+   "ky_vong_loai": "giai_thich",
+   "toi_da_cau_hoi": 0,
+   "_ghi_chu": "Che do giai thich kien thuc, khong lac sang hoi ngan sach"
+  },
+  {
+   "ten": "da_y_may_lanh_va_tu_lanh",
+   "tin_dau": "máy lạnh 15tr phòng 18m2 không nắng phòng ngủ và tủ lạnh cho nhà 4 người",
+   "ky_vong_loai": "bat_ky_khong_loi",
+   "toi_da_cau_hoi": 1,
+   "tiep_theo": [
+    {
+     "tin": "Tư vấn tiếp tủ lạnh",
+     "ky_vong_loai": "bat_ky_khong_loi"
+    }
+   ],
+   "_ghi_chu": "Tinh agent: hang doi da y - xu may lanh xong de xuat + chuyen tu lanh"
   }
  ]
 }

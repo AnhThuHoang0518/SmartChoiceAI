@@ -17,8 +17,10 @@ class Nguon(BaseModel):
 
     truong: str = Field(description="vd: gia, do_on_db, ton_kho")
     gia_tri: str = Field(description="Gia tri da chuan hoa, dang chuoi de log")
-    nguon: str = Field(description="vd: price_api, catalog.csv, mo_ta_san_pham")
-    lay_luc: str = Field(description="ISO 8601")
+    nguon: str = Field(description="vd: catalog:Giá bán, catalog:Độ ồn")
+    lay_luc: str = Field(
+        description="ISO 8601 cua tep du lieu; khong dong nghia gia hien tai"
+    )
     ma_sp: str
     suy_luan: bool = Field(
         False,

@@ -12,6 +12,18 @@
     "sau_cm": {"nguon": "catalog:Sâu", "ro": "cm"}
   },
   "cot_chu": { "loai": {"nguon": "catalog:Loại sản phẩm"} },
+  "yeu_cau_khong_co_du_lieu": [
+    {
+      "truong": "do_on",
+      "mau": ["do\\s*on", "duoi\\s*\\d{2}\\s*db", "gan\\s*phong\\s*ngu"],
+      "text": "Dạ catalog tủ mát/tủ đông hiện chưa có trường độ ồn, nên em chưa thể lọc theo dB hoặc xác nhận tủ phù hợp đặt gần phòng ngủ ạ."
+    },
+    {
+      "truong": "chuyen_doi_mat_dong",
+      "mau": ["doi\\s*qua\\s*lai", "chuyen\\s*(?:doi)?.{0,15}tu\\s*(?:mat|dong)", "vua\\s*mat\\s*vua\\s*dong"],
+      "text": "Dạ dữ liệu hiện chưa có trường chuyển đổi qua lại giữa chế độ tủ mát và tủ đông, nên em chưa thể xác nhận model nào có tính năng này ạ."
+    }
+  ],
   "o_nhu_cau": {
     "loai": {
       "kieu": "chu", "bat_buoc": true,

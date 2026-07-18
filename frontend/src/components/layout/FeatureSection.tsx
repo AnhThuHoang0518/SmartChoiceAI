@@ -64,8 +64,8 @@ const features = [
   },
   {
     icon: CustomShieldIcon,
-    title: "Cập nhật liên tục",
-    description: "Thông tin giá, tồn kho, khuyến mãi được cập nhật mới nhất",
+    title: "Nguồn minh bạch",
+    description: "Giá và khuyến mãi kèm nguồn; hệ thống nói rõ khi thiếu thời điểm cập nhật hoặc tồn kho",
     color: "text-[#8B5CF6]",
     bg: "bg-[#F3E8FF]"
   }

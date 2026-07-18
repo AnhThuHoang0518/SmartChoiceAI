@@ -12,6 +12,7 @@ Dung 2 lan cham LLM cho ca luot. Moi thu quyet dinh deu la code.
 """
 from __future__ import annotations
 
+import re
 import time
 
 from fastapi import APIRouter
@@ -116,13 +117,16 @@ GOI_Y_O = {
 }
 
 
-def _goi_y_tu_van(top3, giong: str) -> list[str]:
+def _goi_y_tu_van(top3, giong: str, p: dict | None = None) -> list[str]:
     ra = []
     if len(top3) >= 2:
         ra.append("So sánh máy 1 và máy 2")
     ra.append("Vì sao chọn máy 1?")
     if giong != "ky_thuat":
         ra.append("Cho xin thông số chi tiết")
+    # TINH AGENT: con nganh trong hang doi -> chu dong de xuat xem tiep
+    if p:
+        ra += _de_xuat_nganh_cho(p)
     return ra
 
 
@@ -239,6 +243,42 @@ def _cac_hang_toan_he() -> set[str]:
             hang |= {s.hang for s in ng.catalog()}
         _HANG = {h for h in hang if h}
     return _HANG
+
+
+def _cac_nganh_trong_cau(text: str) -> list[str]:
+    """Danh sach TEN NGANH khach nhac trong 1 cau (theo THU TU xuat hien) - de
+    xu ly da y ("may lanh va tu lanh"). Tra ten hien thi de dua vao chip."""
+    from backend.app.core.chuan_hoa_tv import bo_dau
+    from backend.app.nganh.khung import cac_nganh
+    kd = bo_dau(text or "").lower()
+    tim = []
+    if co_nganh_may_lanh(text):
+        tim.append(("máy lạnh", kd.find("may lanh") if "may lanh" in kd else kd.find("dieu hoa")))
+    if co_nganh_tu_lanh(text):
+        tim.append(("tủ lạnh", kd.find("tu lanh")))
+    for ng in cac_nganh():
+        for tk in ng.cfg["tu_khoa_nganh"]:
+            i = kd.find(tk)
+            if i >= 0:
+                tim.append((ng.ten_hien_thi, i))
+                break
+    # loai trung ten, sap theo vi tri xuat hien
+    thay, ra = set(), []
+    for ten, vt in sorted(tim, key=lambda x: x[1] if x[1] >= 0 else 999):
+        if ten not in thay:
+            thay.add(ten)
+            ra.append(ten)
+    return ra
+
+
+def _de_xuat_nganh_cho(p: dict) -> list[str]:
+    """Sau khi tu van xong 1 nganh, neu con nganh trong hang doi -> chip de xuat
+    xem tiep (tinh agent: chu dong dan khach qua nhu cau tiep theo)."""
+    cho = p.get("nganh_cho") or []
+    if not cho:
+        return []
+    ke = cho[0]
+    return [f"Tư vấn tiếp {ke}"]
 
 
 def _hang_trong_cau(text: str, ds_nganh, ten_nganh: str):
@@ -398,7 +438,7 @@ def _xu_ly_tu_lanh(t: TinNhan, ma: str, p: dict, t0: float, giong: str) -> TraLo
     return TraLoi(
         phien_id=ma, loai="tu_van", text=text_cuoi,
         o_nhu_cau=nc.model_dump(exclude_none=True, mode="json"),
-        goi_y=_goi_y_tu_van(bang.top3, giong),
+        goi_y=_goi_y_tu_van(bang.top3, giong, p),
         top3=p["top3_truoc"],
         loai_noi_bat=bang.loai_noi_bat.model_dump(mode="json") if bang.loai_noi_bat else None,
         thong_ke={"ms": int((time.perf_counter() - t0) * 1000), "cham_llm": 2,
@@ -484,7 +524,7 @@ def _xu_ly_nganh_khung(t: TinNhan, ma: str, p: dict, t0: float, giong: str,
     return TraLoi(
         phien_id=ma, loai="tu_van", text=r["text"],
         o_nhu_cau=nc.dump(),
-        goi_y=_goi_y_tu_van(bang.top3, giong),
+        goi_y=_goi_y_tu_van(bang.top3, giong, p),
         top3=p["top3_truoc"],
         loai_noi_bat=bang.loai_noi_bat.model_dump(mode="json") if bang.loai_noi_bat else None,
         thong_ke={"ms": int((time.perf_counter() - t0) * 1000), "cham_llm": 2,
@@ -628,6 +668,49 @@ def chat(t: TinNhan) -> TraLoi:
                       "truong_doi_chieu": hoi_tiep["truong"]},
         )
 
+    # Yeu cau can thiep vao quy tac du lieu (null=0, gia nguoc, freshness...)
+    # duoc tra bang CODE truoc router nganh. Khong cho LLM "thu lam theo".
+    from backend.app.core.quy_tac_du_lieu import tra_loi_quy_tac_du_lieu
+    if quy_tac := tra_loi_quy_tac_du_lieu(t.tin_nhan):
+        ma_quy_tac, noi_dung = quy_tac
+        return TraLoi(
+            phien_id=ma,
+            loai="quy_tac_du_lieu",
+            text=noi_dung,
+            thong_ke={"ms": int((time.perf_counter() - t0) * 1000),
+                      "cham_llm": 0, "quy_tac": ma_quy_tac},
+        )
+
+    # Hai intent KHONG can biet nganh: catalog hien khong co ton kho va diem
+    # "dep/sang/ben nhat" la chu quan. Bat som de cau "tu nao con hang" khong
+    # roi xuong fallback may lanh. Cau vua hoi giam gia VUA hoi ton kho van de
+    # nhanh khuyen mai tinh gia co nguon, roi chen canh bao ton kho o cuoi.
+    if hoi_ton_kho(t.tin_nhan) and not hoi_khuyen_mai(t.tin_nhan):
+        return TraLoi(
+            phien_id=ma,
+            loai="thieu_du_lieu",
+            text=("Dạ catalog hiện chưa có dữ liệu tồn kho theo cửa hàng/khu vực "
+                  "hoặc lịch giao hàng ạ. Em chưa thể xác nhận sản phẩm nào còn "
+                  "hàng hay giao ngày mai và sẽ không đoán; phần này cần Stock API "
+                  "chính thức. Em vẫn có thể tư vấn sản phẩm theo nhu cầu và giá "
+                  "trong dữ liệu nguồn."),
+            thong_ke={"ms": int((time.perf_counter() - t0) * 1000),
+                      "cham_llm": 0, "truong_thieu": "ton_kho"},
+        )
+
+    if tieu_chi_cq_som := hoi_chu_quan(t.tin_nhan):
+        return TraLoi(
+            phien_id=ma,
+            loai="chu_quan",
+            text=(f"Dạ tiêu chí “{tieu_chi_cq_som}” phụ thuộc gu và trải nghiệm "
+                  "nên catalog không có điểm khách quan để em xếp hạng ạ. Em "
+                  "không gọi máy nào là đẹp, sang hay tốt nhất nếu không có bằng "
+                  "chứng. Anh chị có thể cho em loại sản phẩm và tiêu chí đo được "
+                  "như kích thước, giá hoặc điện năng để em lọc."),
+            thong_ke={"ms": int((time.perf_counter() - t0) * 1000),
+                      "cham_llm": 0, "tieu_chi_chu_quan": tieu_chi_cq_som},
+        )
+
     # Khach bam loi tat / noi chung chung "tu van san pham" -> PHẢI hoi san
     # pham gi truoc. Khong duoc muon nganh cu trong phien (vd vua xem khuyen
     # mai may lanh xong) roi nhay sang hoi ngan sach nhu screenshot demo.
@@ -753,6 +836,19 @@ def chat(t: TinNhan) -> TraLoi:
             la_cau_hoi_rieng = "?" in t.tin_nhan or bool(_re.search(
                 r"\b(?:co khong|bao nhieu|the nao|la gi|duoc khong)\b", kd_thieu
             ))
+            # Rang buoc lap dat la hard constraint. Khong co field thi dung
+            # ngay, khong dua top may chi dua tren dien tich/gia.
+            if "ong_dong" in moi:
+                p["canh_bao_nguon_may_lanh"] = []
+                return TraLoi(
+                    phien_id=ma,
+                    loai="thieu_du_lieu",
+                    text=canh_bao_may_lanh_chua_co_nguon(moi),
+                    top3=p.get("top3_truoc") or [],
+                    thong_ke={"ms": int((time.perf_counter() - t0) * 1000),
+                              "cham_llm": 0, "nganh": "may_lanh",
+                              "truong_thieu": sorted(moi)},
+                )
             if p.get("top3_truoc") and la_cau_hoi_rieng:
                 p["canh_bao_nguon_may_lanh"] = []
                 return TraLoi(
@@ -860,6 +956,38 @@ def chat(t: TinNhan) -> TraLoi:
             thong_ke={"ms": int((time.perf_counter() - t0) * 1000),
                       "cham_llm": 0, "can_lam_ro_nganh": True},
         )
+
+    # CHE DO GIAI THICH KIEN THUC: "inverter khac gi non-inverter", "HP la gi"
+    # -> tra loi bang kien thuc nganh (template, KHONG LLM) roi keo ve nhu cau.
+    from backend.app.core.giai_thich_kien_thuc import giai_thich_kien_thuc
+    gt = giai_thich_kien_thuc(t.tin_nhan)
+    if gt:
+        return TraLoi(phien_id=ma, loai="giai_thich", text=gt,
+                      thong_ke={"ms": int((time.perf_counter() - t0) * 1000),
+                                "cham_llm": 0, "che_do": "kien_thuc"})
+
+    # TINH AGENT - HANG DOI DA Y: khach noi >1 nganh trong 1 cau ("may lanh...
+    # va tu lanh..."). Xu nganh DAU, nho nganh sau vao p["nganh_cho"], xong flug
+    # nganh dau se tu de xuat xem tiep. Chi lam khi CHUA co nganh dang do.
+    if not p.get("nganh") and not p.get("nganh_cho"):
+        # _cac_nganh_trong_cau phu ca 2 vertical (may lanh/tu lanh) LAN khung,
+        # tra TEN HIEN THI theo thu tu xuat hien.
+        cac_ng = _cac_nganh_trong_cau(t.tin_nhan)
+        if len(cac_ng) >= 2:
+            p["nganh_cho"] = cac_ng[1:]     # hang doi cac nganh con lai
+
+    # Khach bam "Tu van tiep X" -> lay nganh dau hang doi ra, reset o nhu cau de
+    # tu van nganh moi (ngan sach chung van giu). Tinh agent: hoan thanh ke hoach.
+    import re as _re
+    if _re.match(r"^\s*tư vấn tiếp\s+", t.tin_nhan.lower()) and p.get("nganh_cho"):
+        ke = p["nganh_cho"].pop(0)
+        if not p["nganh_cho"]:
+            p.pop("nganh_cho", None)
+        p["nganh"] = None
+        for k in [x for x in p if x.startswith("nhu_cau_")]:
+            p.pop(k, None)
+        p.pop("nhu_cau_tl", None)
+        t = TinNhan(tin_nhan=ke, phien_id=t.phien_id)   # dan lai bang ten nganh
 
     # SO SANH TRUC TIEP 2 may trong top 3 vua tu van - bang do code dung tu
     # du lieu da luu, khong LLM. Chi bat khi phien DA co bang ket qua.
@@ -975,10 +1103,14 @@ def chat(t: TinNhan) -> TraLoi:
         p["ngan_sach_chung"] = nc.ngan_sach_max
 
     # Loc theo HANG - khach neu ten hang ("co may LG khong") la loc that;
-    # "hang nao cung duoc" la xoa loc.
+    # "hang nao cung duoc" la xoa loc; "khong phai LG" la TRU hang.
+    from backend.app.core.chuan_hoa_tv import tru_hang
     if bo_hang(t.tin_nhan):
-        nc = nc.model_copy(update={"hang": None})
+        nc = nc.model_copy(update={"hang": None, "hang_tru": None})
     else:
+        ht = tru_hang(t.tin_nhan, _cac_hang_toan_he())
+        if ht:
+            nc = nc.model_copy(update={"hang_tru": ht})   # "khong phai LG" -> loai LG
         h, tu_choi_hang = _hang_trong_cau(t.tin_nhan, ds, "máy lạnh")
         if tu_choi_hang and (co_nganh_may_lanh(t.tin_nhan) or p.get("nganh") == "may_lanh"):
             phien.ghi(ma, nc, None)
@@ -1261,7 +1393,7 @@ def chat(t: TinNhan) -> TraLoi:
         text=text_cuoi,
         o_nhu_cau=nc.model_dump(exclude_none=True, mode="json"),
         vi_sao_hoi=diem,
-        goi_y=_goi_y_tu_van(bang.top3, giong),
+        goi_y=_goi_y_tu_van(bang.top3, giong, p),
         top3=p["top3_truoc"],
         loai_noi_bat=bang.loai_noi_bat.model_dump(mode="json") if bang.loai_noi_bat else None,
         thong_ke={

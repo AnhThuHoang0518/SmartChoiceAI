@@ -21,6 +21,7 @@ Hai cai bay con lai:
 from __future__ import annotations
 
 import re
+import unicodedata
 
 from backend.app.schemas.ket_qua import BangKetQua
 
@@ -90,6 +91,66 @@ _NHU_CAU_RO = {
     "dien_tich_m2": "m2", "ngan_sach_max": "tien", "so_nguoi": "nguoi",
     "ngang_cm": "cm", "cao_cm": "cm", "sau_cm": "cm",
 }
+
+
+# Claim dinh tinh ma LLM hay tu them du khong co so. Moi muc la:
+# (ten claim, mau trong cau tra loi, mau bat buoc phai co trong evidence).
+# Chi liet ke cac loi ich co rui ro cao; cac ket luan CODE da tinh nhu re/dat,
+# phu hop hard constraint va trade-off khong bi giao lai cho validator nay.
+_LUAT_KHANG_DINH: tuple[tuple[str, str, str], ...] = (
+    ("độ bền", r"\b(?:ben bi|do ben cao|rat ben)\b", r"\b(?:do_ben|do ben|ben bi)\b"),
+    ("khử/diệt khuẩn", r"\b(?:khu khuan|diet khuan|khang khuan)\b",
+     r"\b(?:khu khuan|diet khuan|khang khuan|uvc?|tia uv)\b"),
+    ("lọc không khí", r"\b(?:loc khong khi|loc bui|khu mui)\b",
+     r"\b(?:loc khong khi|loc bui|khu mui)\b"),
+    ("an toàn cho trẻ nhỏ", r"\b(?:an toan cho tre|bao ve tre|tre nho an toan)\b",
+     r"\b(?:khoa tre em|an toan cho tre|che do tre em)\b"),
+    ("chạy êm", r"\b(?:chay em|van hanh em|yen tinh|it on|do on thap)\b",
+     r"\b(?:do_on(?:_db)?|do on|decibel|db)\b"),
+    ("tiết kiệm điện", r"\b(?:tiet kiem dien|it ton dien|an it dien)\b",
+     r"\b(?:cspf|dien_kwh|dien_wh|dien nang|hieu suat nang luong)\b"),
+    ("làm lạnh nhanh", r"\b(?:lam lanh nhanh|lanh nhanh)\b",
+     r"\b(?:lam_lanh_nhanh|lam lanh nhanh)\b"),
+    ("chống nước", r"\b(?:chong nuoc|khang nuoc|di boi)\b",
+     r"\b(?:chong_nuoc|khang_nuoc|ip\d{2}|atm)\b"),
+)
+
+
+def _bo_dau(text: str) -> str:
+    t = unicodedata.normalize("NFD", text or "")
+    t = "".join(c for c in t if unicodedata.category(c) != "Mn").lower()
+    return t.replace("đ", "d")
+
+
+def _evidence_chu(bang: BangKetQua) -> str:
+    """Chu hoa evidence co gia tri that; bo field phu dinh/rong.
+
+    Vi du ``lam_lanh_nhanh = Khong ghi nhan`` khong duoc dung de bao may lam
+    lanh nhanh chi vi ten field co chu do.
+    """
+    phan: list[str] = []
+    rong = {"", "none", "null", "khong", "khong co", "khong ghi nhan",
+            "hang khong cong bo", "dang cap nhat", "false", "0"}
+    for u in bang.top3:
+        for n in u.nguon:
+            gt = _bo_dau(str(n.gia_tri)).strip()
+            if gt in rong:
+                continue
+            phan.append(f"{n.truong} {n.nguon} {n.gia_tri}")
+        phan.extend(x.truc for x in u.hon)
+        phan.extend(x.truc for x in u.kem)
+    return _bo_dau(" ".join(phan))
+
+
+def hau_kiem_khang_dinh(text: str, bang: BangKetQua) -> list[str]:
+    """Chan loi ich dinh tinh khong co field/mo ta ho tro trong evidence."""
+    cau = _bo_dau(text)
+    evidence = _evidence_chu(bang)
+    loi = []
+    for ten, mau_claim, mau_nguon in _LUAT_KHANG_DINH:
+        if re.search(mau_claim, cau) and not re.search(mau_nguon, evidence):
+            loi.append(f'khẳng định "{ten}" không có trường nguồn hỗ trợ trong bảng kết quả')
+    return loi
 
 
 def _so(s: str) -> float | None:
@@ -184,7 +245,7 @@ def hau_kiem(
         if any(abs(v - h) <= max(dung_sai * max(abs(h), 1.0), 0.05) for h in hop_le):
             continue
         loi.append(f'"{nguyen_van}" không khớp dữ liệu nào ({don_vi}) trong bảng kết quả')
-    return loi
+    return loi + hau_kiem_khang_dinh(text, bang)
 
 
 def ban_du_phong(bang: BangKetQua, cau_mau: str) -> str:

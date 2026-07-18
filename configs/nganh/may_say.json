@@ -15,6 +15,28 @@
     "sau_cm": {"nguon": "catalog:Sâu", "ro": "cm"}
   },
   "cot_chu": { "loai": {"nguon": "catalog:Loại sản phẩm"} },
+  "yeu_cau_khong_co_du_lieu": [
+    {
+      "truong": "tien_ich_cam_bien",
+      "mau": ["chong\\s*nhan", "cam\\s*bien\\s*do\\s*am"],
+      "text": "Dạ catalog máy sấy hiện chưa có trường chống nhăn và cảm biến độ ẩm, nên em chưa thể lọc hay khẳng định máy nào có các tính năng này ạ."
+    },
+    {
+      "truong": "thoi_gian_say",
+      "mau": ["say\\s*nhanh", "nhanh\\s*nhat"],
+      "text": "Dạ catalog hiện chưa có thời gian sấy theo cùng chương trình và cùng tải, nên em chưa thể kết luận máy nào sấy nhanh nhất ạ. Công suất W không đủ để suy ra thời gian sấy."
+    },
+    {
+      "truong": "an_toan_tre_em",
+      "mau": ["an\\s*toan.{0,20}tre", "tre\\s*(?:em|nho)"],
+      "text": "Dạ dữ liệu máy sấy hiện chưa có trường khóa trẻ em/tính năng an toàn để so sánh. Có nhiệt độ tối đa thôi chưa đủ để gọi máy nào an toàn nhất cho trẻ nhỏ ạ."
+    },
+    {
+      "truong": "ong_thoat_khi",
+      "mau": ["ong\\s*thoat\\s*khi", "dai\\s*ong", "lap\\s*dat.{0,20}thong\\s*hoi"],
+      "text": "Dạ catalog hiện chưa có chiều dài và yêu cầu lắp ống thoát khí, nên em chưa thể xác nhận phương án lắp máy sấy thông hơi này ạ. Cần kiểm tra tài liệu lắp đặt chính thức của đúng model."
+    }
+  ],
   "o_nhu_cau": {
     "tai_kg": {
       "kieu": "so", "bat_buoc": true,

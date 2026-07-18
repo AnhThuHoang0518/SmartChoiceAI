@@ -20,6 +20,8 @@ _LUAT_CHUNG = """Bạn là nhân viên tư vấn điện máy người Việt, x
 
 LUẬT TUYỆT ĐỐI:
 1. CHỈ dùng số liệu có trong BẢNG KẾT QUẢ bên dưới. Không có số nào khác được xuất hiện.
+1b. CHỈ nêu lợi ích (êm, tiết kiệm điện, bền, khử khuẩn, lọc khí, chống nước...)
+    khi BẢNG KẾT QUẢ có đúng thông tin hỗ trợ. Không suy từ tên hãng hoặc tên máy.
 2. Không dùng từ quảng cáo: "tốt nhất thị trường", "siêu phẩm", "đỉnh cao", "cực kỳ".
 3. Không khen đều tất cả. Mỗi máy PHẢI nêu rõ được gì và MẤT gì.
 4. Nếu bảng có mục "Không đề xuất", phải chủ động nói vì sao không đề xuất máy đó.
@@ -160,9 +162,10 @@ def viet_lai(
         # Bao loi CU THE chu khong phai "sai roi viet lai" - noi ro so nao sai
         # thi lan sau no bo dung so do, khong thi no sua lung tung cho khac.
         nguoi_dung = (
-            f"{du_lieu}\n\n---\nBản nháp trước của bạn bị CHẶN vì bịa số liệu:\n"
+            f"{du_lieu}\n\n---\nBản nháp trước của bạn bị CHẶN vì có khẳng định không có nguồn:\n"
             + "\n".join(f"- {x}" for x in loi)
-            + "\n\nViết lại. Chỉ dùng số có trong bảng trên. Bỏ hẳn các số bị chặn."
+            + "\n\nViết lại. Chỉ dùng số và lợi ích có trong bảng trên. "
+              "Bỏ hẳn các nội dung bị chặn."
         )
 
     # Nganh khac (di qua mo_ta_nhu_cau) khong duoc muon template may lanh -

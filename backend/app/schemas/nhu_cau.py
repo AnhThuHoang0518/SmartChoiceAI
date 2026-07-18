@@ -60,6 +60,7 @@ class ONhuCauMayLanh(BaseModel):
     uu_tien: list[UuTien] = Field(default_factory=list)
     khu_vuc: str | None = Field(None, description="Tinh/TP - de tra ton kho")
     hang: str | None = Field(None, description="Loc theo hang khach neu (doi chieu catalog)")
+    hang_tru: str | None = Field(None, description="Hang khach KHONG muon ('khong phai LG') -> loai")
     can_inverter: bool | None = Field(None, description="True=chi Inverter, False=chi mono, None=khong rang buoc")
 
     def con_trong(self) -> list[str]:

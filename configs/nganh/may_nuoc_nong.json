@@ -26,6 +26,38 @@
    "nguon": "catalog:Tính năng an toàn"
   }
  },
+ "yeu_cau_khong_co_du_lieu": [
+  {
+   "truong": "bom_tro_luc_ap_luc_nuoc",
+   "mau": ["bom\\s*tro\\s*luc", "ap\\s*luc\\s*nuoc", "nuoc\\s*yeu"],
+   "text": "Dạ catalog máy nước nóng hiện chưa có trường bơm trợ lực và dải áp lực nước hoạt động, nên em chưa thể xác nhận máy nào phù hợp nơi nước yếu ạ."
+  },
+  {
+   "truong": "kich_thuoc",
+   "mau": ["hoc\\s*\\d", "\\d{2,3}\\s*[x×]\\s*\\d{2,3}", "phong\\s*tam\\s*nho"],
+   "text": "Dạ dữ liệu máy nước nóng hiện chưa có đủ cao/rộng/dài/dày của từng model, nên em chưa thể xác nhận máy nào đặt vừa hốc ạ. Cần đối chiếu kích thước lắp đặt chính thức."
+  },
+  {
+   "truong": "chat_lieu_chong_gi",
+   "mau": ["chong\\s*gi", "chat\\s*lieu\\s*(?:than|ruot)"],
+   "text": "Dạ catalog hiện chưa có đủ chất liệu thân vỏ/ruột bình để so khả năng chống gỉ, nên em chưa thể gọi máy nào chống gỉ tốt nhất ạ."
+  },
+  {
+   "truong": "thoi_gian_giu_nhiet",
+   "mau": ["cong\\s*suat.{0,30}tiet\\s*kiem\\s*dien", "giu\\s*nhiet", "dung\\s*duoc\\s*bao\\s*lau"],
+   "text": "Dạ công suất W cao hơn không tự chứng minh tiết kiệm điện hơn. Catalog chưa có thời gian sử dụng/giữ nhiệt cùng điều kiện để tính điện năng, nên em chưa thể kết luận ạ."
+  },
+  {
+   "truong": "nhiet_do_toi_da",
+   "mau": ["nhiet\\s*do", "\\d{2,3}\\s*do\\s*c", "gioi\\s*han\\s*nhiet"],
+   "text": "Dạ catalog hiện chưa có nhiệt độ tối đa và dải tùy chỉnh theo từng model; chỉ tên tính năng an toàn chưa đủ để kết luận mức nhiệt nào an toàn cho trẻ ạ."
+  },
+  {
+   "truong": "nang_luong_mat_troi",
+   "mau": ["nang\\s*luong\\s*mat\\s*troi", "tam\\s*thu\\s*nhiet", "ngay\\s*it\\s*nang"],
+   "text": "Dạ dữ liệu hiện chưa có loại tấm thu nhiệt, thời gian giữ nhiệt và điều kiện nắng, nên em chưa thể tính máy nước nóng năng lượng mặt trời dùng được bao lâu vào ngày ít nắng ạ."
+  }
+ ],
  "o_nhu_cau": {
   "loai": {
    "kieu": "chu",

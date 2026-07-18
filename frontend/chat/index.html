@@ -538,7 +538,9 @@ function moNguon(n){
     + '<tr><td>Trường</td><td><b>' + nhan(n.truong) + '</b></td></tr>'
     + '<tr><td>Giá trị</td><td>' + n.gia_tri + '</td></tr>'
     + '<tr><td>Nguồn</td><td>' + n.nguon + '</td></tr>'
-    + '<tr><td>Lấy lúc</td><td>' + n.lay_luc + '</td></tr>'
+    + '<tr><td>Tệp dữ liệu lúc</td><td>' + n.lay_luc + '</td></tr>'
+    + (String(n.nguon || '').toLowerCase().includes('giá')
+      ? '<tr><td>Độ mới giá</td><td>Chưa có updated_at từ nguồn giá; không xem là giá hiện tại</td></tr>' : '')
     + '<tr><td>Mã SP</td><td>' + n.ma_sp + '</td></tr>'
     + (n.suy_luan ? '<tr><td>Lưu ý</td><td>⚠ suy luận từ mô tả, không phải field chính thức</td></tr>' : '')
     + '</table><br><button class="gui" onclick="this.closest(\'dialog\').close()">Đóng</button>';

@@ -83,6 +83,47 @@ def can_hoi_lam_ro_nganh(text: str) -> bool:
     ))
 
 
+_DON_VI_CHU = {"khong": 0, "mot": 1, "hai": 2, "ba": 3, "bon": 4, "nam": 5,
+               "sau": 6, "bay": 7, "tam": 8, "chin": 9, "lam": 5, "tu": 4}
+
+
+def _cum_so_chu(cum: str) -> int | None:
+    """'muoi lam' -> 15 | 'hai muoi lam' -> 25 | 'nam' -> 5 | 'muoi' -> 10.
+    Xu 1-99 (du cho tien trieu/ty noi mieng). Khong parse duoc -> None."""
+    tu = cum.split()
+    if not tu:
+        return None
+    if "muoi" not in tu and "mươi" not in cum:
+        return _DON_VI_CHU.get(tu[0]) if len(tu) == 1 and tu[0] in _DON_VI_CHU else None
+    i = tu.index("muoi") if "muoi" in tu else -1
+    chuc = _DON_VI_CHU.get(tu[i - 1], 1) if i > 0 else 1     # 'muoi' don = 10
+    donvi = _DON_VI_CHU.get(tu[i + 1], 0) if i + 1 < len(tu) else 0
+    return chuc * 10 + donvi
+
+
+def _so_chu_thanh_so(s: str) -> str:
+    """'muoi lam trieu' -> '15 triệu'. Chi doi cum chu DUNG TRUOC trieu/ty/nghin
+    (khong dong cham 'nam' trong 'nam nay', 'ba' trong 'ba me...')."""
+    kd = bo_dau(s).lower()
+    def _thay(m):
+        n = _cum_so_chu(m.group(1).strip())
+        return f"{n} {m.group(2)}" if n else m.group(0)
+    # tim vi tri cum-chu + don vi tren ban KHONG DAU, thay bang so tren ban goc
+    mau = re.compile(r"\b((?:mot|hai|ba|bon|nam|sau|bay|tam|chin|muoi|lam|tu)"
+                     r"(?:\s+(?:muoi|mot|hai|ba|bon|nam|sau|bay|tam|chin|lam|tu)){0,2})"
+                     r"\s+(trieu|ty|ti|nghin)\b")
+    ra, dich = [], 0
+    for m in mau.finditer(kd):
+        n = _cum_so_chu(m.group(1).strip())
+        if n:
+            ra.append(s[dich:m.start()])
+            dv = {"trieu": "triệu", "ty": "tỷ", "ti": "tỷ", "nghin": "nghìn"}[m.group(2)]
+            ra.append(f"{n} {dv}")
+            dich = m.end()
+    ra.append(s[dich:])
+    return "".join(ra)
+
+
 def chuan_hoa_tien(s: str) -> str:
     """'20tr' -> '20000000'. '500k' -> '500000'.
 
@@ -101,6 +142,10 @@ def chuan_hoa_tien(s: str) -> str:
         v = float(m.group(1).replace(",", "."))
         return str(int(v * 1_000_000_000))
 
+    # SO VIET BANG CHU -> so: "muoi lam trieu" -> "15 trieu" (chay dau tien de
+    # cac luat trieu/ty ben duoi bat duoc). Khach noi mieng hay dung chu -
+    # test case chac chan co. Chi doi khi DUNG TRUOC don vi tien.
+    s = _so_chu_thanh_so(s)
     # 'X trieu ruoi' -> X.5 trieu (quy doi tieng Viet, chay TRUOC luat trieu)
     s = re.sub(r"\b([\d]+)\s*(?:triệu|trieu|tr)\s*(?:rưỡi|ruoi)\b",
                lambda m: str(int((int(m.group(1)) + 0.5) * 1_000_000)), s, flags=re.I)
@@ -137,7 +182,7 @@ def co_nganh_may_lanh(text: str) -> bool:
 
 def co_nganh_tu_lanh(text: str) -> bool:
     """Khach nhac tu lanh - nganh thu 2 da co vertical rieng."""
-    return bool(re.search(r"\btu lanh\b|\bfridge\b|\brefrigerator\b",
+    return bool(re.search(r"\btu lanh\b|\bfridge\b|\brefrigerator\b|\bside[ -]?by[ -]?side\b",
                           bo_dau(text or "").lower()))
 
 
@@ -328,7 +373,36 @@ def trich_hang(text: str, cac_hang: set[str]) -> str | None:
             if (du_dai or ten_ngan) and _co(tu):
                 ung_vien.append((len(tu), h))
                 break
-    return max(ung_vien)[1] if ung_vien else None
+    if not ung_vien:
+        return None
+    h = max(ung_vien)[1]
+    # PHU DINH: "khong phai LG", "tru Samsung", "dung lay Aqua" -> KHONG chon
+    # hang do (bug that: truoc day hieu nguoc thanh CHON). Tra None de caller
+    # goi tru_hang() lay hang can loai.
+    hb = bo_dau(h).lower()
+    tu_dau = re.split(r"[^a-z0-9]+", hb)[0]
+    truoc = kd[:kd.find(tu_dau)] if tu_dau in kd else ""
+    if re.search(r"(?:khong|ko|chang|dung|tru|ngoai|khac)\s*(?:phai|lay|thich|muon)?\s*$",
+                 truoc[-18:]):
+        return None
+    return h
+
+
+def tru_hang(text: str, cac_hang: set[str]) -> str | None:
+    """Hang khach KHONG muon: 'khong phai LG', 'tru Samsung'. Tra ten hang de
+    LOAI khoi ket qua (nguoc voi trich_hang)."""
+    kd = bo_dau(text or "").lower()
+    if not re.search(r"\b(?:khong|ko|chang|dung|tru|ngoai|khac)\b", kd):
+        return None
+    for h in cac_hang:
+        if not h:
+            continue
+        hb = re.sub(r"[^a-z0-9]+", " ", bo_dau(h).lower()).strip()
+        for tu in ([hb] + hb.split()):
+            if (len(tu) >= 2 and tu not in _TU_MO_HO
+                    and re.search(rf"(?:khong|ko|chang|dung|tru|ngoai|khac)\s*(?:phai|lay|thich|muon)?\s*{re.escape(tu)}\b", kd)):
+                return h
+    return None
 
 
 def bo_hang(text: str) -> bool:

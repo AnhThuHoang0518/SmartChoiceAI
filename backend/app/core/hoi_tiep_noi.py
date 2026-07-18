@@ -174,6 +174,8 @@ def tieu_chi_may_lanh_chua_co_nguon(text: str) -> set[str]:
         ra.add("tre_nho")
     if re.search(r"\b(?:nhiet do|dai nhiet|bao nhieu do c|chinh may do)\b", kd):
         ra.add("nhiet_do")
+    if re.search(r"\b(?:ong dong|dai ong|chenh cao|kich thuoc ong|ong gas)\b", kd):
+        ra.add("ong_dong")
     return ra
 
 
@@ -184,6 +186,8 @@ def canh_bao_may_lanh_chua_co_nguon(cac_tieu_chi: set[str] | list[str]) -> str:
         thieu.append("chế độ riêng cho trẻ nhỏ")
     if "nhiet_do" in ds:
         thieu.append("dải nhiệt độ cài đặt của từng máy")
+    if "ong_dong" in ds:
+        thieu.append("chiều dài ống đồng, chênh cao và kích thước ống của từng máy")
     if not thieu:
         return ""
     return (

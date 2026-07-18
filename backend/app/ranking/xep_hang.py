@@ -110,6 +110,10 @@ def loc_cung(
         if h and s.hang.lower() != h.lower():
             bi_loai.append((s, "hang", f"khác hãng {h}"))
             continue
+        ht = getattr(nhu_cau, "hang_tru", None)
+        if ht and s.hang.lower() == ht.lower():
+            bi_loai.append((s, "hang", f"khách không muốn hãng {ht}"))
+            continue
         ci = getattr(nhu_cau, "can_inverter", None)
         if ci is not None and s.inverter != ci:
             bi_loai.append((s, "inverter",

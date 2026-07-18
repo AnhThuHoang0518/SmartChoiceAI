@@ -15,6 +15,23 @@
     "sau_cm": {"nguon": "catalog:Sâu", "ro": "cm"}
   },
   "cot_chu": { "loai": {"nguon": "catalog:Loại sản phẩm"} },
+  "yeu_cau_khong_co_du_lieu": [
+    {
+      "truong": "cong_nghe_say_tu_he_cua",
+      "mau": ["tu\\s*he\\s*cua", "bat\\s*kho", "cong\\s*nghe\\s*say"],
+      "text": "Dạ catalog máy rửa chén hiện chưa có trường công nghệ sấy và tự hé cửa, nên em chưa thể xác nhận máy nào làm bát khô theo yêu cầu này ạ."
+    },
+    {
+      "truong": "an_toan_tre_em",
+      "mau": ["an\\s*toan.{0,20}tre", "khoa\\s*tre", "nha\\s*co\\s*tre"],
+      "text": "Dạ dữ liệu hiện chưa có trường khóa trẻ em/tính năng an toàn của máy rửa chén, nên em chưa thể xếp máy nào an toàn hơn cho nhà có trẻ nhỏ ạ."
+    },
+    {
+      "truong": "hieu_qua_lam_sach",
+      "mau": ["cong\\s*suat.{0,30}rua\\s*sach", "rua\\s*sach.{0,20}cong\\s*suat"],
+      "text": "Dạ công suất điện W không chứng minh máy rửa sạch hơn ạ. Catalog hiện chưa có kết quả làm sạch theo cùng chương trình/tiêu chuẩn để so sánh, nên em không suy hiệu quả rửa từ công suất."
+    }
+  ],
   "o_nhu_cau": {
     "so_bua": {
       "kieu": "so", "bat_buoc": true,

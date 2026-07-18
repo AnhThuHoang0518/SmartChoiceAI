@@ -15,6 +15,23 @@
     "sau_cm": {"nguon": "catalog:Sâu", "ro": "cm"}
   },
   "cot_chu": { "loai": {"nguon": "catalog:Loại sản phẩm"} },
+  "yeu_cau_khong_co_du_lieu": [
+    {
+      "truong": "do_on",
+      "mau": ["chay\\s*em", "it\\s*on", "do\\s*on", "yen\\s*tinh"],
+      "text": "Dạ dữ liệu máy giặt hiện chưa có trường độ ồn/độ rung có thể đối chiếu, nên em chưa thể kết luận máy nào chạy êm ạ. Em có thể so sánh điện năng, tải giặt, tốc độ vắt và bảo hành động cơ từ các trường có nguồn."
+    },
+    {
+      "truong": "chuong_trinh_say",
+      "mau": ["giat\\s*chan", "co\\s*say", "giat.{0,15}say"],
+      "text": "Dạ catalog máy giặt hiện chưa nạp trường chương trình giặt chăn và công nghệ sấy, nên em chưa thể xác nhận máy nào đáp ứng cả hai yêu cầu này ạ. Em không suy từ tải giặt hoặc tên máy."
+    },
+    {
+      "truong": "bang_dieu_khien",
+      "mau": ["bang\\s*dieu\\s*khien", "tieng\\s*viet"],
+      "text": "Dạ catalog máy giặt hiện chưa có trường bảng điều khiển/ngôn ngữ hiển thị, nên em chưa thể xác nhận máy nào có tiếng Việt ạ."
+    }
+  ],
   "o_nhu_cau": {
     "so_nguoi": {
       "kieu": "so", "bat_buoc": true,
