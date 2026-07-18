@@ -166,6 +166,8 @@ def chuan_hoa_tien(s: str) -> str:
 # (backend/app/nganh/tu_lanh.py) - router trong api se dan sang, khong tu choi nua.
 NGANH_KHAC = [
     # 'may giat' + 'may say' DA GO (18/07): chay tren khung generic configs/nganh/
+    # 'may say toc/tay' KHAC 'may say quan ao' - khong co du lieu -> ngoai pham vi
+    (r"\bmay say (?:toc|tay)\b|\bsay (?:toc|tay)\b", "máy sấy tóc/tay"),
     (r"\b(?:tivi|ti vi|tv\b)\b", "tivi"),
     (r"\b(?:laptop|may tinh xach tay|macbook)\b", "laptop"),
     # khach hoi ten dong may cu the ('cos iphone 13 k?') cung phai nhan ra
@@ -507,7 +509,12 @@ def mau_thuan_tam_gia(text: str) -> bool:
     Khong the vua re nhat vua cao cap - phai hoi khach uu tien cai nao."""
     kd = bo_dau(text or "").lower()
     co_cao = bool(re.search(r"\b(cao cap|xin nhat|tot nhat|xin nhat|dat nhat|flagship)\b", kd))
-    co_re = bool(re.search(r"\b(re nhat|gia re|re thoi|it tien nhat|tiet kiem nhat)\b", kd))
+    # "tiết kiệm điện nhất" là ưu tiên hiệu suất, KHÔNG đồng nghĩa giá mua rẻ.
+    # Chỉ coi là vế giá rẻ khi khách nói rõ giá/tiền/chi phí mua.
+    co_re = bool(re.search(
+        r"\b(re nhat|gia re|re thoi|it tien nhat|tiet kiem (?:tien|chi phi mua) nhat)\b",
+        kd,
+    ))
     return co_cao and co_re
 
 

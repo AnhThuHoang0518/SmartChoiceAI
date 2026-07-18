@@ -90,6 +90,12 @@ class Nganh:
         bi file man_hinh (dung truoc may_tinh_bang) cuop router.
         """
         kd = bo_dau(text or "").lower()
+        # TU KHOA LOAI TRU: "may say TOC/TAY" khong phai may say quan ao (nganh
+        # nay). Khach hoi san pham khong co du lieu ma tu khoa trung -> khong
+        # nhan la nganh nay, de router tra "ngoai pham vi" (bug that 20/07).
+        for mau in self.cfg.get("tu_khoa_loai_tru", []):
+            if re.search(mau, kd):
+                return None
         khop = []
         for tu_khoa in self.cfg["tu_khoa_nganh"]:
             if m := re.search(rf"\b{tu_khoa}\b", kd):
@@ -189,8 +195,18 @@ class Nganh:
             for mau in spec.get("trich", []):
                 m = re.search(mau, kd)
                 if m:
-                    v = m.group(1).replace(",", ".")
-                    nc.gia_tri[o] = float(v) if spec["kieu"] == "so" else v
+                    v = m.group(1)
+                    if spec["kieu"] == "so":
+                        # Cach viet so VN: 2.000 trang = 2000, trong khi
+                        # 10.5 inch van la so thap phan. Chi bo dau cham khi
+                        # no dung dung mau phan tach hang nghin.
+                        if re.fullmatch(r"\d{1,3}(?:\.\d{3})+", v):
+                            v = v.replace(".", "")
+                        else:
+                            v = v.replace(",", ".")
+                        nc.gia_tri[o] = float(v)
+                    else:
+                        nc.gia_tri[o] = v
                     break
             # trich_gan: khop mau -> GAN gia tri co dinh (khong bat group).
             # Dung cho o kieu "khach co can X khong": '4g/5g' -> can sim.
@@ -213,9 +229,16 @@ class Nganh:
                     and ut["uu_tien"] not in nc.uu_tien:
                 nc.uu_tien.append(ut["uu_tien"])
 
-        # tra loi cut lun: go moi so khi dang duoc hoi dung o do
-        if o_dang_cho and nc.lay(o_dang_cho) is None:
-            if re.fullmatch(r"[\d.,]+", kd.strip()):
+        # tra loi cut lun: go moi so khi dang duoc hoi dung o do.
+        # Doc tu RAW text (truoc chuan_hoa_tien) de "9k"/"9kg" khi dang hoi KG
+        # ra 9 chu khong phai 9000 (bug that: '9k' -> 9000 kg -> 0 may).
+        if o_dang_cho and o_dang_cho != "ngan_sach_max" and nc.lay(o_dang_cho) is None:
+            m = re.fullmatch(r"\s*(\d{1,3}(?:[.,]\d+)?)\s*(?:k|kg|kilo|ki|ky|nguoi|bua|inch|lit|cm)?\s*",
+                             bo_dau(text).lower())
+            if m:
+                nc.gia_tri[o_dang_cho] = float(m.group(1).replace(",", "."))
+        elif o_dang_cho and nc.lay(o_dang_cho) is None:
+            if re.fullmatch(r"[\d.,]+", kd.strip()):     # ngan sach: giu chuan_hoa_tien
                 nc.gia_tri[o_dang_cho] = float(kd.strip().replace(",", "."))
         return nc
 

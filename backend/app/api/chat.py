@@ -40,11 +40,14 @@ from backend.app.core.chuan_hoa_tv import (
     co_nganh_tu_lanh,
     goi_y_may_lanh_tu_nhu_cau_lam_mat,
     hoi_chu_quan,
+    hoi_dich_vu,
+    hoi_gia_hang,
     hoi_hang,
     hoi_vi_sao_xep,
     hoi_khuyen_mai,
     hoi_ton_kho,
     muc_gia,
+    mau_thuan_tam_gia,
     nganh_ngoai_pham_vi,
     so_dien_thoai_trong,
     trich_hang,
@@ -947,6 +950,7 @@ def chat(t: TinNhan) -> TraLoi:
     # tu lay uu tien/gia roi ngam gan may_lanh.
     if p.get("nganh") is None and not co_nganh_ro \
             and can_hoi_lam_ro_nganh(t.tin_nhan) \
+            and not hoi_gia_hang(t.tin_nhan) \
             and giai_thich_truong(t.tin_nhan) is None:
         p["da_hoi"].append("nganh")
         return TraLoi(
@@ -966,11 +970,6 @@ def chat(t: TinNhan) -> TraLoi:
                       thong_ke={"ms": int((time.perf_counter() - t0) * 1000),
                                 "cham_llm": 0, "che_do": "kien_thuc"})
 
-    from backend.app.core.chuan_hoa_tv import (
-        hoi_dich_vu,
-        hoi_gia_hang,
-        mau_thuan_tam_gia,
-    )
     # P2a - HOI DICH VU (tra gop/lap dat/giao hang/doi tra): du lieu KHONG co
     # -> noi that can noi he thong cua hang, khong bia chinh sach; keo ve nhu cau.
     dv = hoi_dich_vu(t.tin_nhan)
@@ -994,21 +993,52 @@ def chat(t: TinNhan) -> TraLoi:
 
     # P2c - HOI GIA 1 HANG cu the ("Casper gia bao nhieu"): dap bang DAI GIA that
     # cua hang do trong nganh dang xet, khong hoi lai ngan sach.
-    if hoi_gia_hang(t.tin_nhan):
+    tiep_gia_hang = p.get("hang_dang_hoi_gia")
+    if hoi_gia_hang(t.tin_nhan) or (tiep_gia_hang and co_nganh_ro):
         from backend.app.core.chuan_hoa_tv import bo_dau as _bd
-        from backend.app.nganh.khung import tim_nganh as _tim_ng
-        hg = trich_hang(t.tin_nhan, _cac_hang_toan_he())
-        ds_ng = catalog()
-        ten_ng = "máy lạnh"
+        from backend.app.nganh.khung import (
+            nganh_theo_ten as _nganh_theo_ten,
+            tim_nganh as _tim_ng,
+        )
+        hg = trich_hang(t.tin_nhan, _cac_hang_toan_he()) or tiep_gia_hang
+        ds_ng, ten_ng = None, None
         ng_kh = _tim_ng(t.tin_nhan)
         if ng_kh:
             ds_ng, ten_ng = ng_kh.catalog(), ng_kh.ten_hien_thi
         elif co_nganh_tu_lanh(t.tin_nhan):
             from backend.app.nganh.tu_lanh import tai_catalog_tu_lanh
             ds_ng, ten_ng = tai_catalog_tu_lanh(), "tủ lạnh"
+        elif co_nganh_may_lanh(t.tin_nhan):
+            ds_ng, ten_ng = catalog(), "máy lạnh"
+        elif p.get("nganh") == "tu_lanh":
+            from backend.app.nganh.tu_lanh import tai_catalog_tu_lanh
+            ds_ng, ten_ng = tai_catalog_tu_lanh(), "tủ lạnh"
+        elif p.get("nganh") == "may_lanh":
+            ds_ng, ten_ng = catalog(), "máy lạnh"
+        elif p.get("nganh"):
+            ng_phien = _nganh_theo_ten(p["nganh"])
+            if ng_phien:
+                ds_ng, ten_ng = ng_phien.catalog(), ng_phien.ten_hien_thi
+
+        # Chỉ có tên hãng thì chưa đủ biết catalog ngành nào. Không được mặc
+        # định sang máy lạnh; nhớ hãng để lượt sau khách chỉ cần chọn sản phẩm.
+        if hg and ds_ng is None:
+            p["hang_dang_hoi_gia"] = hg
+            return TraLoi(
+                phien_id=ma,
+                loai="cau_hoi",
+                text=(f"Dạ anh chị đang hỏi giá hãng {hg} cho loại sản phẩm nào "
+                      "ạ? Em cần đúng loại sản phẩm để tra dải giá trong catalog, "
+                      "không mặc định sang máy lạnh."),
+                goi_y=["Máy lạnh", "Tủ lạnh", "Máy giặt"],
+                thong_ke={"ms": int((time.perf_counter() - t0) * 1000),
+                          "cham_llm": 0, "can_lam_ro_nganh": True,
+                          "che_do": "gia_hang"},
+            )
         if hg:
             gia = [s.gia for s in ds_ng if _bd(s.hang).lower() == _bd(hg).lower()]
             if gia:
+                p.pop("hang_dang_hoi_gia", None)
                 return TraLoi(phien_id=ma, loai="giai_thich",
                               text=(f"Dạ {ten_ng} hãng {hg} bên em có {len(gia)} mẫu, giá từ "
                                     f"{tien_chu(min(gia))} đến {tien_chu(max(gia))} ạ. Giá tùy "
@@ -1017,6 +1047,17 @@ def chat(t: TinNhan) -> TraLoi:
                               goi_y=[f"Xem {hg} tầm trung", f"{hg} rẻ nhất"],
                               thong_ke={"ms": int((time.perf_counter() - t0) * 1000),
                                         "cham_llm": 0, "che_do": "gia_hang"})
+            p.pop("hang_dang_hoi_gia", None)
+            return TraLoi(
+                phien_id=ma,
+                loai="thieu_du_lieu",
+                text=(f"Dạ catalog {ten_ng} em đang có chưa thấy mẫu hãng {hg} ạ. "
+                      "Em không suy giá từ ngành khác; anh chị muốn xem hãng khác "
+                      "trong đúng loại sản phẩm này không ạ?"),
+                thong_ke={"ms": int((time.perf_counter() - t0) * 1000),
+                          "cham_llm": 0, "che_do": "gia_hang",
+                          "nganh": getattr(ng_kh, "ten", p.get("nganh"))},
+            )
 
     # TINH AGENT - HANG DOI DA Y: khach noi >1 nganh trong 1 cau ("may lanh...
     # va tu lanh..."). Xu nganh DAU, nho nganh sau vao p["nganh_cho"], xong flug

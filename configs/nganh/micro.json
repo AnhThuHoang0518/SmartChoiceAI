@@ -30,6 +30,43 @@
    "nguon": "catalog:Kết nối"
   }
  },
+ "yeu_cau_khong_co_du_lieu": [
+  {
+   "truong": "bang_tan_tan_so",
+   "mau": ["bang tan", "tan so hoat dong"],
+   "text": "Dạ catalog micro hiện chưa có trường băng tần/tần số hoạt động đã chuẩn hóa nên em chưa thể xác nhận micro khớp với bộ thu hoặc loa của anh chị. Em không suy tương thích từ hãng; cần thông số chính thức của cả hai thiết bị ạ."
+  },
+  {
+   "truong": "do_meo_tieng",
+   "mau": ["meo tieng", "do meo"],
+   "text": "Dạ dữ liệu micro hiện chưa có trường độ méo tiếng nên em chưa thể xếp máy nào ít méo hơn. Em không dùng giá hoặc thương hiệu để thay cho chỉ số âm thanh còn thiếu ạ."
+  },
+  {
+   "truong": "tuong_thich_thiet_bi",
+   "mau": ["\\biphone\\b", "\\bandroid\\b", "tuong thich", "\\blightning\\b", "\\btype\\s*-?\\s*c\\b", "\\busb\\s*-?\\s*c\\b"],
+   "text": "Dạ catalog micro hiện chưa có đủ trường tương thích thiết bị, loại đầu nối và phiên bản để xác nhận dùng được với điện thoại anh chị nêu. Em không suy từ tên cổng hoặc thương hiệu; cần nguồn tương thích chính thức của đúng SKU ạ."
+  },
+  {
+   "truong": "nam_san_xuat",
+   "mau": ["san xuat gan day", "nam san xuat", "doi moi nhat"],
+   "text": "Dạ dữ liệu micro hiện chưa có năm sản xuất đã xác minh. Em không lấy số trong model_code làm năm, nên chưa thể lọc mẫu sản xuất gần đây ạ."
+  },
+  {
+   "truong": "huong_thu_loc_am",
+   "mau": ["huong thu", "loc am", "loc on", "chong on"],
+   "text": "Dạ catalog micro hiện chưa có trường hướng thu và khả năng lọc âm/chống ồn đã chuẩn hóa. Em chưa thể khẳng định mẫu nào phù hợp phỏng vấn ngoài đường nếu không có thông số này ạ."
+  },
+  {
+   "truong": "pin_bo_phat_bo_thu",
+   "mau": ["dung luong pin.*(?:gio|thoi gian)", "bo phat.*bo thu", "chu ky sac"],
+   "text": "Dạ dữ liệu hiện chưa tách đủ thời gian hoạt động bộ phát, bộ thu và chu kỳ sạc. Em không đổi mAh thành số giờ và không cộng thẳng thời gian các bộ phận; cần thông số thời lượng do hãng công bố ạ."
+  },
+  {
+   "truong": "thong_so_bien_the",
+   "mau": ["phien ban.*khac.*tinh nang", "mau.*khac.*tinh nang"],
+   "text": "Dạ tên màu/phiên bản chưa đủ chứng minh các SKU có cùng tính năng. Catalog xử lý hiện chưa giữ đủ bảng thông số từng biến thể để em kết luận; cần đối chiếu đúng SKU, em không suy từ tên màu ạ."
+  }
+ ],
  "o_nhu_cau": {
   "nhom": {
    "kieu": "chu",

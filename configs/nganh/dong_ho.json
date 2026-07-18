@@ -30,6 +30,33 @@
    "nguon": "catalog:Chuẩn chống nước, bụi"
   }
  },
+ "yeu_cau_khong_co_du_lieu": [
+  {
+   "truong": "suc_khoe_cam_bien",
+   "mau": ["nhip tim", "giac ngu", "\\bspo2\\b", "oxy mau", "cam bien", "phat hien.*benh", "chan doan"],
+   "text": "Dạ catalog đồng hồ hiện chưa có trường theo dõi sức khỏe/cảm biến đã chuẩn hóa để đối chiếu từng mẫu. Em không thể xếp hạng hoặc khẳng định phát hiện bệnh; đồng hồ chỉ hỗ trợ theo dõi theo công bố và không thay thế chẩn đoán y tế ạ."
+  },
+  {
+   "truong": "gps_sim_doc_lap",
+   "mau": ["khong mang dien thoai", "gps doc lap", "goi doc lap", "sim.*doc lap", "\\besim\\b"],
+   "text": "Dạ dữ liệu đồng hồ hiện chưa có đủ GPS độc lập và SIM/eSIM để phân biệt dùng độc lập với gọi qua Bluetooth. Em chưa thể xác nhận mẫu nào chạy hoặc gọi mà không mang điện thoại ạ."
+  },
+  {
+   "truong": "kich_thuoc_deo",
+   "mau": ["co tay", "mat nho", "duong kinh"],
+   "text": "Dạ catalog hiện chưa có chu vi cổ tay, đường kính mặt và khối lượng đã chuẩn hóa nên em chưa thể xác nhận mẫu nào đeo vừa cổ tay anh chị. Kích thước màn hình không được dùng thay cho kích thước mặt ạ."
+  },
+  {
+   "truong": "pham_vi_chong_nuoc",
+   "mau": ["\\b5\\s*atm\\b.*lan", "lan bien", "lan sau"],
+   "text": "Dạ nhãn chống nước trong catalog chưa đủ để xác nhận dùng khi lặn biển. Em không suy phạm vi sử dụng vượt quá hướng dẫn của đúng model; cần kiểm tra khuyến cáo/chứng nhận chính thức của hãng ạ."
+  },
+  {
+   "truong": "tuong_thich_he_dieu_hanh",
+   "mau": ["dung iphone", "tuong thich.*iphone", "he dieu hanh khac", "du tinh nang"],
+   "text": "Dạ catalog đồng hồ hiện chưa có trường tương thích hệ điều hành và ứng dụng theo phiên bản. Chỉ có Bluetooth hoặc nghe gọi chưa đủ để kết luận dùng đủ tính năng với iPhone ạ."
+  }
+ ],
  "o_nhu_cau": {
   "pin_ngay_min": {
    "kieu": "so",

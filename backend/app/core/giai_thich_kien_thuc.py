@@ -18,29 +18,32 @@ from backend.app.core.chuan_hoa_tv import bo_dau
 # tu khoa (khong dau) -> (giai thich, cau keo ve nhu cau)
 _KIEN_THUC = [
     (r"inverter",
-     "Máy Inverter chạy điều chỉnh công suất liên tục nên êm hơn và tốn ít điện "
-     "hơn máy thường (non-Inverter) khi dùng lâu, đổi lại giá mua thường cao hơn. "
-     "Máy non-Inverter rẻ hơn, hợp dùng ít giờ mỗi ngày.",
+     "Inverter là công nghệ điều chỉnh công suất thay vì chỉ bật/tắt theo một "
+     "mức cố định. Chỉ nhãn Inverter chưa đủ để kết luận máy nào ít tốn điện "
+     "hoặc êm hơn; cần so chỉ số điện năng, hiệu suất và độ ồn do hãng công bố "
+     "trong cùng điều kiện.",
      "Anh chị định dùng nhiều giờ mỗi ngày không, và ngân sách khoảng bao nhiêu ạ?"),
     (r"\bhp\b|ngua|cong suat.*(?:la gi|nghia)",
-     "HP (mã lực) là công suất làm lạnh của máy lạnh — chọn theo DIỆN TÍCH phòng "
-     "chứ không theo số người: dưới 15m² ~1HP, 15–20m² ~1.5HP, 20–30m² ~2HP. "
-     "Phòng có nắng chiếu thì lên một bậc.",
+     "HP (mã lực) là cách gọi mức công suất của máy lạnh. Khi chọn máy cần đối "
+     "chiếu diện tích phòng với phạm vi sử dụng do hãng công bố; các yếu tố như "
+     "nắng, nguồn nhiệt và độ kín phòng cũng làm thay đổi tải lạnh. Em không tự "
+     "đặt ngưỡng HP khi chưa có bảng quy đổi được duyệt.",
      "Phòng anh chị rộng khoảng bao nhiêu m² để em chọn đúng công suất ạ?"),
     (r"sao nang luong|nhan nang luong|may sao",
-     "Số sao trên nhãn năng lượng cho biết mức tiết kiệm điện — càng nhiều sao "
-     "càng ít tốn điện, nhưng giá máy thường cao hơn. Đây là nhãn do nhà nước dán, "
-     "không phải đánh giá chất lượng tổng thể.",
+     "Nhãn năng lượng cung cấp thông tin hiệu suất để tham khảo. Muốn kết luận "
+     "máy nào tiết kiệm hơn cần so sản phẩm cùng loại, cùng công suất và cùng điều "
+     "kiện thử; số sao không phải đánh giá chất lượng tổng thể.",
      "Anh chị ưu tiên tiết kiệm điện hay ưu tiên giá rẻ hơn ạ?"),
     (r"dung tich tong|dung tich su dung|tong.*su dung",
      "Dung tích TỔNG là thể tích toàn tủ; dung tích SỬ DỤNG là phần thực sự chứa "
-     "được đồ (đã trừ vách, dàn lạnh) — luôn nhỏ hơn. Khi so sức chứa thật thì "
-     "nhìn dung tích sử dụng chính xác hơn.",
+     "được đồ sau khi tính các bộ phận bên trong. Khi so sức chứa thực tế nên ưu "
+     "tiên cùng một loại chỉ số, thường là dung tích sử dụng do hãng công bố.",
      "Nhà anh chị mấy người để em ước dung tích phù hợp ạ?"),
     (r"side.?by.?side|tu doi|multi.?door|ngan da (?:tren|duoi)",
-     "Kiểu dáng tủ lạnh: Side by Side (2 cánh mở đôi, rộng, giá cao); Ngăn đá trên "
-     "(phổ thông, rẻ); Ngăn đá dưới (lấy đồ mát tiện hơn); Multi Door (nhiều ngăn). "
-     "Chọn theo diện tích bếp và thói quen dùng.",
+     "Đây là các kiểu bố trí cửa và ngăn khác nhau: Side by Side có hai cánh mở "
+     "đôi; ngăn đá trên hoặc dưới mô tả vị trí ngăn đông; Multi Door có nhiều "
+     "cửa/ngăn. Giá và kích thước phải đối chiếu từng mẫu trong catalog, không thể "
+     "suy ra chỉ từ tên kiểu dáng.",
      "Bếp nhà anh chị rộng cỡ nào và nhà mấy người ạ?"),
     (r"chong (?:giat|ro dien)|elcb",
      "ELCB là cầu dao chống rò điện — tự ngắt khi phát hiện dòng rò, tăng an toàn "

@@ -36,6 +36,33 @@
    "nguon": "catalog:Tấm nền"
   }
  },
+ "yeu_cau_khong_co_du_lieu": [
+  {
+   "truong": "tan_so_quet",
+   "mau": ["\\b\\d{2,3}\\s*hz\\b", "tan so quet", "refresh rate"],
+   "text": "Dạ dữ liệu màn hình hiện chưa có trường tần số quét, nên em chưa thể xác nhận mẫu nào đạt số Hz anh chị yêu cầu. Em không suy Hz từ nhãn gaming hoặc thời gian đáp ứng ạ."
+  },
+  {
+   "truong": "vesa_kich_thuoc",
+   "mau": ["\\bvesa\\b", "gan arm", "ban sau", "do day khong chan", "cao khong chan"],
+   "text": "Dạ catalog màn hình hiện chưa có chuẩn VESA và kích thước thân máy/không chân đã chuẩn hóa. Em chưa thể xác nhận gắn arm hoặc đặt vừa bàn chỉ từ kích thước đường chéo màn hình ạ."
+  },
+  {
+   "truong": "ket_noi_usb_c",
+   "mau": ["\\busb\\s*-?\\s*c\\b", "type\\s*-?\\s*c", "cong ket noi"],
+   "text": "Dạ dữ liệu màn hình hiện chưa có danh sách cổng kết nối. Em chưa thể xác nhận nhận hình qua USB-C; cổng USB thông thường cũng không được coi mặc định là cổng xuất hình ạ."
+  },
+  {
+   "truong": "chuan_do_phu_mau",
+   "mau": ["mau chinh xac", "do phu mau", "\\bsrgb\\b", "dci\\s*-?\\s*p3", "\\bntsc\\b", "delta\\s*e"],
+   "text": "Dạ dữ liệu xử lý hiện chỉ còn phần trăm phủ màu nhưng chưa giữ chuẩn gamut tương ứng. Em không thể so trực tiếp sRGB, DCI-P3 và NTSC hoặc gọi là màu chính xác khi thiếu đúng chuẩn/Delta E ạ."
+  },
+  {
+   "truong": "tien_ich_bao_ve_mat",
+   "mau": ["moi mat", "flicker", "anh sang xanh", "low blue"],
+   "text": "Dạ catalog màn hình hiện chưa có trường tiện ích flicker-free/giảm ánh sáng xanh đã chuẩn hóa. Em không thể xếp mẫu nào đỡ mỏi mắt nhất hoặc đưa ra khẳng định y tế ạ."
+  }
+ ],
  "o_nhu_cau": {
   "man_inch_min": {
    "kieu": "so",

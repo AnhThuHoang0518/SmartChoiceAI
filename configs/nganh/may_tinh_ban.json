@@ -38,6 +38,21 @@
     "\\b(?:rtx|gtx)\\s*\\d*"
    ],
    "text": "Dạ dữ liệu máy tính để bàn hiện có CPU, RAM và ổ cứng nhưng chưa có trường card đồ họa/GPU. Vì vậy em chưa thể xác nhận máy nào có card rời hoặc phù hợp nhu cầu chơi game/đồ họa anh chị nêu; em không đề xuất bừa ạ. Cần bổ sung thông số GPU từ nguồn sản phẩm chính thức trước khi lọc."
+  },
+  {
+   "truong": "kha_nang_nang_cap",
+   "mau": ["nang ram", "nang.*ssd", "khe ram", "khe.*m\\.?2", "khe cam mo rong", "ram toi da"],
+   "text": "Dạ catalog máy tính để bàn hiện chưa có số khe RAM, khe SSD/M.2, khe còn trống và mức RAM tối đa. Em chưa thể cam kết khả năng nâng cấp chỉ từ RAM/ổ cứng đang lắp ạ."
+  },
+  {
+   "truong": "cong_ket_noi_wifi",
+   "mau": ["wifi\\s*6", "nhieu usb", "cong i/o", "cong ket noi", "\\bhdmi\\b"],
+   "text": "Dạ dữ liệu máy tính để bàn hiện chưa có Wi-Fi và danh sách cổng I/O/xuất hình đã chuẩn hóa. Em chưa thể lọc đúng Wi-Fi 6, HDMI hoặc số cổng USB và sẽ không suy từ tên máy ạ."
+  },
+  {
+   "truong": "loai_thuc_the_pc",
+   "mau": ["pc hoan chinh", "linh kien roi", "\\bmainboard\\b", "\\bcase\\b.*(?:pc|may|main)"],
+   "text": "Dạ catalog xử lý hiện chưa giữ trường phân loại PC hoàn chỉnh, case, mainboard và linh kiện rời. Em chưa thể so chung hoặc đề xuất linh kiện như một bộ PC hoàn chỉnh; cần xác minh loại thực thể theo đúng SKU ạ."
   }
  ],
  "o_nhu_cau": {

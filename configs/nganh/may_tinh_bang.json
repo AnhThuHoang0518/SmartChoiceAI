@@ -35,6 +35,48 @@
    "nguon": "catalog:SIM"
   }
  },
+ "yeu_cau_khong_co_du_lieu": [
+  {
+   "truong": "hieu_nang_game",
+   "mau": ["choi game", "gaming", "game muot", "hieu nang"],
+   "text": "Dạ catalog máy tính bảng xử lý hiện chưa có CPU, GPU và tốc độ CPU để kiểm chứng hiệu năng game. Em không dùng riêng RAM hoặc giá để gọi máy nào chơi game mượt; cần thêm cấu hình chính thức và tên game/thiết lập ạ."
+  },
+  {
+   "truong": "mang_5g_gps",
+   "mau": ["\\b5g\\b", "\\bgps\\b", "mang di dong"],
+   "text": "Dạ dữ liệu máy tính bảng hiện chỉ có trường SIM, chưa có mạng 5G và GPS đã chuẩn hóa. Có SIM không đồng nghĩa có 5G/GPS, nên em chưa thể xác nhận đủ ba tính năng ạ."
+  },
+  {
+   "truong": "the_nho_dung_luong_kha_dung",
+   "mau": ["the nho", "dung luong kha dung", "bo nho kha dung"],
+   "text": "Dạ catalog hiện có dung lượng lưu trữ danh định nhưng chưa có dung lượng khả dụng và khe/thẻ nhớ. Em chưa thể xác nhận mở rộng thẻ nhớ hoặc coi dung lượng danh định là phần dùng được ạ."
+  },
+  {
+   "truong": "sac_nhanh",
+   "mau": ["sac nhanh", "ho tro sac", "cong suat sac", "thoi gian sac"],
+   "text": "Dạ dữ liệu máy tính bảng hiện có dung lượng pin nhưng chưa có công suất sạc, công nghệ pin và cổng sạc. Pin lớn không đủ để suy máy sạc nhanh hay mất bao lâu để đầy ạ."
+  },
+  {
+   "truong": "do_phan_giai_man_hinh",
+   "mau": ["do phan giai", "\\b0[.,]3\\s*mp\\b"],
+   "text": "Dạ catalog xử lý hiện chưa giữ trường độ phân giải màn hình/camera riêng. Giá trị MP là đơn vị camera, em không dùng nó để chấm độ phân giải màn hình hoặc tự sửa cột ạ."
+  },
+  {
+   "truong": "camera_dinh_luong",
+   "mau": ["chup anh", "camera.*dep", "quay phim"],
+   "text": "Dạ dữ liệu hiện chưa có thông số camera định lượng đầy đủ để xếp máy tính bảng chụp đẹp. Em không suy chất lượng ảnh từ hãng, giá hoặc tên tính năng ạ."
+  },
+  {
+   "truong": "but_do_tre",
+   "mau": ["ho tro but", "but ve", "do tre.*but", "\\bstylus\\b"],
+   "text": "Dạ catalog máy tính bảng hiện chưa có trường hỗ trợ bút và độ trễ bút đã chuẩn hóa. Em chưa thể xác nhận chỉ từ thương hiệu hoặc phụ kiện chung; cần evidence của đúng SKU ạ."
+  },
+  {
+   "truong": "tuong_thich_ung_dung",
+   "mau": ["ung dung.*chay", "chay duoc.*ung dung", "app.*chay", "tuong thich.*app"],
+   "text": "Dạ để xác nhận ứng dụng chạy được cần yêu cầu hệ thống của chính ứng dụng và hệ điều hành/CPU của máy. Catalog hiện chưa đủ các trường đó, nên em không thể cam kết tương thích ạ."
+  }
+ ],
  "o_nhu_cau": {
   "man_inch_min": {
    "kieu": "so",

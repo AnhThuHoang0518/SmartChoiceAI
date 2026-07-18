@@ -28,7 +28,43 @@
    "nguon": "catalog:Kết nối"
   }
  },
+ "yeu_cau_khong_co_du_lieu": [
+  {
+   "truong": "duplex_tu_dong",
+   "mau": ["hai mat tu dong", "in 2 mat tu dong", "duplex"],
+   "text": "Dạ catalog máy in hiện chưa có trường xác nhận in hai mặt tự động. Danh sách loại giấy in hai mặt không đủ chứng minh máy có duplex tự động, nên em chưa thể lọc chắc chắn ạ."
+  },
+  {
+   "truong": "do_net_in_anh",
+   "mau": ["in anh", "anh net", "do net", "do phan giai in"],
+   "text": "Dạ dữ liệu máy in hiện chưa có độ phân giải/chất lượng in và loại giấy ảnh đã chuẩn hóa. Em không thể xếp máy in ảnh nét chỉ dựa vào tốc độ hoặc giá ạ."
+  },
+  {
+   "truong": "chi_phi_muc",
+   "mau": ["tien muc", "chi phi muc", "gia muc", "ton muc", "\\btco\\b"],
+   "text": "Dạ catalog hiện chưa có giá mực và số trang in được của từng hộp/bình mực, nên em không thể tính chi phí mỗi trang hoặc tổng chi phí sử dụng. Em không lấy loại mực làm số tiền thay thế ạ."
+  },
+  {
+   "truong": "tuong_thich_he_dieu_hanh",
+   "mau": ["\\bmacos\\b", "he dieu hanh", "phien ban.*(?:mac|windows)"],
+   "text": "Dạ dữ liệu máy in hiện chưa có phiên bản hệ điều hành tương thích. Em chưa thể cam kết chạy với macOS/Windows mới nhất nếu không có danh sách phiên bản do hãng công bố ạ."
+  },
+  {
+   "truong": "toc_do_theo_che_do",
+   "mau": ["toc do.*mau.*den trang", "toc do.*den trang.*mau"],
+   "text": "Dạ dữ liệu xử lý hiện chỉ có một giá trị tốc độ in, chưa tách chế độ màu và đen trắng. Em không lấy số lớn nhất áp cho mọi chế độ nên chưa thể so theo yêu cầu này ạ."
+  }
+ ],
  "o_nhu_cau": {
+  "cong_suat_thang_min": {
+   "kieu": "so",
+   "bat_buoc": false,
+   "trich": [
+    "([\\d.]+)\\s*trang\\s*(?:/|moi)?\\s*thang"
+   ],
+   "cau_hoi": "Dạ mỗi tháng anh chị dự kiến in khoảng bao nhiêu trang ạ?",
+   "nhan": "công suất từ {:.0f} trang/tháng"
+  },
   "loai": {
    "kieu": "chu",
    "bat_buoc": false,
@@ -53,6 +89,13 @@
   "cau_hoi_lap": "Dạ anh chị cho em xin ngân sách ạ — ví dụ: 'khoảng 4 triệu'."
  },
  "loc_cung": [
+  {
+   "kieu": "toi_thieu",
+   "o": "cong_suat_thang_min",
+   "cot": "cong_suat_thang",
+   "don_vi": "trang/tháng",
+   "ly_do": "cong_suat_thang"
+  },
   {
    "kieu": "khop_ten",
    "o": "loai",
