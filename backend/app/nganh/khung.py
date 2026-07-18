@@ -146,6 +146,13 @@ class Nganh:
                     v = m.group(1).replace(",", ".")
                     nc.gia_tri[o] = float(v) if spec["kieu"] == "so" else v
                     break
+            # trich_gan: khop mau -> GAN gia tri co dinh (khong bat group).
+            # Dung cho o kieu "khach co can X khong": '4g/5g' -> can sim.
+            if nc.lay(o) is None:
+                for tg in spec.get("trich_gan", []):
+                    if re.search(tg["mau"], kd):
+                        nc.gia_tri[o] = tg["gia_tri"]
+                        break
 
         # ngan sach dung chung (chuan_hoa da doi 15tr -> 15000000).
         # Khach noi so moi la GHI DE so cu ("thoi lay tam 5tr thoi") - giu

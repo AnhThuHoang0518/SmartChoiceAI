@@ -1,52 +1,165 @@
 {
-  "ten_nganh": "dong_ho",
-  "ten_hien_thi": "đồng hồ thông minh",
-  "tu_khoa_nganh": ["dong ho thong minh", "dong ho", "smartwatch"],
-  "csv_that": "data/processed/dong_ho.csv",
-  "csv_mau": "data/mock/catalog/dong_ho_mau.csv",
-  "cot_so": {
-    "pin_ngay": {"nguon": "catalog:Thời gian sử dụng", "ro": "ngay"},
-    "pin_mah": {"nguon": "catalog:Dung lượng pin", "ro": "mah"},
-    "man_inch": {"nguon": "catalog:Kích thước màn hình", "ro": "inch"}
+ "ten_nganh": "dong_ho",
+ "ten_hien_thi": "đồng hồ thông minh",
+ "tu_khoa_nganh": [
+  "dong ho thong minh",
+  "dong ho",
+  "smartwatch"
+ ],
+ "csv_that": "data/processed/dong_ho.csv",
+ "csv_mau": "data/mock/catalog/dong_ho_mau.csv",
+ "cot_so": {
+  "pin_ngay": {
+   "nguon": "catalog:Thời gian sử dụng",
+   "ro": "ngay"
   },
-  "cot_chu": {
-    "nghe_goi": {"nguon": "catalog:Thực hiện cuộc gọi"},
-    "khang_nuoc": {"nguon": "catalog:Chuẩn chống nước, bụi"}
+  "pin_mah": {
+   "nguon": "catalog:Dung lượng pin",
+   "ro": "mah"
   },
-  "o_nhu_cau": {
-    "pin_ngay_min": {
-      "kieu": "so", "bat_buoc": false,
-      "trich": ["pin\\s*(?:tu|it nhat|khoang)?\\s*(\\d{1,2})\\s*ngay"],
-      "cau_hoi": "Dạ anh/chị cần pin dùng được từ mấy ngày ạ?",
-      "nhan": "pin từ {:.0f} ngày"
-    },
-    "nghe_goi": {
-      "kieu": "chu", "bat_buoc": false,
-      "trich": ["(nghe goi)"],
-      "cau_hoi": "Dạ anh/chị có cần nghe gọi ngay trên đồng hồ không ạ?",
-      "nhan": "cần {}"
+  "man_inch": {
+   "nguon": "catalog:Kích thước màn hình",
+   "ro": "inch"
+  }
+ },
+ "cot_chu": {
+  "nghe_goi": {
+   "nguon": "catalog:Thực hiện cuộc gọi"
+  },
+  "khang_nuoc": {
+   "nguon": "catalog:Chuẩn chống nước, bụi"
+  }
+ },
+ "o_nhu_cau": {
+  "pin_ngay_min": {
+   "kieu": "so",
+   "bat_buoc": false,
+   "trich": [
+    "pin\\s*(?:tu|it nhat|khoang)?\\s*(\\d{1,2})\\s*ngay"
+   ],
+   "cau_hoi": "Dạ anh/chị cần pin dùng được từ mấy ngày ạ?",
+   "nhan": "pin từ {:.0f} ngày"
+  },
+  "nghe_goi": {
+   "kieu": "chu",
+   "bat_buoc": false,
+   "trich": [
+    "(nghe goi)"
+   ],
+   "cau_hoi": "Dạ anh/chị có cần nghe gọi ngay trên đồng hồ không ạ?",
+   "nhan": "cần {}"
+  },
+  "nghe_goi_can": {
+   "kieu": "chu",
+   "nhan": "cần nghe gọi trên đồng hồ",
+   "trich_gan": [
+    {
+     "mau": "nghe goi|goi dien|dam thoai",
+     "gia_tri": "nghe goi"
     }
+   ]
   },
-  "cau_hoi_ngan_sach": {
-    "cau_hoi": "Dạ anh/chị dự tính khoảng bao nhiêu cho đồng hồ ạ?",
-    "cau_hoi_lap": "Dạ anh/chị cho em xin ngân sách ạ — ví dụ: 'khoảng 3 triệu'."
+  "khang_nuoc_can": {
+   "kieu": "chu",
+   "nhan": "cần kháng nước: {}",
+   "trich_gan": [
+    {
+     "mau": "\\bboi\\b|boi loi|\\blan bien\\b|deo di tam",
+     "gia_tri": "atm"
+    },
+    {
+     "mau": "chong nuoc|khang nuoc",
+     "gia_tri": "nuoc"
+    }
+   ],
+   "_doc": "di boi -> phai chuan ATM (IP67 chi rua tay - khong du, khong xac nhan bua)"
+  }
+ },
+ "cau_hoi_ngan_sach": {
+  "cau_hoi": "Dạ anh/chị dự tính khoảng bao nhiêu cho đồng hồ ạ?",
+  "cau_hoi_lap": "Dạ anh/chị cho em xin ngân sách ạ — ví dụ: 'khoảng 3 triệu'."
+ },
+ "loc_cung": [
+  {
+   "kieu": "toi_thieu",
+   "o": "pin_ngay_min",
+   "cot": "pin_ngay",
+   "don_vi": "ngày",
+   "ly_do": "pin"
   },
-  "loc_cung": [
-    {"kieu": "toi_thieu", "o": "pin_ngay_min", "cot": "pin_ngay", "don_vi": "ngày", "ly_do": "pin"},
-    {"kieu": "ngan_sach"},
-    {"kieu": "khop_ten", "o": "nghe_goi", "cot": "nghe_goi", "ly_do": "nghe_goi"}
-  ],
-  "truc_cham": [
-    {"uu_tien": "pin_trau", "ten": "pin", "cot": "pin_ngay", "thap_tot": false, "fmt": "{:.0f} ngày", "mac_dinh": 0.2,
-     "trich_uu_tien": ["pin trau", "pin khoe", "pin lau"]},
-    {"uu_tien": "man_to", "ten": "màn hình", "cot": "man_inch", "thap_tot": false, "fmt": "{:.2f} inch",
-     "trich_uu_tien": ["man to", "man lon"]},
-    {"uu_tien": "gia", "ten": "giá", "cot": "gia", "thap_tot": true, "fmt": "{:,.0f}đ", "mac_dinh": 0.2,
-     "trich_uu_tien": ["\\bre\\b", "gia re", "khuyen mai"]}
-  ],
-  "hien_thi_thong_so": [
-    {"cot": "pin_ngay", "fmt": "pin ~{:.0f} ngày (theo hãng)"},
-    {"cot": "man_inch", "fmt": "màn {:.2f} inch"},
-    {"cot": "pin_mah", "fmt": "{:.0f} mAh"}
-  ]
+  {
+   "kieu": "ngan_sach"
+  },
+  {
+   "kieu": "khop_ten",
+   "o": "nghe_goi",
+   "cot": "nghe_goi",
+   "ly_do": "nghe_goi"
+  },
+  {
+   "kieu": "khop_ten",
+   "o": "nghe_goi_can",
+   "cot": "nghe_goi",
+   "ly_do": "nghe_goi"
+  },
+  {
+   "kieu": "khop_ten",
+   "o": "khang_nuoc_can",
+   "cot": "khang_nuoc",
+   "ly_do": "khang_nuoc"
+  }
+ ],
+ "truc_cham": [
+  {
+   "uu_tien": "pin_trau",
+   "ten": "pin",
+   "cot": "pin_ngay",
+   "thap_tot": false,
+   "fmt": "{:.0f} ngày",
+   "mac_dinh": 0.2,
+   "trich_uu_tien": [
+    "pin trau",
+    "pin khoe",
+    "pin lau"
+   ]
+  },
+  {
+   "uu_tien": "man_to",
+   "ten": "màn hình",
+   "cot": "man_inch",
+   "thap_tot": false,
+   "fmt": "{:.2f} inch",
+   "trich_uu_tien": [
+    "man to",
+    "man lon"
+   ]
+  },
+  {
+   "uu_tien": "gia",
+   "ten": "giá",
+   "cot": "gia",
+   "thap_tot": true,
+   "fmt": "{:,.0f}đ",
+   "mac_dinh": 0.2,
+   "trich_uu_tien": [
+    "\\bre\\b",
+    "gia re",
+    "khuyen mai"
+   ]
+  }
+ ],
+ "hien_thi_thong_so": [
+  {
+   "cot": "pin_ngay",
+   "fmt": "pin ~{:.0f} ngày (theo hãng)"
+  },
+  {
+   "cot": "man_inch",
+   "fmt": "màn {:.2f} inch"
+  },
+  {
+   "cot": "pin_mah",
+   "fmt": "{:.0f} mAh"
+  }
+ ]
 }

@@ -110,6 +110,11 @@ def loc_cung(
         if h and s.hang.lower() != h.lower():
             bi_loai.append((s, "hang", f"khác hãng {h}"))
             continue
+        ci = getattr(nhu_cau, "can_inverter", None)
+        if ci is not None and s.inverter != ci:
+            bi_loai.append((s, "inverter",
+                            "máy mono (khách cần Inverter)" if ci else "máy Inverter (khách cần mono)"))
+            continue
         if m2 is not None and not s.phu_duoc(m2):
             do = "không đủ tải" if s.pham_vi_max < m2 else "dư công suất, chạy ngắt quãng"
             bi_loai.append(

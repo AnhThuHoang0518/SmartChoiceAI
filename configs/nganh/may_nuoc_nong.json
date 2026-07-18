@@ -1,39 +1,123 @@
 {
-  "ten_nganh": "may_nuoc_nong",
-  "ten_hien_thi": "máy nước nóng",
-  "tu_khoa_nganh": ["may nuoc nong", "binh nong lanh", "binh nuoc nong"],
-  "csv_that": "data/processed/may_nuoc_nong.csv",
-  "csv_mau": "data/mock/catalog/may_nuoc_nong_mau.csv",
-  "cot_so": {
-    "cong_suat_w": {"nguon": "catalog:Công suất đầu ra", "ro": "w"}
+ "ten_nganh": "may_nuoc_nong",
+ "ten_hien_thi": "máy nước nóng",
+ "tu_khoa_nganh": [
+  "may nuoc nong",
+  "binh nong lanh",
+  "binh nuoc nong"
+ ],
+ "csv_that": "data/processed/may_nuoc_nong.csv",
+ "csv_mau": "data/mock/catalog/may_nuoc_nong_mau.csv",
+ "cot_so": {
+  "cong_suat_w": {
+   "nguon": "catalog:Công suất đầu ra",
+   "ro": "w"
   },
-  "cot_chu": {
-    "loai": {"nguon": "catalog:Loại máy"},
-    "an_toan": {"nguon": "catalog:Tính năng an toàn"}
+  "binh_lit": {
+   "nguon": "catalog:Dung lượng dung tích",
+   "ro": "lit"
+  }
+ },
+ "cot_chu": {
+  "loai": {
+   "nguon": "catalog:Loại máy"
   },
-  "o_nhu_cau": {
-    "loai": {
-      "kieu": "chu", "bat_buoc": false,
-      "trich": ["(truc tiep|gian tiep)"],
-      "cau_hoi": "Dạ anh/chị muốn máy nóng TRỰC TIẾP (nóng ngay, gọn) hay GIÁN TIẾP (bình chứa, nhiều người tắm liên tục) ạ?",
-      "nhan": "loại làm nóng {}"
+  "an_toan": {
+   "nguon": "catalog:Tính năng an toàn"
+  }
+ },
+ "o_nhu_cau": {
+  "loai": {
+   "kieu": "chu",
+   "bat_buoc": false,
+   "trich": [
+    "(truc tiep|gian tiep)"
+   ],
+   "cau_hoi": "Dạ anh/chị muốn máy nóng TRỰC TIẾP (nóng ngay, gọn) hay GIÁN TIẾP (bình chứa, nhiều người tắm liên tục) ạ?",
+   "nhan": "loại làm nóng {}"
+  },
+  "an_toan_can": {
+   "kieu": "chu",
+   "nhan": "cần chống giật (ELCB)",
+   "trich_gan": [
+    {
+     "mau": "chong giat|ro dien|elcb|chong ro",
+     "gia_tri": "elcb"
     }
+   ]
   },
-  "cau_hoi_ngan_sach": {
-    "cau_hoi": "Dạ anh/chị dự tính khoảng bao nhiêu cho máy nước nóng ạ?",
-    "cau_hoi_lap": "Dạ anh/chị cho em xin ngân sách ạ — ví dụ: 'khoảng 4 triệu'."
+  "binh_lit_min": {
+   "kieu": "so",
+   "nhan": "bình chứa từ {:.0f} lít",
+   "trich": [
+    "binh(?:\\s*chua)?\\s*(?:khoang\\s*)?(\\d{2,3})\\s*lit",
+    "(\\d{2,3})\\s*lit"
+   ]
+  }
+ },
+ "cau_hoi_ngan_sach": {
+  "cau_hoi": "Dạ anh/chị dự tính khoảng bao nhiêu cho máy nước nóng ạ?",
+  "cau_hoi_lap": "Dạ anh/chị cho em xin ngân sách ạ — ví dụ: 'khoảng 4 triệu'."
+ },
+ "loc_cung": [
+  {
+   "kieu": "khop_ten",
+   "o": "loai",
+   "cot": "loai",
+   "ly_do": "loai"
   },
-  "loc_cung": [
-    {"kieu": "khop_ten", "o": "loai", "cot": "loai", "ly_do": "loai"},
-    {"kieu": "ngan_sach"}
-  ],
-  "truc_cham": [
-    {"uu_tien": "manh", "ten": "công suất", "cot": "cong_suat_w", "thap_tot": false, "fmt": "{:.0f} W", "mac_dinh": 0.2,
-     "trich_uu_tien": ["nong nhanh", "manh"]},
-    {"uu_tien": "gia", "ten": "giá", "cot": "gia", "thap_tot": true, "fmt": "{:,.0f}đ", "mac_dinh": 0.2,
-     "trich_uu_tien": ["\\bre\\b", "gia re", "khuyen mai"]}
-  ],
-  "hien_thi_thong_so": [
-    {"cot": "cong_suat_w", "fmt": "công suất {:.0f} W"}
-  ]
+  {
+   "kieu": "ngan_sach"
+  },
+  {
+   "kieu": "khop_ten",
+   "o": "an_toan_can",
+   "cot": "an_toan",
+   "ly_do": "an_toan"
+  },
+  {
+   "kieu": "toi_thieu",
+   "o": "binh_lit_min",
+   "cot": "binh_lit",
+   "ly_do": "binh_chua",
+   "don_vi": "lít"
+  }
+ ],
+ "truc_cham": [
+  {
+   "uu_tien": "manh",
+   "ten": "công suất",
+   "cot": "cong_suat_w",
+   "thap_tot": false,
+   "fmt": "{:.0f} W",
+   "mac_dinh": 0.2,
+   "trich_uu_tien": [
+    "nong nhanh",
+    "manh"
+   ]
+  },
+  {
+   "uu_tien": "gia",
+   "ten": "giá",
+   "cot": "gia",
+   "thap_tot": true,
+   "fmt": "{:,.0f}đ",
+   "mac_dinh": 0.2,
+   "trich_uu_tien": [
+    "\\bre\\b",
+    "gia re",
+    "khuyen mai"
+   ]
+  }
+ ],
+ "hien_thi_thong_so": [
+  {
+   "cot": "cong_suat_w",
+   "fmt": "công suất {:.0f} W"
+  },
+  {
+   "cot": "binh_lit",
+   "fmt": "bình {:.0f} lít"
+  }
+ ]
 }

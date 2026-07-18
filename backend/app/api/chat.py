@@ -482,6 +482,15 @@ def chat(t: TinNhan) -> TraLoi:
         if h:
             nc = nc.model_copy(update={"hang": h})
 
+    # Inverter: rang buoc CUNG (cot 'Loai Inverter' phu 98%). 'non inverter'/
+    # 'mono' -> chi may thuong; nhac 'inverter' -> chi may Inverter.
+    import re as _re
+    kd_inv = bo_dau(t.tin_nhan).lower()
+    if _re.search(r"\b(?:non|khong|ko)[ -]?inverter\b|\bmono\b", kd_inv):
+        nc = nc.model_copy(update={"can_inverter": False})
+    elif _re.search(r"\binverter\b", kd_inv):
+        nc = nc.model_copy(update={"can_inverter": True})
+
     # Hoi ton kho/con hang -> noi thang du lieu KHONG co truong ton kho, can
     # Stock API (TC-008/TC-017). Chi tra loi rieng khi cau hoi thuan tuy ve
     # ton kho; hoi kem nhu cau thi flow thuong chay va ghi chu duoc them sau.

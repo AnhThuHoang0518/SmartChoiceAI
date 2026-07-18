@@ -63,6 +63,9 @@ def _bang_thanh_chu(
         d.append("ưu tiên: " + ", ".join(u.value for u in nhu_cau.uu_tien))
     if getattr(nhu_cau, "hang", None):
         d.append(f"chỉ xét hãng {nhu_cau.hang}")
+    ci = getattr(nhu_cau, "can_inverter", None)
+    if ci is not None:
+        d.append("chỉ xét máy Inverter" if ci else "chỉ xét máy mono (non-Inverter)")
 
     ra = [", ".join(d), ""]
     ra.append(f"Đã lọc {bang.tong_truoc_loc} máy còn {bang.con_lai_sau_loc} máy phù hợp.")

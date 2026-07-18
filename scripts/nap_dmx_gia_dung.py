@@ -154,6 +154,7 @@ SPEC = {
         "sheet": "Máy nước nóng",
         "cot": {
             "cong_suat_w": ("Công suất đầu ra", p_so),
+            "binh_lit": ("Dung lượng dung tích", p_so),
         },
         "chu": {"loai": "Loại máy", "an_toan": "Tính năng an toàn"},
         "bat_buoc": [],

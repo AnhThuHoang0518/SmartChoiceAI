@@ -1,59 +1,161 @@
 {
-  "ten_nganh": "man_hinh",
-  "ten_hien_thi": "màn hình máy tính",
-  "tu_khoa_nganh": ["man hinh"],
-  "csv_that": "data/processed/man_hinh.csv",
-  "csv_mau": "data/mock/catalog/man_hinh_mau.csv",
-  "cot_so": {
-    "man_inch": {"nguon": "catalog:Kích thước màn hình", "ro": "inch"},
-    "dap_ung_ms": {"nguon": "catalog:Thời gian đáp ứng", "ro": "ms"},
-    "do_sang_nit": {"nguon": "catalog:Độ sáng", "ro": "nit"}
+ "ten_nganh": "man_hinh",
+ "ten_hien_thi": "màn hình máy tính",
+ "tu_khoa_nganh": [
+  "man hinh"
+ ],
+ "csv_that": "data/processed/man_hinh.csv",
+ "csv_mau": "data/mock/catalog/man_hinh_mau.csv",
+ "cot_so": {
+  "man_inch": {
+   "nguon": "catalog:Kích thước màn hình",
+   "ro": "inch"
   },
-  "cot_chu": {
-    "phan_giai": {"nguon": "catalog:Độ phân giải"},
-    "tam_nen": {"nguon": "catalog:Tấm nền"}
+  "dap_ung_ms": {
+   "nguon": "catalog:Thời gian đáp ứng",
+   "ro": "ms"
   },
-  "o_nhu_cau": {
-    "man_inch_min": {
-      "kieu": "so", "bat_buoc": false,
-      "trich": ["(?:tu|it nhat)?\\s*([\\d.]{2,4})\\s*inch"],
-      "cau_hoi": "Dạ anh/chị muốn màn từ bao nhiêu inch ạ?",
-      "nhan": "từ {:.0f} inch"
-    },
-    "phan_giai": {
-      "kieu": "chu", "bat_buoc": false,
-      "trich": ["(4k|2k|full hd|fhd|qhd|uhd)"],
-      "cau_hoi": "Dạ anh/chị cần độ phân giải nào ạ — Full HD, 2K hay 4K?",
-      "nhan": "độ phân giải {}"
-    },
-    "tam_nen": {
-      "kieu": "chu", "bat_buoc": false,
-      "trich": ["\\b(ips|va|tn|oled)\\b"],
-      "cau_hoi": "Dạ anh/chị có yêu cầu tấm nền không ạ (IPS/VA)?",
-      "nhan": "tấm nền {}"
+  "do_sang_nit": {
+   "nguon": "catalog:Độ sáng",
+   "ro": "nit"
+  },
+  "loa_co": {
+   "nguon": "catalog:Loa",
+   "ro": ""
+  }
+ },
+ "cot_chu": {
+  "phan_giai": {
+   "nguon": "catalog:Độ phân giải"
+  },
+  "tam_nen": {
+   "nguon": "catalog:Tấm nền"
+  }
+ },
+ "o_nhu_cau": {
+  "man_inch_min": {
+   "kieu": "so",
+   "bat_buoc": false,
+   "trich": [
+    "(?:tu|it nhat)?\\s*([\\d.]{2,4})\\s*inch"
+   ],
+   "cau_hoi": "Dạ anh/chị muốn màn từ bao nhiêu inch ạ?",
+   "nhan": "từ {:.0f} inch"
+  },
+  "phan_giai": {
+   "kieu": "chu",
+   "bat_buoc": false,
+   "trich": [
+    "(4k|2k|full hd|fhd|qhd|uhd)"
+   ],
+   "cau_hoi": "Dạ anh/chị cần độ phân giải nào ạ — Full HD, 2K hay 4K?",
+   "nhan": "độ phân giải {}"
+  },
+  "tam_nen": {
+   "kieu": "chu",
+   "bat_buoc": false,
+   "trich": [
+    "\\b(ips|va|tn|oled)\\b"
+   ],
+   "cau_hoi": "Dạ anh/chị có yêu cầu tấm nền không ạ (IPS/VA)?",
+   "nhan": "tấm nền {}"
+  },
+  "loa_min": {
+   "kieu": "so",
+   "nhan": "cần loa tích hợp",
+   "trich_gan": [
+    {
+     "mau": "co loa|loa tich hop|loa ngoai|kem loa|loa san",
+     "gia_tri": 1
     }
+   ]
+  }
+ },
+ "cau_hoi_ngan_sach": {
+  "cau_hoi": "Dạ anh/chị dự tính khoảng bao nhiêu cho màn hình ạ?",
+  "cau_hoi_lap": "Dạ anh/chị cho em xin ngân sách ạ — ví dụ: 'khoảng 5 triệu'."
+ },
+ "loc_cung": [
+  {
+   "kieu": "toi_thieu",
+   "o": "man_inch_min",
+   "cot": "man_inch",
+   "don_vi": "inch",
+   "ly_do": "man_hinh"
   },
-  "cau_hoi_ngan_sach": {
-    "cau_hoi": "Dạ anh/chị dự tính khoảng bao nhiêu cho màn hình ạ?",
-    "cau_hoi_lap": "Dạ anh/chị cho em xin ngân sách ạ — ví dụ: 'khoảng 5 triệu'."
+  {
+   "kieu": "ngan_sach"
   },
-  "loc_cung": [
-    {"kieu": "toi_thieu", "o": "man_inch_min", "cot": "man_inch", "don_vi": "inch", "ly_do": "man_hinh"},
-    {"kieu": "ngan_sach"},
-    {"kieu": "khop_ten", "o": "phan_giai", "cot": "phan_giai", "ly_do": "phan_giai"},
-    {"kieu": "khop_ten", "o": "tam_nen", "cot": "tam_nen", "ly_do": "tam_nen"}
-  ],
-  "truc_cham": [
-    {"uu_tien": "muot", "ten": "thời gian đáp ứng", "cot": "dap_ung_ms", "thap_tot": true, "fmt": "{:.0f} ms",
-     "trich_uu_tien": ["choi game", "gaming", "muot"]},
-    {"uu_tien": "sang", "ten": "độ sáng", "cot": "do_sang_nit", "thap_tot": false, "fmt": "{:.0f} nit",
-     "trich_uu_tien": ["sang", "ngoai troi"]},
-    {"uu_tien": "gia", "ten": "giá", "cot": "gia", "thap_tot": true, "fmt": "{:,.0f}đ", "mac_dinh": 0.3,
-     "trich_uu_tien": ["\\bre\\b", "gia re", "khuyen mai"]}
-  ],
-  "hien_thi_thong_so": [
-    {"cot": "man_inch", "fmt": "{:.1f} inch"},
-    {"cot": "dap_ung_ms", "fmt": "đáp ứng {:.0f} ms"},
-    {"cot": "do_sang_nit", "fmt": "sáng {:.0f} nit"}
-  ]
+  {
+   "kieu": "khop_ten",
+   "o": "phan_giai",
+   "cot": "phan_giai",
+   "ly_do": "phan_giai"
+  },
+  {
+   "kieu": "khop_ten",
+   "o": "tam_nen",
+   "cot": "tam_nen",
+   "ly_do": "tam_nen"
+  },
+  {
+   "kieu": "toi_thieu",
+   "o": "loa_min",
+   "cot": "loa_co",
+   "ly_do": "loa",
+   "don_vi": ""
+  }
+ ],
+ "truc_cham": [
+  {
+   "uu_tien": "muot",
+   "ten": "thời gian đáp ứng",
+   "cot": "dap_ung_ms",
+   "thap_tot": true,
+   "fmt": "{:.0f} ms",
+   "trich_uu_tien": [
+    "choi game",
+    "gaming",
+    "muot"
+   ]
+  },
+  {
+   "uu_tien": "sang",
+   "ten": "độ sáng",
+   "cot": "do_sang_nit",
+   "thap_tot": false,
+   "fmt": "{:.0f} nit",
+   "trich_uu_tien": [
+    "sang",
+    "ngoai troi"
+   ]
+  },
+  {
+   "uu_tien": "gia",
+   "ten": "giá",
+   "cot": "gia",
+   "thap_tot": true,
+   "fmt": "{:,.0f}đ",
+   "mac_dinh": 0.3,
+   "trich_uu_tien": [
+    "\\bre\\b",
+    "gia re",
+    "khuyen mai"
+   ]
+  }
+ ],
+ "hien_thi_thong_so": [
+  {
+   "cot": "man_inch",
+   "fmt": "{:.1f} inch"
+  },
+  {
+   "cot": "dap_ung_ms",
+   "fmt": "đáp ứng {:.0f} ms"
+  },
+  {
+   "cot": "do_sang_nit",
+   "fmt": "sáng {:.0f} nit"
+  }
+ ]
 }

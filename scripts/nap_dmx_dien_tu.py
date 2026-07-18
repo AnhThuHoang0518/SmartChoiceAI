@@ -100,6 +100,7 @@ SPEC = {
             "man_inch": ("Kích thước màn hình", p_inch),
             "dap_ung_ms": ("Thời gian đáp ứng", _num),
             "do_sang_nit": ("Độ sáng", _num),
+            "loa_co": ("Loa", lambda v: 1.0 if str(v or "").strip().lower() == "có" else None),
         },
         "chu": {"phan_giai": ("Độ phân giải", p_phan_giai), "tam_nen": "Tấm nền"},
         "bat_buoc": ["man_inch"],
@@ -110,7 +111,7 @@ SPEC = {
             "ram_gb": ("RAM", p_gb),
             "ssd_gb": ("Ổ cứng", p_gb),
         },
-        "chu": {"cpu": "Loại CPU"},
+        "chu": {"cpu": "Loại CPU", "cong_nghe_cpu": "Công nghệ CPU"},
         "bat_buoc": [],
     },
     "may_in": {

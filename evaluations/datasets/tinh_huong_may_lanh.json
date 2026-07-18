@@ -557,6 +557,65 @@
    "ky_vong_loai": "danh_sach_hang",
    "toi_da_cau_hoi": 0,
    "_ghi_chu": "liet ke hang that trong catalog kem so may dem duoc"
+  },
+  {
+   "ten": "may_lanh_can_inverter",
+   "tin_dau": "máy lạnh inverter 15tr phòng 18m2 không nắng phòng ngủ",
+   "ky_vong_loai": "tu_van",
+   "toi_da_cau_hoi": 1,
+   "ky_vong_o": {
+    "can_inverter": true
+   }
+  },
+  {
+   "ten": "tablet_can_sim",
+   "can_du_lieu_that": true,
+   "tin_dau": "tablet có sim nghe gọi tầm 8tr màn 10 inch",
+   "ky_vong_loai": "tu_van",
+   "toi_da_cau_hoi": 1,
+   "ky_vong_o": {
+    "sim_can": "sim"
+   }
+  },
+  {
+   "ten": "dong_ho_di_boi",
+   "can_du_lieu_that": true,
+   "tin_dau": "đồng hồ đeo đi bơi pin 5 ngày tầm 3tr",
+   "ky_vong_loai": "tu_van",
+   "toi_da_cau_hoi": 1,
+   "ky_vong_o": {
+    "khang_nuoc_can": "atm"
+   },
+   "_ghi_chu": "di boi -> chi nhan chuan ATM, IP67 rua tay khong tinh"
+  },
+  {
+   "ten": "nuoc_nong_chong_giat_binh_20l",
+   "can_du_lieu_that": true,
+   "tin_dau": "máy nước nóng chống giật bình 20 lít tầm 4tr",
+   "ky_vong_loai": "bat_ky_khong_loi",
+   "toi_da_cau_hoi": 1,
+   "ky_vong_o": {
+    "an_toan_can": "elcb",
+    "binh_lit_min": 20
+   }
+  },
+  {
+   "ten": "man_hinh_co_loa",
+   "can_du_lieu_that": true,
+   "tin_dau": "màn hình 24 inch có loa tầm 3tr",
+   "ky_vong_loai": "bat_ky_khong_loi",
+   "toi_da_cau_hoi": 1,
+   "ky_vong_o": {
+    "loa_min": 1
+   }
+  },
+  {
+   "ten": "pc_i5_du_lieu_ngheo_noi_that",
+   "can_du_lieu_that": true,
+   "tin_dau": "pc core i5 ram 16gb tầm 15tr",
+   "ky_vong_loai": "khong_co_may",
+   "toi_da_cau_hoi": 1,
+   "_ghi_chu": "sheet PC chi 3 may ghi ro i5, khong con nao RAM>=16 -> tu choi that"
   }
  ]
 }

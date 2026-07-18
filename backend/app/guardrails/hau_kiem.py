@@ -75,7 +75,7 @@ _TRUONG_RO = {
     "nguoi_min": "nguoi", "nguoi_max": "nguoi",
     "bua_min": "bua", "bua_max": "bua", "bo_chau_au": "bo",
     "nuoc_lit": "lit", "dung_tich_min": "lit",
-    "dien_kwh_ngay": "kwh", "cong_suat_w": "w",
+    "dien_kwh_ngay": "kwh", "cong_suat_w": "w", "binh_lit": "lit",
     "man_inch": "inch", "ram_gb": "gb", "luu_tru_gb": "gb", "ssd_gb": "gb",
     "pin_mah": "mah", "nang_g": "gam", "pin_ngay": "ngay",
     "dap_ung_ms": "ms", "do_sang_nit": "nit", "toc_do_trang": "trang",
