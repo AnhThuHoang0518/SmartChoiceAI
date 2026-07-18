@@ -403,11 +403,13 @@ def khuyen_mai_that() -> list[dict]:
 
 
 @router.get("/nhan-truong")
-def nhan_truong() -> dict[str, str]:
-    """Ten truong ky thuat -> nhan tieng Viet cho badge UI (1 nguon su that,
-    frontend khong hardcode)."""
+def nhan_truong() -> dict:
+    """Nhan tieng Viet cho UI (1 nguon su that, frontend khong hardcode):
+    truong -> nhan badge, va truc trade-off -> [nhan hon, nhan kem]."""
     from backend.app.core.nhan_truong import NHAN
-    return {k: v[0] for k, v in NHAN.items()}
+    from backend.app.schemas.ket_qua import NHAN_TRUC
+    return {"truong": {k: v[0] for k, v in NHAN.items()},
+            "truc": {k: list(v) for k, v in NHAN_TRUC.items()}}
 
 
 @router.post("/chat", response_model=TraLoi)
@@ -434,12 +436,11 @@ def chat(t: TinNhan) -> TraLoi:
         dong = [f"Dạ **{u['ten']}** đứng vị trí {vs + 1} vì tổng điểm cao "
                 f"{'nhất' if vs == 0 else 'thứ ' + str(vs + 1)} trên các tiêu chí "
                 f"anh/chị nêu ạ ({u['diem']:.2f}/1):"]
+        from backend.app.schemas.ket_qua import nhan_truc
         for h in u.get("hon", []):
-            nh = "Rẻ hơn" if h["truc"] == "giá" else f"Nhỉnh hơn về {h['truc']}"
-            dong.append(f"✓ {nh}: {h['cua_minh']} (so với {h['doi_thu']})")
+            dong.append(f"✓ {nhan_truc(h['truc'], True)}: {h['cua_minh']} (so với {h['doi_thu']})")
         for k in u.get("kem", []):
-            nh = "Đắt hơn" if k["truc"] == "giá" else f"Chịu thiệt về {k['truc']}"
-            dong.append(f"△ {nh}: {k['cua_minh']} (so với {k['doi_thu']})")
+            dong.append(f"△ {nhan_truc(k['truc'], False)}: {k['cua_minh']} (so với {k['doi_thu']})")
         dong.append("")
         dong.append("Điểm cả bảng: " + " · ".join(
             f"{i + 1}. {x['ten']} ({x['diem']:.2f})" for i, x in enumerate(top)))

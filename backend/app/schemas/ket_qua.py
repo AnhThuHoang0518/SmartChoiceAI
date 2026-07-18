@@ -35,18 +35,33 @@ class TrucSoSanh(BaseModel):
     doi_thu: str = Field(description="vd: May B 29 dB")
 
 
+# truc -> (nhan khi HON, nhan khi KEM). Truc "thap la tot" phai co chu rieng:
+# "Nhỉnh hơn về điện năng: 256 kWh" nghe nhu TON dien hon (bug demo that 19/07).
+NHAN_TRUC = {
+    "giá": ("Rẻ hơn", "Đắt hơn"),
+    "điện năng": ("Ăn ít điện hơn", "Tốn điện hơn"),
+    "tiết kiệm điện": ("Tiết kiệm điện hơn", "Tốn điện hơn"),
+    "độ ồn": ("Êm hơn", "Ồn hơn"),
+    "thời gian đáp ứng": ("Phản hồi nhanh hơn", "Phản hồi chậm hơn"),
+    "công suất điện": ("Ăn ít điện hơn", "Tốn điện hơn"),
+    "nước mỗi lần rửa": ("Tốn ít nước hơn", "Tốn nước hơn"),
+}
+
+
+def nhan_truc(truc: str, la_hon: bool) -> str:
+    """Nhan tu nhien cho 1 truc trade-off - dung chung backend + tra cho UI."""
+    if truc in NHAN_TRUC:
+        return NHAN_TRUC[truc][0 if la_hon else 1]
+    return f"Nhỉnh hơn về {truc}" if la_hon else f"Chịu thiệt về {truc}"
+
+
 def dong_so_sanh(x: "TrucSoSanh", la_hon: bool) -> str:
     """Dien dat 1 truc trade-off thanh cau tu nhien cho LLM/ban du phong.
 
     Truoc day serialize "HƠN về giá / KÉM về giá" -> LLM nhai lai nguyen van
-    ("Kém về giá vì đắt hơn") nghe nhu may dich (thay tren demo that). Truc
-    'giá' co tu rieng (rẻ/đắt), truc khac dung 'nhỉnh hơn / chịu thiệt'.
+    ("Kém về giá vì đắt hơn") nghe nhu may dich (thay tren demo that).
     """
-    if x.truc == "giá":
-        dau = "Rẻ hơn" if la_hon else "Đắt hơn"
-        return f"   {dau}: {x.cua_minh} (so với {x.doi_thu})"
-    dau = f"Nhỉnh hơn về {x.truc}" if la_hon else f"Chịu thiệt về {x.truc}"
-    return f"   {dau}: {x.cua_minh} (so với {x.doi_thu})"
+    return f"   {nhan_truc(x.truc, la_hon)}: {x.cua_minh} (so với {x.doi_thu})"
 
 
 class UngVien(BaseModel):

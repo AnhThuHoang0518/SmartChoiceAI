@@ -87,9 +87,11 @@ def chuan_hoa_tien(s: str) -> str:
 # (backend/app/nganh/tu_lanh.py) - router trong api se dan sang, khong tu choi nua.
 NGANH_KHAC = [
     # 'may giat' + 'may say' DA GO (18/07): chay tren khung generic configs/nganh/
-    (r"\b(?:tivi|ti vi)\b", "tivi"),
-    (r"\b(?:laptop|may tinh xach tay)\b", "laptop"),
-    (r"\bdien thoai\b", "điện thoại"),
+    (r"\b(?:tivi|ti vi|tv\b)\b", "tivi"),
+    (r"\b(?:laptop|may tinh xach tay|macbook)\b", "laptop"),
+    # khach hoi ten dong may cu the ('cos iphone 13 k?') cung phai nhan ra
+    # nganh dien thoai - bug demo that 19/07: bot chao lai nhu chua nghe
+    (r"\b(?:dien thoai|iphone|smartphone|smart phone|dtdd)\b", "điện thoại"),
 ]
 
 

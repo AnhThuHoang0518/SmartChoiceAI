@@ -99,11 +99,14 @@ const khung = document.getElementById('khung');
 const oNhap = document.getElementById('o-nhap');
 const nut = document.getElementById('nut');
 
-// Nhan tieng Viet cho badge nguon: lay tu backend (1 nguon su that) - fail
-// thi roi ve ten truong tho, khong chan trang.
-let NHAN = {};
-fetch('/api/nhan-truong').then(r => r.json()).then(d => NHAN = d).catch(() => {});
+// Nhan tieng Viet cho badge nguon + nhan trade-off theo truc: lay tu backend
+// (1 nguon su that) - fail thi roi ve ten tho, khong chan trang.
+let NHAN = {}, NHAN_TRUC = {};
+fetch('/api/nhan-truong').then(r => r.json()).then(d => { NHAN = d.truong || {}; NHAN_TRUC = d.truc || {}; }).catch(() => {});
 const nhan = t => NHAN[t] || t;
+// dien nang THAP la tot - "Nhỉnh hơn về điện năng: 256 kWh" nghe nhu ton dien hon
+const nhanTruc = (truc, hon) => (NHAN_TRUC[truc] || [])[hon ? 0 : 1]
+  || (hon ? 'Nhỉnh hơn về ' + truc : 'Chịu thiệt về ' + truc);
 
 // Markdown toi gian: chi **dam** va xuong dong (pre-wrap lo). Truoc day **
 // hien tho tren man hinh - thay ngay tren demo that.
@@ -155,8 +158,8 @@ function veSanPham(u, i){
     giaHtml += u.gia.toLocaleString('vi-VN') + 'đ</span>';
   }
   let s = '<div class="the-sp"><div class="hang-to"><b>' + (i+1) + '. ' + u.ten + '</b>' + giaHtml + '</div>';
-  (u.hon||[]).forEach(h => s += '<div class="to hon">✓ ' + (h.truc === 'giá' ? 'Rẻ hơn' : 'Nhỉnh hơn về ' + h.truc) + ': ' + h.cua_minh + ' (so với ' + h.doi_thu + ')</div>');
-  (u.kem||[]).forEach(k => s += '<div class="to kem">△ ' + (k.truc === 'giá' ? 'Đắt hơn' : 'Chịu thiệt về ' + k.truc) + ': ' + k.cua_minh + ' (so với ' + k.doi_thu + ')</div>');
+  (u.hon||[]).forEach(h => s += '<div class="to hon">✓ ' + nhanTruc(h.truc, true) + ': ' + h.cua_minh + ' (so với ' + h.doi_thu + ')</div>');
+  (u.kem||[]).forEach(k => s += '<div class="to kem">△ ' + nhanTruc(k.truc, false) + ': ' + k.cua_minh + ' (so với ' + k.doi_thu + ')</div>');
   s += '<div>';
   (u.nguon||[]).forEach(n => {
     if (n.gia_tri && n.gia_tri !== 'None')
