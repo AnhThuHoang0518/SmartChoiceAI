@@ -248,6 +248,30 @@ def _cac_hang_toan_he() -> set[str]:
     return _HANG
 
 
+def _tim_may_theo_ma(text: str):
+    """Khach nhac MA/MODEL may cu the ('LG 179380', 'tu van may 179380') - tim
+    trong 14 catalog san pham co ten chua ma do. Tra (sp, ten_nganh, nganh_key)
+    hoac None. Dung de tu van THANG ve may do thay vi hoi lai chung chung, va
+    de tranh mã số bị hiểu nhầm thành ngân sách (bug tu landing).
+    """
+    import re as _re
+    ma_so = _re.findall(r"\b(\d{5,7})\b", bo_dau(text))
+    if not ma_so:
+        return None
+    from backend.app.nganh.khung import cac_nganh
+    from backend.app.nganh.tu_lanh import tai_catalog_tu_lanh
+    nguon = [("máy lạnh", "may_lanh", catalog()),
+             ("tủ lạnh", "tu_lanh", tai_catalog_tu_lanh())]
+    for ng in cac_nganh():
+        nguon.append((ng.ten_hien_thi, ng.ten, ng.catalog()))
+    for ten_ng, key, ds in nguon:
+        for s in ds:
+            for ma in ma_so:
+                if ma in s.ten:
+                    return (s, ten_ng, key)
+    return None
+
+
 def _cac_nganh_trong_cau(text: str) -> list[str]:
     """Danh sach TEN NGANH khach nhac trong 1 cau (theo THU TU xuat hien) - de
     xu ly da y ("may lanh va tu lanh"). Tra ten hien thi de dua vao chip."""
@@ -1030,6 +1054,31 @@ def chat(t: TinNhan) -> TraLoi:
             thong_ke={"ms": int((time.perf_counter() - t0) * 1000),
                       "cham_llm": 0, "can_lam_ro_nganh": True},
         )
+
+    # HOI VE MAY CU THE theo MA ("LG 179380", tu landing bam card): tu van thang
+    # ve may do bang du lieu that (gia/KM/qua/pham vi), roi hoi phong de kiem tra
+    # hop khong. Chay SOM de ma so khong bi hieu nham thanh ngan sach.
+    if not p.get("nganh") and not p.get("top3_truoc"):
+        tim = _tim_may_theo_ma(t.tin_nhan)
+        if tim:
+            s, ten_ng, key = tim
+            p["nganh"] = key
+            gg = getattr(s, "gia_goc", s.gia)
+            km = (f" (đang giảm {round((1 - s.gia / gg) * 100)}%, giá gốc {tien_chu(gg)})"
+                  if gg and gg > s.gia else "")
+            pv = (f" Hãng công bố dùng cho phòng {s.pham_vi_min:.0f}-{s.pham_vi_max:.0f}m²."
+                  if key == "may_lanh" and getattr(s, "pham_vi_max", None) else "")
+            qua = f" Kèm quà: {s.qua[:90]}." if getattr(s, "qua", "") else ""
+            hoi = ("Phòng anh chị rộng khoảng bao nhiêu m² để em xem có hợp không ạ?"
+                   if key == "may_lanh"
+                   else "Anh chị cho em xin thêm nhu cầu để em tư vấn chính xác ạ?")
+            return TraLoi(
+                phien_id=ma, loai="giai_thich",
+                text=(f"Dạ {s.ten} là {ten_ng}, giá {tien_chu(s.gia)}{km}.{pv}{qua} {hoi}"),
+                top3=[], goi_y=["Máy nào đang giảm giá?"],
+                thong_ke={"ms": int((time.perf_counter() - t0) * 1000), "cham_llm": 0,
+                          "che_do": "hoi_may_cu_the", "nganh": key},
+            )
 
     # CHE DO GIAI THICH KIEN THUC: "inverter khac gi non-inverter", "HP la gi"
     # -> tra loi bang kien thuc nganh (template, KHONG LLM) roi keo ve nhu cau.

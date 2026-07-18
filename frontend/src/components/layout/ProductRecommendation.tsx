@@ -67,7 +67,7 @@ export function ProductRecommendation() {
                 </div>
 
                 <Button
-                  onClick={() => denChat(`Tư vấn máy lạnh ${sp.ten.split(" ")[0]} đang giảm giá, hợp phòng mình không?`)}
+                  onClick={() => denChat(`Tư vấn máy lạnh ${sp.ten}, có hợp phòng mình không?`)}
                   className="w-full rounded-lg bg-[#005BFF] hover:bg-[#005BFF]/90 text-white font-medium h-10"
                 >
                   Tư vấn máy này
