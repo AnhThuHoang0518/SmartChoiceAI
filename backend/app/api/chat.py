@@ -97,6 +97,7 @@ class TraLoi(BaseModel):
 # nguong tinh tu phan bo gia THAT cua nganh (tercile), khong bia so.
 GOI_Y_O = {
     "ngan_sach_max": ["Tầm trung", "Giá rẻ thôi", "Không giới hạn ngân sách"],
+    "dien_tich_m2": ["Phòng 18m²", "Phòng 25m²", "Phòng 30m²"],
     "co_nang": ["Có nắng", "Không nắng"],
     "loai_phong": ["Phòng ngủ", "Phòng khách"],
     "so_nguoi": ["2 người", "4 người", "6 người"],
@@ -485,6 +486,21 @@ def chat(t: TinNhan) -> TraLoi:
     ma = t.phien_id if t.phien_id and phien.lay(t.phien_id) else phien.tao_phien()
     p = phien.lay(ma)
 
+    # Khach bam loi tat / noi chung chung "tu van san pham" -> PHẢI hoi san
+    # pham gi truoc. Khong duoc muon nganh cu trong phien (vd vua xem khuyen
+    # mai may lanh xong) roi nhay sang hoi ngan sach nhu screenshot demo.
+    import re as _re
+    kd_chung = bo_dau(t.tin_nhan).lower().strip()
+    if _re.fullmatch(r"(?:tu van|chon|mua|tim)(?: giup)? san pham(?: nao)?", kd_chung):
+        p["nganh"] = None
+        p["da_hoi"].append("nganh")
+        return TraLoi(
+            phien_id=ma,
+            loai="cau_hoi",
+            text=cfg()["chao_hoi"]["mau"],
+            thong_ke={"ms": int((time.perf_counter() - t0) * 1000), "cham_llm": 0},
+        )
+
     # Hoi chinh sach/dich vu (bao hanh, doi tra, giao hang/lap dat...) -> tra
     # bang tai lieu private da nap runtime trong data/policies, KHONG qua LLM,
     # KHONG commit noi dung that len repo public.
@@ -725,29 +741,44 @@ def chat(t: TinNhan) -> TraLoi:
             reverse=True,
         )[:3]
         if giam:
-            dong = []
-            for s in giam:
-                muc = s.gia_goc - s.gia
-                dong.append(
-                    f"• {s.ten}: {s.gia_goc:,.0f}đ còn {s.gia:,.0f}đ (giảm {muc/1_000_000:.1f} triệu)".replace(",", ".")
-                )
-                # Qua tang NGUYEN VAN tu catalog - khong sinh chu, khong hua qua khong co
-                if getattr(s, "qua", ""):
-                    dong.append(f"   🎁 {s.qua[:120]}")
+            top_km = _gan_anh([
+                {
+                    "ma_sp": s.ma_sp,
+                    "ten": s.ten,
+                    "gia": s.gia,
+                    "diem": round((s.gia_goc - s.gia) / max(s.gia_goc, 1), 4),
+                    "hon": [],
+                    "kem": [],
+                    "nguon": [
+                        n.model_dump(mode="json")
+                        for n in [s.nguon_cua("gia"), s.nguon_cua("gia_goc"), s.nguon_cua("qua")]
+                        if n is not None
+                    ],
+                }
+                for s in giam
+            ])
             text = (
-                "Dạ đang có mấy máy giảm sâu nhất nè ạ:\n" + "\n".join(dong)
-                + "\nMáy phù hợp hay không còn tùy phòng anh chị ạ — phòng anh chị rộng khoảng bao nhiêu m² để em xem máy nào đang giảm mà VỪA phòng anh chị ạ?"
+                "Dạ em thấy mấy máy lạnh đang giảm sâu nhất trong dữ liệu hiện có đây ạ. "
+                "Máy phù hợp hay không còn tùy phòng anh chị — phòng anh chị rộng khoảng "
+                "bao nhiêu m² để em lọc máy đang giảm mà vừa phòng ạ?"
             )
         else:
+            top_km = []
             text = "Dạ hiện tại em chưa thấy máy nào đang có giá khuyến mãi trong dữ liệu ạ. Anh/chị cho em xin diện tích phòng và ngân sách, em lọc máy giá tốt nhất cho anh chị nhé ạ?"
         phien.ghi(ma, nc, "dien_tich_m2")
+        if giam:
+            p["loai_truoc"] = "khuyen_mai"
+            p["top3_truoc"] = top_km
         return TraLoi(
             phien_id=ma,
             loai="khuyen_mai",
             text=text,
             o_nhu_cau=nc.model_dump(exclude_none=True, mode="json"),
+            top3=top_km,
+            goi_y=GOI_Y_O.get("dien_tich_m2", []),
             thong_ke={"ms": int((time.perf_counter() - t0) * 1000), "cham_llm": 1,
-                      "giong": giong},
+                      "giong": giong, "nganh": "may_lanh",
+                      "truoc_loc": len(ds), "sau_loc": len(giam)},
         )
 
     if cau_hoi_cong_suat(t.tin_nhan):

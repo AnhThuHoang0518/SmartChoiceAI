@@ -34,10 +34,6 @@
   .ten-bot{font-weight:700;font-size:14.5px}
   .trang-thai{font-size:12px;color:var(--phu);margin-top:2px}
   .mat.dang-noi ~ .trang-thai{color:var(--chinh)}
-  #o-anh .khung-anh{height:120px;border:1.5px dashed var(--vien);border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:var(--phu);font-size:12px;margin-top:8px}
-  #o-anh .khung-anh .bieu-tuong{font-size:34px}
-  #o-anh .ten-sp{font-weight:700;font-size:13.5px;margin-top:8px;color:var(--muc)}
-  #o-anh .gia-sp{color:var(--chinh);font-weight:700;font-size:14px}
   .dong{display:flex;margin-bottom:14px}
   .dong.khach{justify-content:flex-end}
   .bong{max-width:78%;padding:11px 15px;border-radius:14px;line-height:1.55;font-size:15px;white-space:pre-wrap}
@@ -45,8 +41,7 @@
   [data-theme="dark"] .khach .bong{background:#2058c9}
   .bot .bong{background:var(--the);border:1px solid var(--vien);border-bottom-left-radius:4px}
   .the-sp{background:var(--the);border:1px solid var(--vien);border-radius:12px;padding:12px 14px;margin-top:8px;font-size:14px}
-  .anh-sp-nho{width:62px;height:62px;object-fit:contain;float:right;margin:0 0 6px 10px;border-radius:8px;background:#fff}
-  #o-anh .khung-anh img{max-width:100%;max-height:112px;object-fit:contain}
+  .anh-sp-nho{width:88px;height:88px;object-fit:contain;float:right;margin:0 0 8px 12px;border-radius:10px;background:#fff;border:1px solid var(--vien)}
   .nguon-anh{font-size:10.5px;color:var(--phu);margin-top:4px}
   .the-sp b{font-size:15px}
   .hang-to{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
@@ -122,14 +117,10 @@
     <div class="ten-bot">Trợ lý Smart Choice</div>
     <div class="trang-thai" id="trang-thai">Sẵn sàng tư vấn</div>
   </div>
-  <div class="the-panel" id="o-anh">
-    <div style="font-size:12.5px;color:var(--phu);text-align:left">SẢN PHẨM ĐANG XEM</div>
-    <div class="khung-anh"><span class="bieu-tuong">📦</span><span>Bấm vào máy trong top 3<br>để xem tại đây</span></div>
-  </div>
   <div class="the-panel" style="text-align:left">
     <div style="font-size:12.5px;color:var(--phu)">LỐI TẮT</div>
     <div class="loi-tat">
-      <button onclick="guiVB('Em muốn tư vấn sản phẩm')">🛒 Tư vấn sản phẩm</button>
+      <button onclick="guiVB('Tư vấn sản phẩm')">🛒 Tư vấn sản phẩm</button>
       <button onclick="guiVB('Chính sách bảo hành đổi trả thế nào?')">📄 Hỏi chính sách</button>
       <button onclick="guiVB('Khuyến mãi hè — máy lạnh nào giảm sâu nhất?')">☀️ Xem khuyến mãi</button>
       <button onclick="guiVB('so sánh máy 1 và máy 2')">⚖️ So sánh sản phẩm</button>
@@ -138,7 +129,7 @@
 </div>
 
 <div id="khung">
-  <div class="dong bot"><div class="bong">Em chào anh chị ạ 👋 Em có thể tư vấn chọn sản phẩm theo nhu cầu thật, hoặc tra cứu chính sách mua hàng của Điện máy XANH. Anh chị muốn bắt đầu với phần nào ạ?</div></div>
+  <div class="dong bot"><div class="bong">Em chào anh chị ạ 👋 Anh chị muốn tư vấn sản phẩm gì trước ạ? Nếu cần, em cũng tra cứu được chính sách mua hàng của Điện máy XANH.</div></div>
   <div class="goi-y-moi" id="goiy">
     <section class="nhom-goi-y">
       <div class="nhom-tieu-de"><span>🛒</span>Tư vấn sản phẩm</div>
@@ -209,25 +200,11 @@ const trangThai = document.getElementById('trang-thai');
 function batMieng(){ if (matBot) { matBot.classList.add('dang-noi'); trangThai.textContent = 'Đang nói...'; } }
 function tatMieng(){ if (matBot) { matBot.classList.remove('dang-noi'); trangThai.textContent = 'Sẵn sàng tư vấn'; } }
 
-// ── O "san pham dang xem": bam card top 3 -> hien o panel trai.
-// Anh THAT chua co (du lieu DMX khong kem link anh) -> ghi ro cho Image API,
-// khong do anh gia - dung luat "khong bia" ke ca bang hinh.
+// Icon fallback khi san pham chua co anh chinh chu. Anh that neu co duoc lay
+// tu data/processed/anh_sp.json (ma_sp -> URL dienmayxanh.com), khong do anh.
 const ICON_NGANH = {may_lanh:'❄️', tu_lanh:'🧊', may_giat:'🧺', may_say:'🌀', may_rua_chen:'🍽️',
   tu_dong_mat:'🧊', may_nuoc_nong:'🚿', may_tinh_bang:'📱', dong_ho:'⌚', man_hinh:'🖥️',
   may_tinh_ban:'🖥️', may_in:'🖨️', micro:'🎤'};
-function chonSP(sp){
-  const o = document.getElementById('o-anh');
-  if (!o) return;
-  const giam = sp.gg && sp.gg > sp.gia
-    ? ' <span class="giam">-' + Math.round((1 - sp.gia / sp.gg) * 100) + '%</span>' : '';
-  const anh = sp.anh
-    ? '<div class="khung-anh" style="border-style:solid"><img src="' + sp.anh + '" onerror="this.parentNode.innerHTML=\'<span class=bieu-tuong>' + (ICON_NGANH[sp.nganh] || '📦') + '</span>\'" alt=""></div><div class="nguon-anh">Ảnh: dienmayxanh.com (productidweb)</div>'
-    : '<div class="khung-anh"><span class="bieu-tuong">' + (ICON_NGANH[sp.nganh] || '📦') + '</span><span>Ảnh thật: chờ nối<br>Image API của ĐMX (productidweb)</span></div>';
-  o.innerHTML = '<div style="font-size:12.5px;color:var(--phu);text-align:left">SẢN PHẨM ĐANG XEM</div>'
-    + anh
-    + '<div class="ten-sp">' + sp.ten + '</div>'
-    + '<div class="gia-sp">' + sp.gia.toLocaleString('vi-VN') + 'đ' + giam + '</div>';
-}
 
 let amThanh = null;                           // audio dang phat - phat cai moi thi tat cai cu
 async function docTo(text){
@@ -337,10 +314,12 @@ function veSanPham(u, i){
   } else {
     giaHtml += u.gia.toLocaleString('vi-VN') + 'đ</span>';
   }
-  const spNho = JSON.stringify({ten: u.ten, gia: u.gia, gg: gg, nganh: nganhHienTai, anh: u.anh_url || ''}).replace(/'/g, "&#39;");
-  let s = '<div class="the-sp" style="cursor:pointer" onclick=\'chonSP(' + spNho + ')\' title="Bấm để xem ở panel trái">';
+  const qua = (u.nguon||[]).find(n => n.truong === 'qua' && n.gia_tri && n.gia_tri !== 'None');
+  let s = '<div class="the-sp">';
   if (u.anh_url) s += '<img class="anh-sp-nho" src="' + u.anh_url + '" onerror="this.remove()" alt="">';
+  else s += '<div class="anh-sp-nho" style="display:flex;align-items:center;justify-content:center;font-size:32px;color:var(--phu)">' + (ICON_NGANH[nganhHienTai] || '📦') + '</div>';
   s += '<div class="hang-to"><b>' + (i+1) + '. ' + u.ten + '</b>' + giaHtml + '</div>';
+  if (qua) s += '<div class="to" style="color:var(--hon)">🎁 ' + md(String(qua.gia_tri).slice(0, 140)) + '</div>';
   (u.hon||[]).forEach(h => s += '<div class="to hon">✓ ' + nhanTruc(h.truc, true) + ': ' + h.cua_minh + ' (so với ' + h.doi_thu + ')</div>');
   (u.kem||[]).forEach(k => s += '<div class="to kem">△ ' + nhanTruc(k.truc, false) + ': ' + k.cua_minh + ' (so với ' + k.doi_thu + ')</div>');
   s += '<div>';
@@ -400,7 +379,7 @@ async function gui(e){
             + d.vi_sao_hoi.map(x => '<span>' + x.o + ' = ' + x.diem.toFixed(2) + '</span>').join('')
             + '</div>';
     }
-    if (d.loai === 'tu_van'){
+    if (d.loai === 'tu_van' || d.loai === 'khuyen_mai'){
       (d.top3||[]).forEach((u,i) => html += veSanPham(u,i));
       if (d.loai_noi_bat)
         html += '<div class="loai-noi-bat"><b>Vì sao em không đề xuất ' + d.loai_noi_bat.ten + ':</b> ' + d.loai_noi_bat.chi_tiet + '</div>';
