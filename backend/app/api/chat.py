@@ -260,11 +260,11 @@ def _cac_nganh_trong_cau(text: str) -> list[str]:
     if co_nganh_tu_lanh(text):
         tim.append(("tủ lạnh", kd.find("tu lanh")))
     for ng in cac_nganh():
-        for tk in ng.cfg["tu_khoa_nganh"]:
-            i = kd.find(tk)
-            if i >= 0:
-                tim.append((ng.ten_hien_thi, i))
-                break
+        # Từ khóa ngành trong config là REGEX (vd ``\\bmicro\\b``), không
+        # phải chuỗi thô để dùng ``str.find``. Dùng cùng bộ khớp của router để
+        # vừa lấy đúng vị trí, vừa tôn trọng các mẫu loại trừ như “máy sấy tóc”.
+        if (vi_tri := ng.vi_tri_khop(text)) is not None:
+            tim.append((ng.ten_hien_thi, vi_tri[0]))
     # loai trung ten, sap theo vi tri xuat hien
     thay, ra = set(), []
     for ten, vt in sorted(tim, key=lambda x: x[1] if x[1] >= 0 else 999):
@@ -768,6 +768,54 @@ def chat(t: TinNhan) -> TraLoi:
             },
         )
 
+    # Suy luận từ tình huống chỉ tạo ỨNG VIÊN ngành. Khách phải xác nhận trước
+    # khi tên ngành được ghép vào câu và đi qua bộ lọc/xếp hạng bình thường.
+    # Nếu khách chủ động gọi tên một ngành khác thì lời nói rõ luôn thắng gợi ý.
+    dang_cho_gian_tiep = p.get("xac_nhan_nganh_gian_tiep")
+    if dang_cho_gian_tiep:
+        co_nganh_moi = bool(
+            _cac_nganh_trong_cau(t.tin_nhan)
+            or co_nganh_may_lanh(t.tin_nhan)
+            or co_nganh_tu_lanh(t.tin_nhan)
+            or nganh_ngoai_pham_vi(t.tin_nhan)
+        )
+        if co_nganh_moi:
+            p.pop("xac_nhan_nganh_gian_tiep", None)
+        else:
+            xac_nhan_gian_tiep = tra_loi_xac_nhan_goi_y(t.tin_nhan)
+            san_pham_goi_y = dang_cho_gian_tiep["san_pham"]
+            if xac_nhan_gian_tiep is True:
+                p.pop("xac_nhan_nganh_gian_tiep", None)
+                # Giữ cả phần nhu cầu nói thêm trong lượt xác nhận (giá, tải
+                # trọng...) để bộ trích ô đọc luôn, không bắt khách nói lại.
+                t = TinNhan(
+                    tin_nhan=f"{san_pham_goi_y} {t.tin_nhan}",
+                    phien_id=t.phien_id,
+                )
+            elif xac_nhan_gian_tiep is False:
+                p.pop("xac_nhan_nganh_gian_tiep", None)
+                return TraLoi(
+                    phien_id=ma,
+                    loai="cau_hoi",
+                    text=("Dạ anh chị muốn tìm sản phẩm gì ạ? Anh chị cứ nói tên "
+                          "sản phẩm hoặc nhu cầu sử dụng, em sẽ hỏi tiếp để tư vấn "
+                          "đúng ạ."),
+                    thong_ke={"ms": int((time.perf_counter() - t0) * 1000),
+                              "cham_llm": 0},
+                )
+            else:
+                return TraLoi(
+                    phien_id=ma,
+                    loai="xac_nhan_nganh",
+                    text=(f"Dạ em chưa dám tự chọn thay anh chị. Có phải anh chị "
+                          f"đang tìm {san_pham_goi_y} không ạ?"),
+                    goi_y=[f"Đúng, tìm {san_pham_goi_y}",
+                            "Tôi cần sản phẩm khác"],
+                    thong_ke={"ms": int((time.perf_counter() - t0) * 1000),
+                              "cham_llm": 0, "suy_luan": True,
+                              "bang_chung": dang_cho_gian_tiep["bang_chung"]},
+                )
+
     # Nganh KHONG co sheet (dien thoai/laptop/tivi) phai tu choi truoc cac
     # intent phu nhu "co hang nao/Samsung khong". Neu khong, cau "đth co
     # Samsung khong" se bi hoi_hang bat va muon nganh cu trong phien (vd may
@@ -1109,8 +1157,24 @@ def chat(t: TinNhan) -> TraLoi:
                           f"micro. Anh chị cần món nào trong số này em giúp ngay ạ!"),
                     thong_ke={"ms": int((time.perf_counter() - t0) * 1000),
                               "cham_llm": 0, "che_do": "gian_tiep_ngoai"})
-            # co du lieu -> dan sang nganh do bang chinh ten san pham (chay flow)
-            t = TinNhan(tin_nhan=f"{sp} {t.tin_nhan}", phien_id=t.phien_id)
+            # Có dữ liệu nhưng đây vẫn chỉ là SUY LUẬN. Chưa gán ngành, chưa
+            # lọc sản phẩm; lưu ứng viên và chờ khách xác nhận ở lượt kế tiếp.
+            p["xac_nhan_nganh_gian_tiep"] = {
+                "san_pham": sp,
+                "bang_chung": "khách mô tả tình huống sử dụng",
+            }
+            phien.ghi(ma, p["nhu_cau"])
+            return TraLoi(
+                phien_id=ma,
+                loai="xac_nhan_nganh",
+                text=(f"Dạ nghe tình huống anh chị mô tả thì có vẻ anh chị đang "
+                      f"tìm {sp}. Em hiểu vậy có đúng không ạ?"),
+                goi_y=[f"Đúng, tìm {sp}", "Tôi cần sản phẩm khác"],
+                thong_ke={"ms": int((time.perf_counter() - t0) * 1000),
+                          "cham_llm": 0, "suy_luan": True,
+                          "bang_chung": "nhu_cau_gian_tiep",
+                          "nganh_goi_y": sp},
+            )
 
     # Khach bam "Tu van tiep X" -> lay nganh dau hang doi ra, reset o nhu cau de
     # tu van nganh moi (ngan sach chung van giu). Tinh agent: hoan thanh ke hoach.
