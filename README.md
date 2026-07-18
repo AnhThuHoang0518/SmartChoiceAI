@@ -33,6 +33,10 @@ Bản demo công khai dùng **dữ liệu thật của ĐMX** (NDA, không nằm
 đặt file gốc vào `data/raw/` rồi `python scripts/nap_dmx.py` — hệ tự ưu tiên
 dữ liệu thật khi có. Khóa API: xem `.env.example`.
 
+Tài liệu chính sách/luồng chat thật cũng không nằm trên repo public. Khi cần bot
+trả lời bảo hành, đổi trả, giao hàng/lắp đặt..., đặt file `.md` vào
+`data/policies/` hoặc trỏ biến `CHINH_SACH_DIR` tới thư mục private trên máy chạy.
+
 ## Đo chất lượng
 
 ```bash

@@ -49,6 +49,7 @@ from backend.app.schemas.nhu_cau import UuTien
 KHONG_GIOI_HAN = 10**12
 from backend.app.ranking.xep_hang import cfg, xep_hang
 from backend.app.services.catalog import tai_catalog
+from backend.app.services.chinh_sach import hoi_chinh_sach, tra_loi_chinh_sach
 from backend.app.services.llm import tao_llm
 
 router = APIRouter()
@@ -483,6 +484,22 @@ def chat(t: TinNhan) -> TraLoi:
     t0 = time.perf_counter()
     ma = t.phien_id if t.phien_id and phien.lay(t.phien_id) else phien.tao_phien()
     p = phien.lay(ma)
+
+    # Hoi chinh sach/dich vu (bao hanh, doi tra, giao hang/lap dat...) -> tra
+    # bang tai lieu private da nap runtime trong data/policies, KHONG qua LLM,
+    # KHONG commit noi dung that len repo public.
+    if hoi_chinh_sach(t.tin_nhan):
+        rcs = tra_loi_chinh_sach(t.tin_nhan)
+        return TraLoi(
+            phien_id=ma,
+            loai=rcs["loai"],
+            text=rcs["text"],
+            thong_ke={
+                "ms": int((time.perf_counter() - t0) * 1000),
+                "cham_llm": 0,
+                "nguon_chinh_sach": rcs.get("nguon", []),
+            },
+        )
 
     # SO SANH TRUC TIEP 2 may trong top 3 vua tu van - bang do code dung tu
     # du lieu da luu, khong LLM. Chi bat khi phien DA co bang ket qua.

@@ -30,7 +30,9 @@ RA = Path("data/processed/anh_sp.json")
 
 # thu lan luot cac prefix nam/thang (timerseo gen theo dot; 2026/05 dang trung
 # nhieu nhat theo tham do). Trung o prefix nao thi dung o do.
-PREFIX = ["2026/05", "2026/06", "2026/07", "2026/04", "2026/03"]
+PREFIX = ["2026/05", "2026/06", "2026/07", "2026/04", "2026/03",
+          "2026/02", "2026/01", "2025/12", "2025/11", "2025/10",
+          "2025/09", "2025/08", "2025/07", "2025/06", "2025/05"]
 NGUONG_BYTE = 3000                       # anh that >= 3KB; be hon coi nhu khong co
 
 

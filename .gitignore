@@ -32,6 +32,11 @@ evaluations/results/*
 data/raw/*
 !data/raw/.gitkeep
 
+# Tai lieu chinh sach/lich su chat that de chay runtime - khong public.
+# Neu can tra loi chinh sach tren VPS: scp rieng vao data/policies/.
+data/policies/*
+!data/policies/.gitkeep
+
 # Editors and OS
 .idea/
 .vscode/
