@@ -272,6 +272,28 @@ def _tim_may_theo_ma(text: str):
     return None
 
 
+def _suy_nganh_bang_ai(text: str) -> str | None:
+    """Suy 1 nganh UNG VIEN tu cau mo ho: embedding truoc (nhanh, ngu nghia),
+    LLM de xuat sau (vot moi cach noi). Chi tra nganh CO du lieu; None neu ca
+    hai tit hoac khong co khoa mo hinh.
+
+    AN TOAN: day chi la DE XUAT ung vien -> router bat khach xac nhan truoc khi
+    loc; khong tu chot nganh, so lieu van tu DB. Lop vot CUOI, chay truoc khi
+    hoi chung chung."""
+    try:
+        from backend.app.agents.hieu_y_mo import goi_y_nganh
+        gy = goi_y_nganh(text, toi_da=1)
+        if gy:
+            return gy[0]
+    except Exception:
+        pass
+    try:
+        from backend.app.agents.suy_luan_nganh_llm import de_xuat_nganh_llm
+        return de_xuat_nganh_llm(text, llm())
+    except Exception:
+        return None
+
+
 def _cac_nganh_trong_cau(text: str) -> list[str]:
     """Danh sach TEN NGANH khach nhac trong 1 cau (theo THU TU xuat hien) - de
     xu ly da y ("may lanh va tu lanh"). Tra ten hien thi de dua vao chip."""
@@ -1147,6 +1169,26 @@ def chat(t: TinNhan) -> TraLoi:
             and _ncgt_som(t.tin_nhan) is None \
             and not hoi_gia_hang(t.tin_nhan) \
             and giai_thich_truong(t.tin_nhan) is None:
+        # Truoc khi hoi chung chung: thu SUY nganh bang AI (embedding + LLM) khi
+        # luat regex tinh huong tit. AN TOAN: chi de xuat 1 ung vien trong danh
+        # sach dong -> khach xac nhan; khong tu chot, so lieu van tu DB.
+        ten_uv = _suy_nganh_bang_ai(t.tin_nhan)
+        if ten_uv:
+            p["xac_nhan_nganh_gian_tiep"] = {
+                "san_pham": ten_uv,
+                "bang_chung": "AI suy từ mô tả nhu cầu",
+            }
+            phien.ghi(ma, p["nhu_cau"])
+            return TraLoi(
+                phien_id=ma,
+                loai="xac_nhan_nganh",
+                text=(f"Dạ nghe anh chị mô tả thì có vẻ đang tìm {ten_uv}. "
+                      f"Em hiểu vậy đúng không ạ?"),
+                goi_y=[f"Đúng, tìm {ten_uv}", "Tôi cần sản phẩm khác"],
+                thong_ke={"ms": int((time.perf_counter() - t0) * 1000),
+                          "cham_llm": 1, "suy_luan": True,
+                          "bang_chung": "suy_nganh_ai", "nganh_goi_y": ten_uv},
+            )
         p["da_hoi"].append("nganh")
         return TraLoi(
             phien_id=ma,
