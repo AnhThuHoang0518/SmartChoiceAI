@@ -1,13 +1,17 @@
-import { Menu, Tv, Refrigerator, AirVent, Laptop, Smartphone, Package, Sparkles } from "lucide-react"
+import { Menu, Refrigerator, AirVent, Package, Wind, Snowflake, Utensils, Droplets, Tablet, Sparkles } from "lucide-react"
 import { Link } from "react-router-dom"
 
+// Chi liet ke danh muc CO du lieu that trong catalog (khong show Tivi/Laptop/
+// Dien thoai vi chua co san pham -> tranh giam khao bam vao trang rong).
 const CATEGORIES = [
-  { icon: Tv, label: "Tivi" },
-  { icon: Refrigerator, label: "Tủ lạnh" },
   { icon: AirVent, label: "Máy lạnh" },
+  { icon: Refrigerator, label: "Tủ lạnh" },
   { icon: Package, label: "Máy giặt" },
-  { icon: Laptop, label: "Laptop" },
-  { icon: Smartphone, label: "Điện thoại" },
+  { icon: Wind, label: "Máy sấy" },
+  { icon: Snowflake, label: "Tủ đông" },
+  { icon: Utensils, label: "Máy rửa chén" },
+  { icon: Droplets, label: "Máy nước nóng" },
+  { icon: Tablet, label: "Máy tính bảng" },
   { icon: Sparkles, label: "Khuyến mãi", highlight: true },
 ]
 

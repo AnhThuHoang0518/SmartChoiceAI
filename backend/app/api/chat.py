@@ -672,6 +672,70 @@ def khuyen_mai_that() -> list[dict]:
              "phan_tram": round((1 - s.gia / s.gia_goc) * 100)} for s in giam]
 
 
+def _catalog_theo_slug(slug: str):
+    """slug danh muc ('may-lanh', 'tu-lanh'...) -> (ten_hien_thi, danh_sach_sp).
+    Khong co nganh khop -> None. Dung chung cho trang danh muc landing: san pham
+    THAT tu catalog, KHONG mock - dung luat 'moi con so co nguon'."""
+    from backend.app.nganh.khung import cac_nganh
+    from backend.app.nganh.tu_lanh import tai_catalog_tu_lanh
+    s = bo_dau(slug or "").lower().replace("-", " ").strip()
+    if not s:
+        return None
+    bang = [("máy lạnh", catalog())]
+    try:
+        bang.append(("tủ lạnh", tai_catalog_tu_lanh()))
+    except Exception:
+        pass
+    for ng in cac_nganh():
+        try:
+            bang.append((ng.ten_hien_thi, ng.catalog()))
+        except Exception:
+            pass
+    for ten, ds in bang:                       # khop chinh xac truoc
+        if bo_dau(ten).lower() == s:
+            return ten, ds
+    for ten, ds in bang:                       # khop mem (chua/bi chua)
+        tn = bo_dau(ten).lower()
+        if s in tn or tn in s:
+            return ten, ds
+    return None
+
+
+@router.get("/san-pham")
+def san_pham_theo_nganh(nganh: str = "", hang: str = "", gia_min: int = 0,
+                        gia_max: int = 0, sap_xep: str = "giam") -> dict:
+    """San pham THAT theo danh muc cho trang /category tren landing. Gia/anh/hang
+    lay thang tu catalog - khong hardcode, khong mock. Ho tro loc hang + muc gia
+    + sap xep (giam sau nhat / gia tang / gia giam)."""
+    kq = _catalog_theo_slug(nganh)
+    if not kq:
+        return {"nganh": nganh, "ten": "", "tong": 0, "hang": [], "san_pham": []}
+    ten, ds = kq
+    hang_ds = sorted({s.hang for s in ds if getattr(s, "hang", "")})
+    loc = list(ds)
+    if hang:
+        muon = {h.strip().lower() for h in hang.split(",") if h.strip()}
+        loc = [s for s in loc if (s.hang or "").lower() in muon]
+    if gia_min:
+        loc = [s for s in loc if s.gia >= gia_min]
+    if gia_max:
+        loc = [s for s in loc if s.gia <= gia_max]
+    if sap_xep == "gia_tang":
+        loc.sort(key=lambda s: s.gia)
+    elif sap_xep == "gia_giam":
+        loc.sort(key=lambda s: s.gia, reverse=True)
+    else:
+        loc.sort(key=lambda s: (s.gia_goc - s.gia), reverse=True)
+    anh = _anh_sp()
+    sp = [{"ten": s.ten, "hang": s.hang, "gia": s.gia, "gia_goc": s.gia_goc,
+           "giam": s.gia_goc - s.gia,
+           "phan_tram": round((1 - s.gia / s.gia_goc) * 100) if s.gia_goc else 0,
+           "qua": (getattr(s, "qua", "") or "")[:100],
+           "anh_url": anh.get(str(s.ma_sp), "")} for s in loc[:60]]
+    return {"nganh": nganh, "ten": ten, "tong": len(loc),
+            "hang": hang_ds, "san_pham": sp}
+
+
 @router.get("/nhan-truong")
 def nhan_truong() -> dict:
     """Nhan tieng Viet cho UI (1 nguon su that, frontend khong hardcode):

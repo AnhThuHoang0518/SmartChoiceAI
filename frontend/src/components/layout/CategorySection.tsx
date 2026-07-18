@@ -3,16 +3,18 @@ import { motion } from "framer-motion"
 import { ChevronRight, ChevronLeft } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 
+// Chi danh muc CO du lieu that (slug -> /api/san-pham co san pham). Khong dua
+// Tivi/Laptop/Dien thoai vao vi catalog chua co -> tranh trang danh muc rong.
 const categories = [
-  { name: "Tivi", image: "/images/image.png" },
-  { name: "Tủ lạnh", image: "/images/image copy.png" },
   { name: "Máy lạnh", image: "/images/image copy 2.png" },
+  { name: "Tủ lạnh", image: "/images/image copy.png" },
   { name: "Máy giặt", image: "/images/image copy 3.png" },
-  { name: "Laptop", image: "/images/image copy 4.png" },
-  { name: "Điện thoại", image: "/images/image copy 5.png" },
-  { name: "Tai nghe", image: "/images/image copy 6.png" },
+  { name: "Máy sấy", image: "/images/image copy 4.png" },
+  { name: "Tủ đông", image: "/images/image.png" },
+  { name: "Máy rửa chén", image: "/images/image copy 5.png" },
+  { name: "Máy nước nóng", image: "/images/image copy 6.png" },
   { name: "Màn hình", image: "/images/image copy 7.png" },
-  { name: "Phụ kiện", image: "/images/image copy 8.png" },
+  { name: "Máy tính bảng", image: "/images/image copy 8.png" },
 ]
 
 export function CategorySection() {
