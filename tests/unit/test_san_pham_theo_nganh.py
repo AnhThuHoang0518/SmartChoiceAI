@@ -2,8 +2,20 @@
 """Endpoint /api/san-pham cho trang danh muc landing: san pham THAT tu catalog,
 KHONG mock. Nganh co data -> tra san pham + danh sach hang; nganh khong co data
 -> rong (UI hien 'dang cap nhat'). Loc hang/gia + sap xep chay tren data that."""
+from pathlib import Path
+
+import pytest
+
 from backend.app.api.chat import san_pham_theo_nganh as f
 from backend.app.api.chat import danh_muc_landing, khuyen_mai_that
+
+# Hang that (vd 'Daikin') va anh_sp.json (URL anh that) chi co trong
+# data/processed/ - NDA, khong len git (AGENTS.md muc 6). May chua co file
+# nay (CI, clone moi) chay tren catalog mau (hang an danh Alpha/Bravo, khong
+# co anh) -> 2 test duoi day PHAI skip, khong phai fail that.
+_CO_DU_LIEU_THAT = Path("data/processed/may_lanh.csv").exists()
+_can_du_lieu_that = pytest.mark.skipif(
+    not _CO_DU_LIEU_THAT, reason="can data/processed/*.csv + anh_sp.json (NDA, khong co tren CI)")
 
 
 def test_nganh_co_data_tra_san_pham_that():
@@ -24,6 +36,7 @@ def test_nganh_khong_co_data_tra_rong_khong_bia():
         assert r["ten"] == "" and r["tong"] == 0 and r["san_pham"] == [], slug
 
 
+@_can_du_lieu_that
 def test_loc_hang_va_gia_chay_that():
     r = f(nganh="may-lanh", hang="Daikin", gia_max=15000000, sap_xep="gia_tang")
     assert r["tong"] > 0
@@ -48,6 +61,7 @@ def test_khuyen_mai_landing_pho_thong_da_hang():
     assert len(set(hang)) == len(hang)                 # moi hang 1 may (da dang)
 
 
+@_can_du_lieu_that
 def test_danh_muc_landing_moi_muc_co_anh_that_khop_nganh():
     from backend.app.api.chat import _catalog_theo_slug, _anh_sp
     dm = danh_muc_landing()
