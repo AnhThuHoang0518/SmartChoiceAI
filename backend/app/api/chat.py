@@ -15,10 +15,11 @@ from __future__ import annotations
 import re
 import time
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Request
 from pydantic import BaseModel, Field
 
 from backend.app.agents.gia_tri_thong_tin import bang_diem, chon_cau_hoi
+from backend.app.core import gioi_han
 from backend.app.agents.trich_o_nhu_cau import trich, trich_bang_luat
 from backend.app.agents.viet_lai import viet_lai
 from backend.app.core import phien
@@ -631,18 +632,22 @@ class AnhYeuCau(BaseModel):
 
 
 @router.post("/nhin-anh")
-def nhin_anh_khach(y: AnhYeuCau) -> dict:
+def nhin_anh_khach(y: AnhYeuCau, request: Request = None) -> dict:
     """Khach chup anh (nhan nang luong may cu, may dang phan van) -> Qwen2.5-VL
     doc -> tra MO TA. UI dua mo ta vao o nhap -> chay flow tu van binh thuong
     (anh chi giup DIEN o nhu cau nhu tin nhan go tay, moi so van qua hau kiem).
 
     Chua cau hinh FPT -> 503, UI bao khach go tay. Gioi han base64 ~ 6MB.
+    Gioi han them 10 lan/60s/IP - anh la loi goi ton tien nhat (VLM), chan spam.
     """
     import os as _os
 
     from fastapi import HTTPException
 
     from backend.app.services.llm import nhin_anh
+
+    if gioi_han.qua_gioi_han(request, "nhin_anh", so_lan_toi_da=10, cua_so_giay=60):
+        raise HTTPException(429, "Đang có nhiều ảnh gửi lên quá, đợi một chút rồi gửi lại giúp em ạ")
 
     khoa = (_os.getenv("LLM_API_KEY") or "").strip()
     if not khoa or (_os.getenv("LLM_NHA_CUNG_CAP") or "").strip().lower() != "fpt":
@@ -662,7 +667,7 @@ class DocYeuCau(BaseModel):
 
 
 @router.post("/doc")
-def doc_thanh_tieng(y: DocYeuCau):
+def doc_thanh_tieng(y: DocYeuCau, request: Request = None):
     """TTS FPT.AI-VITs - theo DUNG tai lieu tren trang model (Inference API):
     client.audio.speech.create(model='FPT.AI-VITs', input=..., voice='std_kimngan',
     response_format='wav') tren base https://mkp-api.fptcloud.com (OpenAI compat)
@@ -670,12 +675,16 @@ def doc_thanh_tieng(y: DocYeuCau):
 
     Chua cau hinh FPT -> 503, UI tu roi ve giong trinh duyet (van doc duoc).
     Gioi han 400 ky tu: gia $16.5/1M ky tu -> ~1/3 xu moi cau, khong chay lan.
+    Gioi han them 20 lan/60s/IP - chan spam goi lien tuc dot tien API that.
     """
     import os as _os
 
     import requests as _rq
     from fastapi import HTTPException
     from fastapi.responses import Response as _Resp
+
+    if gioi_han.qua_gioi_han(request, "doc", so_lan_toi_da=20, cua_so_giay=60):
+        raise HTTPException(429, "Đang có nhiều yêu cầu đọc giọng quá, đợi một chút giúp em ạ")
 
     khoa = (_os.getenv("LLM_API_KEY") or "").strip()
     if not khoa or (_os.getenv("LLM_NHA_CUNG_CAP") or "").strip().lower() != "fpt":
@@ -837,8 +846,35 @@ def nhan_truong() -> dict:
 
 
 @router.post("/chat", response_model=TraLoi)
-def chat(t: TinNhan) -> TraLoi:
+def chat(t: TinNhan, request: Request = None) -> TraLoi:
     t0 = time.perf_counter()
+
+    # Chan spam TRUOC ca khi tao/tra phien - khong de spam de lai session rac.
+    # Tra 200 + text lich su (khong phai loi HTTP tho) vi frontend/chat/index.html
+    # KHONG kiem tra r.ok cho /api/chat, chi doc thang d.text/d.phien_id.
+    if gioi_han.qua_gioi_han(request, "chat", so_lan_toi_da=20, cua_so_giay=60):
+        return TraLoi(
+            phien_id=t.phien_id or phien.tao_phien(),
+            loai="tu_choi",
+            text="Dạ hệ thống đang có nhiều người hỏi cùng lúc, anh chị đợi khoảng "
+                 "1 phút rồi nhắn lại giúp em ạ.",
+            thong_ke={"ms": int((time.perf_counter() - t0) * 1000),
+                      "cham_llm": 0, "gioi_han_da_chan": True},
+        )
+
+    # Tin nhan sieu dai khong giup hieu ro hon nhu cau, chi doi token/chi phi
+    # LLM - cat som, van tra loi lich su (khong phai 422 tho cho khach thay).
+    if len(t.tin_nhan) > 500:
+        ma_tam = t.phien_id if t.phien_id and phien.lay(t.phien_id) else phien.tao_phien()
+        return TraLoi(
+            phien_id=ma_tam,
+            loai="tu_choi",
+            text="Dạ tin nhắn hơi dài, anh chị rút gọn giúp em còn khoảng vài câu "
+                 "chính thôi ạ, em sẽ tư vấn chính xác hơn.",
+            thong_ke={"ms": int((time.perf_counter() - t0) * 1000),
+                      "cham_llm": 0, "tin_nhan_qua_dai": True},
+        )
+
     ma = t.phien_id if t.phien_id and phien.lay(t.phien_id) else phien.tao_phien()
     p = phien.lay(ma)
 

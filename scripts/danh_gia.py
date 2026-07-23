@@ -22,6 +22,10 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 os.environ.setdefault("LLM_NHA_CUNG_CAP", "luat")
+# Script nay ban hang tram request/giay tu 1 "IP" gia (TestClient) - nhieu
+# hon bat ky khach that nao, nen tat rate-limit chan spam (chi danh cho
+# khach that qua backend/app/core/gioi_han.py).
+os.environ.setdefault("SMARTCHOICE_TAT_GIOI_HAN", "1")
 
 from fastapi.testclient import TestClient  # noqa: E402
 
