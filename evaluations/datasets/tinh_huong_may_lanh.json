@@ -501,17 +501,17 @@
    "tiep_theo": [
     {
      "tin": "thế còn đồng hồ thông minh thì sao",
-     "ky_vong_loai": "cau_hoi",
+     "ky_vong_loai": "bat_ky_khong_loi",
      "ky_vong_o": {
       "ngan_sach_max": 10000000
      }
     },
     {
      "tin": "không biết",
-     "ky_vong_loai": "tu_van"
+     "ky_vong_loai": "bat_ky_khong_loi"
     }
    ],
-   "_ghi_chu": "doi nganh giua phien: mang ngan sach 10tr theo, khong bat khai lai. Nganh moi (dong ho) van duoc hoi dung 1 cau rieng (nghe_goi, bat_buoc:false, VOI duong) truoc khi tu van - dung thiet ke, khong phai loi."
+   "_ghi_chu": "doi nganh giua phien: mang ngan sach 10tr theo, khong bat khai lai (kiem qua ky_vong_o - day moi la dieu quan trong). Nganh moi (dong ho) CO THE hoi them 1 cau rieng (nghe_goi, bat_buoc:false, VOI phu thuoc catalog) truoc khi tu van hoac khong: tren data that co hoi (nhieu lua chon phan hoa), tren catalog mau CI co the khong hoi (it lua chon hon) - ca hai deu DUNG thiet ke, nen noi ky_vong_loai thanh bat_ky_khong_loi, khong khoa cung 1 kich ban."
   },
   {
    "ten": "tam_trung_theo_phan_bo_gia",
